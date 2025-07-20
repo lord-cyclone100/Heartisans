@@ -7,6 +7,7 @@ import { Auction } from './pages/Auction'
 import { Shop } from './pages/Shop'
 import { Resale } from './pages/Resale'
 import { AppLayout } from './components/layout/AppLayout'
+import { ShopDetails } from './pages/ShopDetails'
 
 export const App = () => {
 
@@ -39,6 +40,10 @@ export const App = () => {
         {
           path:"/shop",
           element:<Shop/>
+        },
+        {
+          path:"/shop/:name",
+          element:<ShopDetails/>
         },
         {
           path:"/auction",
