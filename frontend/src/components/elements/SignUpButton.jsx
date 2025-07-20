@@ -7,7 +7,7 @@ export const SignUpButton = () => {
   }
   return(
     <>
-      <header className="text-2xl px-8 py-6 btn btn-primary">
+      <header className="text-2xl px-8 py-6 btn btn-success">
         <SignedOut>
           <SignInButton />
         </SignedOut>

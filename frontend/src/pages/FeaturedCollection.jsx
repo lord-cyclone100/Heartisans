@@ -1,4 +1,4 @@
-import { Carousel } from "../components/Carousel"
+import { Carousel } from "../components/elements/Carousel"
 
 export const FeaturedCollection = () => {
   return(

@@ -1,4 +1,4 @@
-import { Blob } from "../components/Blob"
+import { Blob } from "../components/elements/Blob"
 
 export const Ambassador = () => {
   return(
@@ -29,6 +29,7 @@ export const Ambassador = () => {
             <h1 className="text-center text-[5rem] leading-20 lg:text-[6rem] lg:leading-24">Join our <br />Ambassador <br />Program</h1>
             <h5 className="text-amber-500 text-[2rem] lg:text-[3rem]">Coming Soon</h5>
           </div>
+          
         </div>
       </section>
     </>
