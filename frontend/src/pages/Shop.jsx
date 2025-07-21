@@ -12,7 +12,7 @@ export const Shop = () => {
               {
                 shopCategories.map((item,idx)=>(
                   <NavLink to={`/shop/${item.name}`}>
-                    <div id="item" key={idx} className="size-50 bg-emerald-300">{item.name}</div>
+                    <div id="item" key={idx} className="size-44 bg-emerald-300">{item.name}</div>
                   </NavLink>
                 ))
               }
@@ -20,11 +20,16 @@ export const Shop = () => {
           </div>
           <div>
             <h1 className="text-[3rem] text-center py-16">Shop by States</h1>
-            <div className="flex gap-16 w-full items-center justify-center px-20 flex-wrap">
+            <div className="flex gap-20 w-full items-center justify-center px-20 flex-wrap">
               {
                 shopStates.map((item,idx)=>(
                   <NavLink to={`/shop/${item.name}`}>
-                    <div key={idx} className="size-50 bg-emerald-300">{item.name}</div>
+                    <div className="flex flex-col items-center gap-12">
+                      <div key={idx} className="size-44 bg-emerald-300 rounded-full">
+                        <img src={item.url} className="scale-150" alt="" />
+                      </div>
+                      <p>{item.name}</p>
+                    </div>
                   </NavLink>
                 ))
               }

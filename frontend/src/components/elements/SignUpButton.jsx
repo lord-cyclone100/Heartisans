@@ -9,12 +9,12 @@ export const SignUpButton = () => {
   // let userId = ""
   useEffect(()=>{
     if(user){
-      console.log(user);
-      console.log(user.imageUrl);
+      // console.log(user);
+      // console.log(user.imageUrl);
       const fullName = user.fullName;
       const email = user.primaryEmailAddress.emailAddress;
-      const userId = user.id;
-      console.log(userId);
+      // const userId = user.id;
+      // console.log(userId);
 
       axios.post("http://localhost:5000/api/user",{
         userName:fullName,

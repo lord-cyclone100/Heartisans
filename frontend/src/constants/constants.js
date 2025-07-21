@@ -15,5 +15,12 @@ export const shopCategories = [
 ]
 
 export const shopStates = [
-  {name:'West Bengal'}, {name:'Tamil Nadu'}, {name:'Kerala'}, {name:'Maharashtra'}, {name:'Rajasthan'}, {name:'Jharkhand'}, {name:'Kashmir'}, {name:'Gujarat'}
+  {name:'West Bengal',url:"./photos/West Bengal.svg"}, 
+  {name:'Tamil Nadu',url:"./photos/Tamil Nadu.svg"}, 
+  {name:'Kerala',url:"./photos/Kerala.svg"}, 
+  {name:'Maharashtra',url:"./photos/Maharashtra.svg"}, 
+  {name:'Rajasthan',url:"./photos/Rajasthan.svg"}, 
+  {name:'Jharkhand',url:"./photos/Jharkhand.svg"}, 
+  {name:'Kashmir',url:"./photos/Kashmir.svg"}, 
+  {name:'Gujarat',url:"./photos/Gujarat.svg"}
 ]
