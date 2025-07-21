@@ -1,0 +1,9 @@
+Shop Card Details
+Name, Price, State, Category, Seller Name
+
+Description/Details, Materials Used, Weight, Color, COD(Cash on Delivery)
+
+
+Auction Card
+
+Cloudinary

@@ -1,16 +1,17 @@
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios"
 import { NavLink, useNavigate } from "react-router-dom";
 
 export const SignUpButton = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  const [dbUserId, setDbUserId] = useState(null);
   // let userId = ""
   useEffect(()=>{
     if(user){
-      // console.log(user);
-      // console.log(user.imageUrl);
+      console.log(user);
+      const imageUrl = user.imageUrl;
       const fullName = user.fullName;
       const email = user.primaryEmailAddress.emailAddress;
       // const userId = user.id;
@@ -18,8 +19,13 @@ export const SignUpButton = () => {
 
       axios.post("http://localhost:5000/api/user",{
         userName:fullName,
-        email:email
-      }).catch((err)=>{
+        email:email,
+        imageUrl:imageUrl,
+        fullName:fullName
+      }).then(res => {
+        setDbUserId(res.data.user._id);
+      })
+      .catch((err)=>{
         console.error("Failed");
       })
     }
@@ -32,7 +38,7 @@ export const SignUpButton = () => {
         </SignedOut>
         <SignedIn>
 
-          {user && (<button className="rounded-full size-10" onClick={() => navigate(`/dashboard/${user.id}`)}>
+          {user && dbUserId && (<button className="rounded-full size-10" onClick={() => navigate(`/dashboard/${dbUserId}`)}>
             <img src={user.imageUrl} alt="" />
             {/* {user.id} */}
             {/* Profile */}

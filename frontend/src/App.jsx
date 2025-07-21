@@ -9,6 +9,7 @@ import { Resale } from './pages/Resale'
 import { AppLayout } from './components/layout/AppLayout'
 import { ShopDetails } from './pages/ShopDetails'
 import { UserDashBoard } from './pages/UserDashBoard'
+import { AdminPanel } from './pages/AdminPanel'
 
 export const App = () => {
 
@@ -55,7 +56,11 @@ export const App = () => {
           element:<Resale/>,
         },
         {
-          path:"/dashboard/:userId",
+          path:"/admin",
+          element:<AdminPanel/>,
+        },
+        {
+          path:"/dashboard/:id",
           element:<UserDashBoard/>,
         },
       ]
