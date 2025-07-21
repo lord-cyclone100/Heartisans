@@ -8,6 +8,7 @@ import { Shop } from './pages/Shop'
 import { Resale } from './pages/Resale'
 import { AppLayout } from './components/layout/AppLayout'
 import { ShopDetails } from './pages/ShopDetails'
+import { UserDashBoard } from './pages/UserDashBoard'
 
 export const App = () => {
 
@@ -52,6 +53,10 @@ export const App = () => {
         {
           path:"/resale",
           element:<Resale/>,
+        },
+        {
+          path:"/dashboard/:userId",
+          element:<UserDashBoard/>,
         },
       ]
     },    
