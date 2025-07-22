@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv'
 
-const URI = 'mongodb+srv://heartisans_admin:heartisans@cluster0.efjikoc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/heartisans_main'
+
+dotenv.config()
+const URI = process.env.MONGO_URI
 
 export const connectDB = async()=> {
   try{

@@ -11,7 +11,7 @@ export const shopCategories = [
   {name:'Fashion'}, 
   {name:'Crafts'}, 
   {name:'Crochet'}, 
-  {name:'Accessiories'}
+  {name:'Accessories'}
 ]
 
 export const shopStates = [

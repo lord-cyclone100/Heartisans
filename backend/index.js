@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { connectDB } from './database/db.js';
 import { userModel } from './models/userModel.js';
+import { shopCardModel } from './models/shopCardModel.js';
 
 const app = express();
 const port = 5000;
@@ -66,6 +67,35 @@ app.get('/api/user/email/:email', async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+app.get('/api/shopcards', async (req, res) => {
+  try {
+    const cards = await shopCardModel.find();
+    res.json(cards);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch shop cards" });
+  }
+});
+
+// Get products by category
+app.get('/api/shopcards/category/:category', async (req, res) => {
+  try {
+    const cards = await shopCardModel.find({ productCategory: req.params.category });
+    res.json(cards);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch shop cards by category" });
+  }
+});
+
+// Get products by state
+app.get('/api/shopcards/state/:state', async (req, res) => {
+  try {
+    const cards = await shopCardModel.find({ productState: req.params.state });
+    res.json(cards);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch shop cards by state" });
   }
 });
 
