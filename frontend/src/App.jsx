@@ -11,6 +11,8 @@ import { ShopDetails } from './pages/ShopDetails'
 import { UserDashBoard } from './pages/UserDashBoard'
 import { AdminPanel } from './pages/AdminPanel'
 import { ProductDetails } from './pages/ProductDetails'
+import { Modal } from './components/elements/Modal'
+import { SellForm } from './pages/SellForm'
 
 export const App = () => {
 
@@ -59,6 +61,18 @@ export const App = () => {
         {
           path:"/resale",
           element:<Resale/>,
+        },
+        {
+          path:"/sellform",
+          element:<SellForm/>,
+        },
+        {
+          path:"/sellform",
+          element:<SellForm/>,
+        },
+        {
+          path:"/modal",
+          element:<Modal/>,
         },
         {
           path:"/admin",

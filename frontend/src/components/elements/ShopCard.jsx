@@ -3,11 +3,12 @@ import { NavLink } from "react-router-dom"
 export const ShopCard = ({card}) => {
   return(
     <>
-      <div className="card bg-base-100 w-96 shadow-2xl border-1">
-        <figure>
+      <div className="card bg-base-100 w-96 h-[30rem] shadow-2xl border-1 relative">
+        <figure className="bg-amber-300 h-[50%] w-[100%]">
           <img
             src={card.productImageUrl}
-            alt={card.productName} />
+            alt={card.productName}
+            className="object-center object-cover size-[100%]" />
         </figure>
         <div className="card-body">
           <h2 className="card-title">

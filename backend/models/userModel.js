@@ -27,6 +27,11 @@ const userSchema = new Schema({
     type:Boolean,
     default:false,
     required:true,
+  },
+  joiningDate: {
+    type: Date,
+    required: true,
+    default: Date.now // Automatically sets to current date/time on creation
   }
 })
 

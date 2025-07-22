@@ -1,11 +1,13 @@
 import { SignOutButton } from "@clerk/clerk-react"
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
 export const UserDashBoard = () => {
   const [user,setUser] = useState(null)
   const { id } = useParams();
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
   // console.log(typeof id);
 
   useEffect(()=>{
@@ -20,36 +22,78 @@ export const UserDashBoard = () => {
       .catch(() => alert("Failed to update status"));
   };
 
+  const handleProtectedRedirect = (path) => {
+    if (user.isArtisan) {
+      navigate(path);
+    } else {
+      setShowModal(true);
+    }
+  };
+
   if (!user) {
     return <div className="text-center mt-10">Unauthorized or loading...</div>;
   }
   return(
     <>
-      <div className="w-full h-[10vh]"></div>
-      <div className="size-60 rounded-full bg-amber-300">
-        <img src={user.imageUrl} alt="" />
+    <section>
+      <div className="">
+        <div className="w-full h-[10vh]"></div>
+        <div className="flex flex-col items-center py-20">
+          <div className="size-40 rounded-full bg-amber-300 overflow-hidden">
+            <img src={user.imageUrl} alt="" />
+          </div>
+          <p>Welcome {user.userName}</p>
+          <p>{user.email}</p>
+          <p>
+            Date joined :- {user.joiningDate && new Date(user.joiningDate).toLocaleDateString('en-GB')}
+          </p>
+          <div className="flex gap-4 mt-4">
+            <button
+              className="btn btn-success"
+              disabled={user.isArtisan}
+              onClick={() => handleArtisanStatus(true)}
+            >
+              Apply as Artisan
+            </button>
+            <button
+              className="btn btn-warning"
+              disabled={!user.isArtisan}
+              onClick={() => handleArtisanStatus(false)}
+            >
+              Revoke
+            </button>
+          </div>
+          <div className="flex gap-4 mt-8">
+              <button
+                className="btn btn-primary"
+                onClick={() => handleProtectedRedirect("/modal")}
+              >
+                Start Auction
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => handleProtectedRedirect("/sellform")}
+              >
+                Sell on Heartisans
+              </button>
+            </div>
+          <SignOutButton>
+            <button className="btn btn-error mt-4">Log Out</button>
+          </SignOutButton>
+        </div>
       </div>
-      <p>{user.userName}</p>
-      <p>{user.email}</p>
-      <div className="flex gap-4 mt-4">
-        <button
-          className="btn btn-success"
-          disabled={user.isArtisan}
-          onClick={() => handleArtisanStatus(true)}
-        >
-          Apply as Artisan
-        </button>
-        <button
-          className="btn btn-warning"
-          disabled={!user.isArtisan}
-          onClick={() => handleArtisanStatus(false)}
-        >
-          Revoke
-        </button>
-      </div>
-      <SignOutButton>
-        <button className="btn btn-error mt-4">Log Out</button>
-      </SignOutButton>
+    </section>
+    {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded shadow-lg text-center">
+            <h2 className="text-xl font-bold mb-4">Access Denied</h2>
+            <p>You must be an Artisan to use this feature.</p>
+            <button className="btn btn-primary mt-4" onClick={() => setShowModal(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   )
 }

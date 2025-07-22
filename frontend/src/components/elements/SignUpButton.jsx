@@ -32,13 +32,15 @@ export const SignUpButton = () => {
   },[user])
   return(
     <>
-      <header className="text-2xl px-8 py-6 btn btn-success">
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
+      <header className="">
+        <button className={`text-2xl px-8 py-6 btn btn-success ${user ? 'hidden' : 'flex'}`}>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+        </button>
         <SignedIn>
 
-          {user && dbUserId && (<button className="rounded-full size-10" onClick={() => navigate(`/dashboard/${dbUserId}`)}>
+          {user && dbUserId && (<button className="rounded-full size-12 overflow-hidden " onClick={() => navigate(`/dashboard/${dbUserId}`)}>
             <img src={user.imageUrl} alt="" />
             {/* {user.id} */}
             {/* Profile */}

@@ -3,6 +3,7 @@ import cors from 'cors'
 import { connectDB } from './database/db.js';
 import { userModel } from './models/userModel.js';
 import { shopCardModel } from './models/shopCardModel.js';
+import { v2 as cloudinary } from 'cloudinary'
 
 const app = express();
 const port = 5000;
@@ -16,9 +17,29 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json())
 
+cloudinary.config({
+  cloud_name:process.env.CLOUD_NAME,
+  api_key:process.env.API_KEY,
+  api_secret:process.env.API_SECRET
+})
+
 app.get('/',(req,res)=>{
   res.status(200).send("Hello World");
 })
+
+app.get('/api/cloudinary-signature', (req, res) => {
+  const timestamp = Math.round((new Date).getTime()/1000);
+  const signature = cloudinary.utils.api_sign_request(
+    { timestamp },
+    process.env.API_SECRET
+  );
+  res.json({
+    timestamp,
+    signature,
+    apiKey: process.env.API_KEY || 'YOUR_API_KEY',
+    cloudName: process.env.CLOUD_NAME || 'YOUR_CLOUD_NAME'
+  });
+});
 
 app.post('/api/user', async (req, res) => {
   try {
@@ -67,6 +88,15 @@ app.get('/api/user/email/:email', async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+app.post('/api/shopcards', async (req, res) => {
+  try {
+    const card = await shopCardModel.create(req.body);
+    res.status(201).json(card);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create shop card" });
   }
 });
 
