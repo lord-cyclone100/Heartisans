@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom"
+
 export const ShopCard = ({card}) => {
   return(
     <>
@@ -18,7 +20,7 @@ export const ShopCard = ({card}) => {
             <div className="badge badge-outline">{card.productCategory}</div>
             <div className="badge badge-outline">{card.productState}</div>
           </div>
-          <button className="btn btn-accent">Details</button>
+          <NavLink to={`/shop/${card.productCategory}/${card._id}`} ><button className="btn btn-accent w-[100%]">Details</button></NavLink>
         </div>
       </div>
     </>

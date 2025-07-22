@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom"
 import { useUser } from '@clerk/clerk-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { HamBurgerMenu } from '../elements/HamBurgerMenu';
 
 export const Navbar = () => {
   const { user } = useUser();
@@ -25,7 +26,7 @@ export const Navbar = () => {
           </NavLink>
         </div>
         <div className='flex  gap-[4vw]'>
-          <div>
+          <div className='hidden lg:block'>
             <ul className={`menu menu-horizontal px-1 text-2xl gap-[2vw] ${user ? "flex" : "hidden"}`}>
               <li><NavLink to="/shop">Shop</NavLink></li>
               <li><NavLink to="/auction">Auction</NavLink></li>
@@ -36,6 +37,7 @@ export const Navbar = () => {
             </ul>
           </div>
           <SignUpButton/>
+          <HamBurgerMenu/>
         </div>
       </nav>
     </>

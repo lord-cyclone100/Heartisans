@@ -10,6 +10,7 @@ import { AppLayout } from './components/layout/AppLayout'
 import { ShopDetails } from './pages/ShopDetails'
 import { UserDashBoard } from './pages/UserDashBoard'
 import { AdminPanel } from './pages/AdminPanel'
+import { ProductDetails } from './pages/ProductDetails'
 
 export const App = () => {
 
@@ -46,6 +47,10 @@ export const App = () => {
         {
           path:"/shop/:name",
           element:<ShopDetails/>
+        },
+        {
+          path:"/shop/:name/:id",
+          element:<ProductDetails/>
         },
         {
           path:"/auction",

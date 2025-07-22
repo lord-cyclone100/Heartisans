@@ -99,6 +99,16 @@ app.get('/api/shopcards/state/:state', async (req, res) => {
   }
 });
 
+app.get('/api/shopcards/:id', async (req, res) => {
+  try {
+    const card = await shopCardModel.findById(req.params.id);
+    if (!card) return res.status(404).json({ error: "Product not found" });
+    res.json(card);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch product" });
+  }
+});
+
 connectDB().then(()=>{
   app.listen(port,()=>{
     console.log(`Server running on port ${port}`);
