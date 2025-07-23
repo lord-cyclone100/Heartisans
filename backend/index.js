@@ -29,9 +29,15 @@ io.on("connection", (socket) => {
     try {
       const auction = await auctionModel.findById(auctionId);
 
+      // Prevent auction creator from bidding
+      if (auction.sellerId.toString() === userId.toString()) {
+        socket.emit("bidError", { error: "You cannot bid on your own auction." });
+        return;
+      }
+
       // Auction time checks
       const now = new Date();
-      const auctionEnd = new Date(auction.startTime.getTime() + auction.duration * 1000);
+      const auctionEnd = new Date(auction.startTime.getTime() + auction.duration * 60 * 1000);
       if (now < auction.startTime) {
         socket.emit("bidError", { error: "Auction not started" });
         return;
@@ -206,6 +212,27 @@ app.post('/api/auctions', async (req, res) => {
 app.get('/api/auctions', async (req, res) => {
   try {
     const auctions = await auctionModel.find();
+    const now = Date.now();
+    for (const auction of auctions) {
+      const start = new Date(auction.startTime).getTime();
+      const end = start + auction.duration * 60 * 1000; // duration in ms
+      let changed = false;
+      if (now >= start && now < end && (!auction.hasBegun || auction.hasEnded)) {
+        auction.hasBegun = true;
+        auction.hasEnded = false;
+        changed = true;
+      }
+      if (now >= end && !auction.hasEnded) {
+        auction.hasEnded = true;
+        changed = true;
+      }
+      if (now < start && (auction.hasBegun || auction.hasEnded)) {
+        auction.hasBegun = false;
+        auction.hasEnded = false;
+        changed = true;
+      }
+      if (changed) await auction.save();
+    }
     res.json(auctions);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch auctions" });
@@ -227,6 +254,11 @@ app.post('/api/auctions/:id/bid', async (req, res) => {
   try {
     const { userId, userName, amount } = req.body;
     const auction = await auctionModel.findById(req.params.id);
+
+    // Prevent auction creator from bidding
+    if (auction.sellerId.toString() === userId.toString()) {
+      return res.status(400).json({ error: "You cannot bid on your own auction." });
+    }
 
     // Check if auction has started and not ended
     const now = new Date();

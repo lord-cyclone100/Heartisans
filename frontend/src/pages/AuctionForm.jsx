@@ -175,7 +175,7 @@ export const AuctionForm = () => {
               <input
                 type="number"
                 name="duration"
-                placeholder="Duration (seconds)"
+                placeholder="Duration (minutes)"
                 value={form.duration}
                 onChange={handleChange}
                 required

@@ -7,7 +7,7 @@ export const Footer = () => {
     <>
       <footer className="footer sm:footer-horizontal bg-green-800 text-neutral-content p-10 flex items-center justify-evenly font-mhlk">
         <aside className='flex flex-col gap-8'>
-          <img src="./photos/secondary-logo.svg" className='h-20' alt="" />
+          <img src={`${import.meta.env.BASE_URL}photos/secondary-logo.svg`} className='h-20' alt="" />
           <p className='text-[1.2rem] leading-8'>
             Garia, Kolkata-700152
             <br />

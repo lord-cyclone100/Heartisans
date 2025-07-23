@@ -1,16 +1,10 @@
+import { AuctionLeaderBoard } from "../components/elements/AuctionLeaderBoard"
+
 export const Resale = () => {
   return(
     <>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
-      <h1>Resale</h1>
+      <div className="w-full h-[10vh]"></div>
+      {/* <AuctionLeaderBoard/> */}
       <h1>Resale</h1>
     </>
   )

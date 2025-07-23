@@ -67,6 +67,14 @@ const auctionSchema = new Schema({
   createdAt: { 
     type: Date, 
     default: Date.now 
+  },
+  hasBegun:{
+    type:Boolean,
+    default:false
+  },
+  hasEnded:{
+    type:Boolean,
+    default:false
   }
 });
 
