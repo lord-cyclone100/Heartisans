@@ -3,10 +3,62 @@ import cors from 'cors'
 import { connectDB } from './database/db.js';
 import { userModel } from './models/userModel.js';
 import { shopCardModel } from './models/shopCardModel.js';
-import { v2 as cloudinary } from 'cloudinary'
+import { auctionModel } from './models/auctionModel.js';
+import { v2 as cloudinary } from 'cloudinary';
+import http from 'http';
+import { Server } from 'socket.io';
 
 const app = express();
 const port = 5000;
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on("connection", (socket) => {
+  // Join auction room
+  socket.on("joinAuction", (auctionId) => {
+    socket.join(auctionId);
+  });
+  socket.on("placeBid", async ({ auctionId, userId, userName, amount }) => {
+    try {
+      const auction = await auctionModel.findById(auctionId);
+
+      // Auction time checks
+      const now = new Date();
+      const auctionEnd = new Date(auction.startTime.getTime() + auction.duration * 1000);
+      if (now < auction.startTime) {
+        socket.emit("bidError", { error: "Auction not started" });
+        return;
+      }
+      if (now > auctionEnd) {
+        socket.emit("bidError", { error: "Auction ended" });
+        return;
+      }
+
+      // Bid amount check
+      const highestBid = auction.bids.length > 0 ? Math.max(...auction.bids.map(b => b.amount)) : auction.basePrice;
+      if (amount <= highestBid) {
+        socket.emit("bidError", { error: "Bid too low" });
+        return;
+      }
+
+      // Add bid
+      auction.bids.push({ userId, userName, amount });
+      await auction.save();
+
+      // Emit updated auction to all in the room
+      io.to(auctionId).emit("auctionUpdate", auction);
+    } catch (err) {
+      socket.emit("bidError", { error: "Failed to place bid" });
+    }
+  });
+});
 
 const corsOptions = {
   origin:"http://localhost:5173",
@@ -139,8 +191,65 @@ app.get('/api/shopcards/:id', async (req, res) => {
   }
 });
 
+// Create a new auction
+app.post('/api/auctions', async (req, res) => {
+  try {
+    const auction = await auctionModel.create(req.body);
+    res.status(201).json(auction);
+  } catch (err) {
+    console.error("Auction creation error:", err);
+    res.status(500).json({ error: "Failed to create auction"});
+  }
+});
+
+// Get all auctions
+app.get('/api/auctions', async (req, res) => {
+  try {
+    const auctions = await auctionModel.find();
+    res.json(auctions);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch auctions" });
+  }
+});
+
+// Get a single auction
+app.get('/api/auctions/:id', async (req, res) => {
+  try {
+    const auction = await auctionModel.findById(req.params.id);
+    res.json(auction);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch auction" });
+  }
+});
+
+// Place a bid
+app.post('/api/auctions/:id/bid', async (req, res) => {
+  try {
+    const { userId, userName, amount } = req.body;
+    const auction = await auctionModel.findById(req.params.id);
+
+    // Check if auction has started and not ended
+    const now = new Date();
+    const auctionEnd = new Date(auction.startTime.getTime() + auction.duration * 1000);
+    if (now < auction.startTime) return res.status(400).json({ error: "Auction not started" });
+    if (now > auctionEnd) return res.status(400).json({ error: "Auction ended" });
+
+    // Check if bid is higher than current highest or base price
+    const highestBid = auction.bids.length > 0 ? Math.max(...auction.bids.map(b => b.amount)) : auction.basePrice;
+    if (amount <= highestBid) return res.status(400).json({ error: "Bid too low" });
+
+    // Add bid
+    auction.bids.push({ userId, userName, amount });
+    await auction.save();
+
+    res.json(auction);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to place bid" });
+  }
+});
+
 connectDB().then(()=>{
-  app.listen(port,()=>{
+  server.listen(port,()=>{
     console.log(`Server running on port ${port}`);
   })
 })

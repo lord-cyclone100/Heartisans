@@ -66,7 +66,7 @@ export const UserDashBoard = () => {
           <div className="flex gap-4 mt-8">
               <button
                 className="btn btn-primary"
-                onClick={() => handleProtectedRedirect("/modal")}
+                onClick={() => handleProtectedRedirect("/auctionform")}
               >
                 Start Auction
               </button>

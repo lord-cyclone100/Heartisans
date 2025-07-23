@@ -13,6 +13,8 @@ import { AdminPanel } from './pages/AdminPanel'
 import { ProductDetails } from './pages/ProductDetails'
 import { Modal } from './components/elements/Modal'
 import { SellForm } from './pages/SellForm'
+import { AuctionForm } from './pages/AuctionForm'
+import { AuctionDetails } from './pages/AuctionDetails'
 
 export const App = () => {
 
@@ -59,6 +61,10 @@ export const App = () => {
           element:<Auction/>,
         },
         {
+          path:"/auction/:id",
+          element:<AuctionDetails/>,
+        },
+        {
           path:"/resale",
           element:<Resale/>,
         },
@@ -67,8 +73,8 @@ export const App = () => {
           element:<SellForm/>,
         },
         {
-          path:"/sellform",
-          element:<SellForm/>,
+          path:"/auctionform",
+          element:<AuctionForm/>,
         },
         {
           path:"/modal",

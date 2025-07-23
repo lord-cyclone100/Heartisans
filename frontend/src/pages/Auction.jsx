@@ -1,18 +1,28 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { AuctionCard } from "../components/elements/AuctionCard";
+
 export const Auction = () => {
-  return(
+  const [auctions, setAuctions] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/auctions")
+      .then(res => setAuctions(res.data))
+      .catch(() => setAuctions([]));
+  }, []);
+
+  return (
     <>
-      <div className="w-full h-[10vh]"></div>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
-      <h1>Auction</h1>
+      <section>
+        <div>
+          <div className="w-full h-[10vh]"></div>
+          <div className="flex flex-wrap gap-8 justify-center py-10">
+            {auctions.map(auction => (
+              <AuctionCard key={auction._id} auction={auction} />
+            ))}
+          </div>
+        </div>
+      </section>
     </>
-  )
-}
+  );
+};

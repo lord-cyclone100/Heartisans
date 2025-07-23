@@ -22,7 +22,7 @@ export const Navbar = () => {
       <nav className='h-[10vh] w-full bg-black/70 backdrop-blur-lg border-b border-white/40  px-40 flex items-center justify-between fixed z-10 font-mhlk text-white'>
         <div>
           <NavLink to="/">
-            <img src="./photos/primary-logo.svg" className='h-20' alt="" />
+            <img src={`${import.meta.env.BASE_URL}photos/primary-logo.svg`} className='h-20' alt="" />
           </NavLink>
         </div>
         <div className='flex  gap-[4vw]'>
