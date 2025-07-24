@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import axios from 'axios'
 
 export const CheckoutForm = () => {
   const { user } = useUser();
@@ -8,6 +9,24 @@ export const CheckoutForm = () => {
   const [address, setAddress] = useState("");
   const location = useLocation();
   const total = location.state?.total || 0;
+
+  const handlePayment = async(e) => {
+    e.preventDefault();
+    const data = {
+      name:user.fullName,
+      mobile:Number(phoneNumber),
+      amount:Number(total)
+    }
+    try {
+      console.log("Hello");
+      const response = await axios.post("http://localhost:5000/create-order",data)
+      console.log("Payment API response:", response.data);
+      console.log(response.data);
+      window.location.href = response.data.url
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
@@ -59,7 +78,7 @@ export const CheckoutForm = () => {
               </div>
               <div className="">
                 <div className="text-xl font-bold mb-6">Total Amount: Rs {total}</div>
-                <button type="submit" className="btn btn-success w-full text-lg">
+                <button type="button" className="btn btn-success w-full text-lg" onClick={handlePayment}>
                   Pay Now
                 </button>
               </div>

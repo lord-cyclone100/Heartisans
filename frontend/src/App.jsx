@@ -17,6 +17,8 @@ import { AuctionForm } from './pages/AuctionForm'
 import { AuctionDetails } from './pages/AuctionDetails'
 import { CartPage } from './pages/CartPage'
 import { CheckoutForm } from './pages/CheckoutForm'
+import { PaymentSuccess } from './pages/PaymentSuccess'
+import { PaymentFailed } from './pages/PaymentFailed'
 
 export const App = () => {
 
@@ -89,6 +91,14 @@ export const App = () => {
         {
           path:"/modal",
           element:<Modal/>,
+        },
+        {
+          path:"/payment-success",
+          element:<PaymentSuccess/>,
+        },
+        {
+          path:"/payment-failure",
+          element:<PaymentFailed/>,
         },
         {
           path:"/admin",

@@ -8,6 +8,9 @@ import { cartModel } from './models/cartModel.js';
 import { v2 as cloudinary } from 'cloudinary';
 import http from 'http';
 import { Server } from 'socket.io';
+import crypto from 'crypto'
+import { v4 as uuidv4 } from 'uuid'
+import axios from 'axios'
 
 const app = express();
 const port = 5000;
@@ -81,6 +84,17 @@ cloudinary.config({
   api_key:process.env.API_KEY,
   api_secret:process.env.API_SECRET
 })
+
+
+const MERCHANT_ID = process.env.MERCHANT_ID
+const MERCHANT_KEY = process.env.MERCHANT_KEY
+const BASE_URL = process.env.BASE_URL
+const STATUS_URL = process.env.STATUS_URL
+
+const redirecturl = `http://localhost:${port}/status`
+const successurl = `http://localhost:${port}/payment-success`
+const failureurl = `http://localhost:${port}/payment-failure`
+
 
 app.get('/',(req,res)=>{
   res.status(200).send("Hello World");
@@ -325,6 +339,90 @@ app.post('/api/cart/remove', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to remove from cart" });
   }
+});
+
+//PhonePe payment gateway
+app.post('/create-order',async(req,res)=>{
+  const {name,mobile,amount} = req.body;
+  const orderId = uuidv4()
+
+  const payLoad = {
+    merchantId:MERCHANT_ID,
+    merchantUserId:name,
+    mobileNumber:mobile,
+    amount:amount*100,
+    merchantTransactionId:orderId,
+    redirectUrl:`${redirecturl}/?id=${orderId}`,
+    redirectMode:'POST',
+    paymentInstrument:{
+      type:'PAY_PAGE'
+    }
+  }
+  const newPayLoad = Buffer.from(JSON.stringify(payLoad)).toString('base64');
+  const keyIndex = 1;
+  const str = newPayLoad + '/pg/v1/pay' + MERCHANT_KEY
+  const sha256 = crypto.createHash('sha256').update(str).digest('hex')
+  const checksum = sha256 + '###' + keyIndex
+
+  const option = {
+    method:'POST',
+    url:BASE_URL,
+    headers:{
+      accept:'application/json',
+      'Content-Type':'application/json',
+      'X-VERIFY':checksum,
+      'X-MERCHANT-ID': MERCHANT_ID
+    },
+    data:{
+      request:newPayLoad
+    }
+
+  }
+  try {
+    const response = await axios.request(option)
+    console.log("PhonePe API response:", response.data);
+    const redirectUrl = response.data.data.instrumentResponse.redirectInfo.url;
+    res.status(200).json({ url: redirectUrl });
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+
+app.post('/status',async(req,res)=>{
+  const merchantTransactionId = req.query.id
+  const keyIndex = 1;
+  const str = `/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}` + MERCHANT_KEY
+  const sha256 = crypto.createHash('sha256').update(str).digest('hex')
+  const checksum = sha256 + '###' + keyIndex
+
+  const option = {
+    method:'GET',
+    url:`${STATUS_URL}/${MERCHANT_ID}/${merchantTransactionId}`,
+    headers:{
+      accept:'application/json',
+      'Content-Type':'application/json',
+      'X-VERIFY':checksum,
+      'X-MERCHANT-ID': MERCHANT_ID
+    },
+
+  }
+  axios.request(option).then((response)=>{
+    if(response.data.success === true){
+      res.redirect(successurl)
+    }
+    else{
+      res.redirect(failureurl)
+    }
+  })
+})
+
+app.get('/payment-success', (req, res) => {
+  res.redirect('http://localhost:5173/payment-success')
+});
+
+app.get('/payment-failure', (req, res) => {
+  res.send('Payment Failed!');
 });
 
 connectDB().then(()=>{

@@ -10,7 +10,7 @@ export const SignUpButton = () => {
   // let userId = ""
   useEffect(()=>{
     if(user){
-      console.log(user);
+      // console.log(user);
       const imageUrl = user.imageUrl;
       const fullName = user.fullName;
       const email = user.primaryEmailAddress.emailAddress;
