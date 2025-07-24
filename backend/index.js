@@ -4,6 +4,7 @@ import { connectDB } from './database/db.js';
 import { userModel } from './models/userModel.js';
 import { shopCardModel } from './models/shopCardModel.js';
 import { auctionModel } from './models/auctionModel.js';
+import { cartModel } from './models/cartModel.js';
 import { v2 as cloudinary } from 'cloudinary';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -277,6 +278,52 @@ app.post('/api/auctions/:id/bid', async (req, res) => {
     res.json(auction);
   } catch (err) {
     res.status(500).json({ error: "Failed to place bid" });
+  }
+});
+
+// Add item to cart
+app.post('/api/cart/add', async (req, res) => {
+  try {
+    const { userId, productId, productName, productImageUrl, productPrice, productCategory } = req.body;
+    let cart = await cartModel.findOne({ userId });
+    if (!cart) {
+      cart = await cartModel.create({
+        userId,
+        items: [{ productId, productName, productImageUrl, productPrice, productCategory }]
+      });
+    } else {
+      const item = cart.items.find(i => i.productId.toString() === productId);
+      if (!item) {
+        cart.items.push({ productId, productName, productImageUrl, productPrice, productCategory });
+      }
+      await cart.save();
+    }
+    res.json(cart);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to add to cart" });
+  }
+});
+
+// Get user's cart
+app.get('/api/cart/:userId', async (req, res) => {
+  try {
+    const cart = await cartModel.findOne({ userId: req.params.userId });
+    res.json(cart || { items: [] });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch cart" });
+  }
+});
+
+app.post('/api/cart/remove', async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+    const cart = await cartModel.findOne({ userId });
+    if (!cart) return res.json({ success: true });
+    cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+    await cart.save();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to remove from cart" });
   }
 });
 

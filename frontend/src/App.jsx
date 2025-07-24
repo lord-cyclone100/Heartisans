@@ -15,6 +15,8 @@ import { Modal } from './components/elements/Modal'
 import { SellForm } from './pages/SellForm'
 import { AuctionForm } from './pages/AuctionForm'
 import { AuctionDetails } from './pages/AuctionDetails'
+import { CartPage } from './pages/CartPage'
+import { CheckoutForm } from './pages/CheckoutForm'
 
 export const App = () => {
 
@@ -73,8 +75,16 @@ export const App = () => {
           element:<SellForm/>,
         },
         {
+          path:"/cart",
+          element:<CartPage/>,
+        },
+        {
           path:"/auctionform",
           element:<AuctionForm/>,
+        },
+        {
+          path:"/checkout",
+          element:<CheckoutForm/>,
         },
         {
           path:"/modal",
