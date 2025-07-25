@@ -104,8 +104,8 @@ const failureurl = `http://localhost:${port}/payment-failure`
 // const CASHFREE_BASE_URL = process.env.CASHFREE_BASE_URL || "https://sandbox.cashfree.com/pg";
 
 // Cashfree configuration
-const CASHFREE_APP_ID = 'TEST107307213a03804df823aca3552212703701'
-const CASHFREE_SECRET_KEY = 'cfsk_ma_test_4845740e4d2b0471e9ad1abf0199ba0c_777312b8'
+const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID
+const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY
 
 // Initialize Cashfree SDK
 const cashfree = new Cashfree(
