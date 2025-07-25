@@ -19,6 +19,7 @@ import { CartPage } from './pages/CartPage'
 import { CheckoutForm } from './pages/CheckoutForm'
 import { PaymentSuccess } from './pages/PaymentSuccess'
 import { PaymentFailed } from './pages/PaymentFailed'
+import { PaymentPage } from './pages/PaymentPage'
 
 export const App = () => {
 
@@ -91,6 +92,10 @@ export const App = () => {
         {
           path:"/modal",
           element:<Modal/>,
+        },
+        {
+          path:"/payment",
+          element:<PaymentPage/>,
         },
         {
           path:"/payment-success",

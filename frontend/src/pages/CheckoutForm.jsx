@@ -1,12 +1,14 @@
 import { useUser } from "@clerk/clerk-react";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios'
 
 export const CheckoutForm = () => {
   const { user } = useUser();
   const [phoneNumber, setPhoneNumber] = useState("");
+  // const [message, setMessage] = useState('')
   const [address, setAddress] = useState("");
+  const navigate = useNavigate()
   const location = useLocation();
   const total = location.state?.total || 0;
 
@@ -14,15 +16,26 @@ export const CheckoutForm = () => {
     e.preventDefault();
     const data = {
       name:user.fullName,
-      mobile:Number(phoneNumber),
-      amount:Number(total)
+      mobile:phoneNumber,
+      amount:total
     }
+    // console.log(data);
     try {
       console.log("Hello");
       const response = await axios.post("http://localhost:5000/create-order",data)
       console.log("Payment API response:", response.data);
-      console.log(response.data);
-      window.location.href = response.data.url
+      const responseData = response.data;
+      // window.location.href = response.data.url
+      if (responseData.paymentSessionId && responseData.orderId) {
+        // Navigate to payment page with order details
+        navigate('/payment', { 
+          state: { 
+            orderId: responseData.orderId,
+            paymentSessionId: responseData.paymentSessionId,
+            bookingData: data
+          }
+        })
+      }
     } catch (error) {
       console.log(error);
     }
@@ -36,7 +49,7 @@ export const CheckoutForm = () => {
           <div className="max-w-lg mx-auto bg-white rounded shadow p-8 mt-10">
             <h2 className="text-2xl font-bold mb-6">Checkout</h2>
             
-            <form>
+            <form onSubmit={handlePayment}>
               <div className="mb-4">
                 <label className="block mb-1 font-semibold">Username</label>
                 <input
@@ -78,7 +91,7 @@ export const CheckoutForm = () => {
               </div>
               <div className="">
                 <div className="text-xl font-bold mb-6">Total Amount: Rs {total}</div>
-                <button type="button" className="btn btn-success w-full text-lg" onClick={handlePayment}>
+                <button type="submit" className="btn btn-success w-full text-lg" >
                   Pay Now
                 </button>
               </div>

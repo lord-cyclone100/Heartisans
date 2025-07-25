@@ -11,6 +11,7 @@ import { Server } from 'socket.io';
 import crypto from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
 import axios from 'axios'
+import { Cashfree, CFEnvironment } from 'cashfree-pg';
 
 const app = express();
 const port = 5000;
@@ -94,6 +95,24 @@ const STATUS_URL = process.env.STATUS_URL
 const redirecturl = `http://localhost:${port}/status`
 const successurl = `http://localhost:${port}/payment-success`
 const failureurl = `http://localhost:${port}/payment-failure`
+
+
+
+
+// const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID;
+// const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY;
+// const CASHFREE_BASE_URL = process.env.CASHFREE_BASE_URL || "https://sandbox.cashfree.com/pg";
+
+// Cashfree configuration
+const CASHFREE_APP_ID = 'TEST107307213a03804df823aca3552212703701'
+const CASHFREE_SECRET_KEY = 'cfsk_ma_test_4845740e4d2b0471e9ad1abf0199ba0c_777312b8'
+
+// Initialize Cashfree SDK
+const cashfree = new Cashfree(
+  process.env.NODE_ENV === 'production' ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX,
+  CASHFREE_APP_ID,
+  CASHFREE_SECRET_KEY
+);
 
 
 app.get('/',(req,res)=>{
@@ -342,88 +361,306 @@ app.post('/api/cart/remove', async (req, res) => {
 });
 
 //PhonePe payment gateway
-app.post('/create-order',async(req,res)=>{
-  const {name,mobile,amount} = req.body;
-  const orderId = uuidv4()
+// app.post('/create-order',async(req,res)=>{
+//   const {name,mobile,amount} = req.body;
+//   const orderId = uuidv4()
 
-  const payLoad = {
-    merchantId:MERCHANT_ID,
-    merchantUserId:name,
-    mobileNumber:mobile,
-    amount:amount*100,
-    merchantTransactionId:orderId,
-    redirectUrl:`${redirecturl}/?id=${orderId}`,
-    redirectMode:'POST',
-    paymentInstrument:{
-      type:'PAY_PAGE'
+//   const payLoad = {
+//     merchantId:MERCHANT_ID,
+//     merchantUserId:name,
+//     mobileNumber:mobile,
+//     amount:amount*100,
+//     merchantTransactionId:orderId,
+//     redirectUrl:`${redirecturl}/?id=${orderId}`,
+//     redirectMode:'POST',
+//     paymentInstrument:{
+//       type:'PAY_PAGE'
+//     }
+//   }
+//   const newPayLoad = Buffer.from(JSON.stringify(payLoad)).toString('base64');
+//   const keyIndex = 1;
+//   const str = newPayLoad + '/pg/v1/pay' + MERCHANT_KEY
+//   const sha256 = crypto.createHash('sha256').update(str).digest('hex')
+//   const checksum = sha256 + '###' + keyIndex
+
+//   const option = {
+//     method:'POST',
+//     url:BASE_URL,
+//     headers:{
+//       accept:'application/json',
+//       'Content-Type':'application/json',
+//       'X-VERIFY':checksum,
+//       'X-MERCHANT-ID': MERCHANT_ID
+//     },
+//     data:{
+//       request:newPayLoad
+//     }
+
+//   }
+//   try {
+//     const response = await axios.request(option)
+//     console.log("PhonePe API response:", response.data);
+//     const redirectUrl = response.data.data.instrumentResponse.redirectInfo.url;
+//     res.status(200).json({ url: redirectUrl });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })
+
+
+
+
+
+const generateOrderId = () => {
+  return 'ORDER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+};
+
+app.post('/create-order', async (req, res) => {
+  try{
+    const { name, mobile, amount } = req.body;
+    const orderId = generateOrderId();
+
+    const orderPayload = {
+      order_id: orderId,
+      order_amount: parseFloat(amount),
+      order_currency: "INR",
+      customer_details: {
+        customer_id: `CUST_${Date.now()}`,
+        customer_name: name,
+        customer_email: "test@example.com", // Replace with actual email if available
+        customer_phone: mobile.toString()
+      },
+      order_meta: {
+        return_url: `http://localhost:5173/payment-success?order_id=${orderId}`,
+        // notify_url: `http://localhost:5000/api/payment/webhook`,
+        payment_methods: "cc,dc,upi"
+      },
+      order_expiry_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      // order_note: `Booking for ${patientName} - ${reason}`,
+    };
+
+    console.log('Creating Cashfree order with data:', orderPayload);
+
+    const cashfreeResponse = await cashfree.PGCreateOrder(orderPayload);
+    console.log('Cashfree response:', cashfreeResponse.data);
+
+    if (cashfreeResponse.data.payment_session_id) {
+      res.json({
+        success: true,
+        message: 'Order created successfully',
+        orderId: orderId,
+        paymentUrl: cashfreeResponse.data.payment_link,
+        paymentSessionId: cashfreeResponse.data.payment_session_id
+      });
+    } else {
+      throw new Error('Failed to create payment session');
     }
   }
-  const newPayLoad = Buffer.from(JSON.stringify(payLoad)).toString('base64');
-  const keyIndex = 1;
-  const str = newPayLoad + '/pg/v1/pay' + MERCHANT_KEY
-  const sha256 = crypto.createHash('sha256').update(str).digest('hex')
-  const checksum = sha256 + '###' + keyIndex
 
-  const option = {
-    method:'POST',
-    url:BASE_URL,
-    headers:{
-      accept:'application/json',
-      'Content-Type':'application/json',
-      'X-VERIFY':checksum,
-      'X-MERCHANT-ID': MERCHANT_ID
-    },
-    data:{
-      request:newPayLoad
+  catch(error) {
+    console.error('Booking error:', error);
+    
+    // Log detailed error information
+    if (error.response) {
+      console.error('Cashfree API Error Response:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data,
+        headers: error.response.headers
+      });
     }
-
+    
+    res.status(500).json({ 
+      message: 'Failed to create booking',
+      error: error.message,
+      details: error.response?.data || 'No additional details available'
+    });
   }
+});
+
+
+
+
+
+
+
+app.post('/payment/verify', async (req, res) => {
   try {
-    const response = await axios.request(option)
-    console.log("PhonePe API response:", response.data);
-    const redirectUrl = response.data.data.instrumentResponse.redirectInfo.url;
-    res.status(200).json({ url: redirectUrl });
+    console.log("Hello");
+    const { orderId } = req.body;
+
+    if (!orderId) {
+      return res.status(400).json({ message: 'Order ID is required' });
+    }
+
+    console.log(`Verifying pay for order: ${orderId}`);
+
+    // Get order details from Cashfree using SDK
+    const cashfreeResponse = await cashfree.PGFetchOrder(orderId);
+    console.log('Cashfree order details:', cashfreeResponse.data);
+    
+    const orderStatus = cashfreeResponse.data.order_status;
+    const paymentDetails = cashfreeResponse.data.payment_details || {};
+
+    
+
+    // // Update booking status in database
+    // const booking = await Booking.findOne({ orderId });
+    // if (booking) {
+    //   console.log(`Updating booking ${orderId} from status: ${booking.status} to: ${orderStatus}`);
+      
+    //   // Handle different payment statuses
+    //   switch (orderStatus) {
+    //     case 'PAID':
+    //       booking.status = 'paid';
+    //       booking.paymentId = paymentDetails.payment_id || paymentDetails.auth_id || 'PAYMENT_COMPLETED';
+    //       booking.paymentMethod = paymentDetails.payment_method;
+    //       booking.paymentTime = paymentDetails.payment_time;
+    //       booking.bankReference = paymentDetails.bank_reference;
+    //       console.log(`Payment verified as successful for order ${orderId}`);
+    //       break;
+          
+    //     case 'EXPIRED':
+    //       booking.status = 'cancelled';
+    //       console.log(`Payment expired for order ${orderId}`);
+    //       break;
+          
+    //     case 'FAILED':
+    //       booking.status = 'failed';
+    //       booking.paymentMessage = paymentDetails.payment_message;
+    //       console.log(`Payment failed for order ${orderId}`);
+    //       break;
+          
+    //     case 'PENDING':
+    //       booking.status = 'pending';
+    //       console.log(`Payment still pending for order ${orderId}`);
+    //       break;
+          
+    //     default:
+    //       console.log(`Unknown payment status for order ${orderId}: ${orderStatus}`);
+    //       booking.status = orderStatus.toLowerCase();
+    //   }
+      
+    //   await booking.save();
+    //   console.log(`Booking ${orderId} updated successfully`);
+
+    //   // Return both verification result and booking data
+    //   res.json({
+    //     success: true,
+    //     orderStatus: orderStatus,
+    //     bookingStatus: booking.status,
+    //     paymentDetails: paymentDetails,
+    //     booking: {
+    //       id: booking._id,
+    //       patientName: booking.patientName,
+    //       email: booking.email,
+    //       mobileNumber: booking.mobileNumber,
+    //       bookingDateTime: booking.bookingDateTime,
+    //       reason: booking.reason,
+    //       status: booking.status,
+    //       orderId: booking.orderId,
+    //       amount: booking.amount,
+    //       paymentId: booking.paymentId,
+    //       paymentMethod: booking.paymentMethod,
+    //       paymentTime: booking.paymentTime,
+    //       bankReference: booking.bankReference,
+    //       paymentMessage: booking.paymentMessage,
+    //       createdAt: booking.createdAt,
+    //       updatedAt: booking.updatedAt
+    //     }
+    //   });
+    // } else {
+    //   console.error(`Booking not found for orderId: ${orderId}`);
+    //   res.status(404).json({
+    //     success: false,
+    //     message: 'Booking not found',
+    //     orderStatus: orderStatus
+    //   });
+    // }
+
+
+
+
+  res.json({
+      success: orderStatus === 'PAID',
+      orderStatus,
+      paymentDetails,
+      orderId,
+      amount: cashfreeResponse.data.order_amount,
+      paymentMethod: paymentDetails.payment_method,
+      paymentId: paymentDetails.payment_id || paymentDetails.auth_id,
+      paymentTime: paymentDetails.payment_time,
+      bankReference: paymentDetails.bank_reference,
+      paymentMessage: paymentDetails.payment_message,
+    });
+
+
+
+
+
   } catch (error) {
-    console.log(error);
-  }
-})
-
-
-app.post('/status',async(req,res)=>{
-  const merchantTransactionId = req.query.id
-  const keyIndex = 1;
-  const str = `/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}` + MERCHANT_KEY
-  const sha256 = crypto.createHash('sha256').update(str).digest('hex')
-  const checksum = sha256 + '###' + keyIndex
-
-  const option = {
-    method:'GET',
-    url:`${STATUS_URL}/${MERCHANT_ID}/${merchantTransactionId}`,
-    headers:{
-      accept:'application/json',
-      'Content-Type':'application/json',
-      'X-VERIFY':checksum,
-      'X-MERCHANT-ID': MERCHANT_ID
-    },
-
-  }
-  axios.request(option).then((response)=>{
-    if(response.data.success === true){
-      res.redirect(successurl)
+    console.error('Payment verification error:', error);
+    
+    // Log detailed error information
+    if (error.response) {
+      console.error('Cashfree API Error Response:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data
+      });
     }
-    else{
-      res.redirect(failureurl)
-    }
-  })
-})
-
-app.get('/payment-success', (req, res) => {
-  res.redirect('http://localhost:5173/payment-success')
+    
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to vrify payment',
+      error: error.message,
+      details: error.response?.data || 'No additional details available'
+    });
+  }
 });
 
-app.get('/payment-failure', (req, res) => {
-  res.send('Payment Failed!');
-});
+
+
+
+
+
+
+
+// app.post('/status',async(req,res)=>{
+//   const merchantTransactionId = req.query.id
+//   const keyIndex = 1;
+//   const str = `/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}` + MERCHANT_KEY
+//   const sha256 = crypto.createHash('sha256').update(str).digest('hex')
+//   const checksum = sha256 + '###' + keyIndex
+
+//   const option = {
+//     method:'GET',
+//     url:`${STATUS_URL}/${MERCHANT_ID}/${merchantTransactionId}`,
+//     headers:{
+//       accept:'application/json',
+//       'Content-Type':'application/json',
+//       'X-VERIFY':checksum,
+//       'X-MERCHANT-ID': MERCHANT_ID
+//     },
+
+//   }
+//   axios.request(option).then((response)=>{
+//     if(response.data.success === true){
+//       res.redirect(successurl)
+//     }
+//     else{
+//       res.redirect(failureurl)
+//     }
+//   })
+// })
+
+// app.get('/payment-success', (req, res) => {
+//   res.redirect('http://localhost:5173/payment-success')
+// });
+
+// app.get('/payment-failure', (req, res) => {
+//   res.send('Payment Failed!');
+// });
 
 connectDB().then(()=>{
   server.listen(port,()=>{
