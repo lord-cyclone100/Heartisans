@@ -3,11 +3,13 @@ import { useParams, useNavigate, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaWallet } from "react-icons/fa";
+import { ArtisanPlanModal } from "../components/elements/ArtisanPlanModal";
 
 export const UserDashBoard = () => {
   const [user,setUser] = useState(null)
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
+  const [showArtisanPlanModal, setShowArtisanPlanModal] = useState(false);
   const navigate = useNavigate();
   // console.log(typeof id);
 
@@ -82,6 +84,26 @@ export const UserDashBoard = () => {
               >
                 Sell on Heartisans
               </button>
+              <button
+                className={`btn ${
+                  !user.isArtisan 
+                    ? 'btn-disabled' 
+                    : user.hasArtisanSubscription 
+                      ? 'btn-success' 
+                      : 'btn-accent'
+                }`}
+                disabled={!user.isArtisan || user.hasArtisanSubscription}
+                onClick={() => user.isArtisan && !user.hasArtisanSubscription && setShowArtisanPlanModal(true)}
+                title={
+                  !user.isArtisan 
+                    ? "Become an artisan to access this feature"
+                    : user.hasArtisanSubscription 
+                      ? "You are already subscribed to the Artisan Plan"
+                      : "Access your artisan plan"
+                }
+              >
+                {user.hasArtisanSubscription ? 'Subscribed' : 'Artisan Plan'}
+              </button>
             </div>
           <SignOutButton>
             <button className="btn btn-error mt-4">Log Out</button>
@@ -100,6 +122,11 @@ export const UserDashBoard = () => {
           </div>
         </div>
       )}
+      <ArtisanPlanModal 
+        isOpen={showArtisanPlanModal}
+        onClose={() => setShowArtisanPlanModal(false)}
+        user={user}
+      />
     </>
   )
 }

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
-  const [booking, setBooking] = useState(null);
+  const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -21,21 +21,49 @@ export const PaymentSuccess = () => {
 
   const verifyPayment = async () => {
     try {
-      // Single API call: verify payment and get booking data
-      const response = await fetch('http://localhost:5000/payment/verify', {
+      // First, try to check if this is a subscription order
+      let isSubscriptionOrder = false;
+      
+      // Try subscription verification first
+      const subscriptionResponse = await fetch('http://localhost:5000/subscription/payment/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId })
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setBooking(data.booking);
-      } else {
-        setError(data.message || 'Payment verification failed');
+      if (subscriptionResponse.ok) {
+        const subscriptionData = await subscriptionResponse.json();
+        if (subscriptionData.success !== undefined) {
+          // This is a subscription order
+          isSubscriptionOrder = true;
+          if (subscriptionData.success) {
+            setOrder(subscriptionData.order);
+          } else {
+            setError(subscriptionData.message || 'Subscription payment verification failed');
+          }
+          setLoading(false);
+          return;
+        }
       }
-    } catch {
+
+      // If not a subscription, try regular payment verification
+      if (!isSubscriptionOrder) {
+        const response = await fetch('http://localhost:5000/payment/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setOrder(data.order);
+        } else {
+          setError(data.message || 'Payment verification failed');
+        }
+      }
+    } catch (error) {
+      console.error('Payment verification error:', error);
       setError('Failed to verify payment');
     } finally {
       setLoading(false);
@@ -88,7 +116,17 @@ export const PaymentSuccess = () => {
             </svg>
           </div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Payment Successful!</h2>
-          <p className="text-gray-600 mb-6">Your order has been booked successfully.</p>
+          <p className="text-gray-600 mb-6">Your order has been placed successfully.</p>
+
+          {order && (
+            <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+              <h3 className="font-semibold mb-2">Order Details:</h3>
+              <p className="text-sm text-gray-600">Order ID: {order.orderId}</p>
+              <p className="text-sm text-gray-600">Product: {order.productDetails?.productName}</p>
+              <p className="text-sm text-gray-600">Amount: Rs {order.amount}</p>
+              <p className="text-sm text-gray-600">Status: {order.status}</p>
+            </div>
+          )}
 
           <div className="space-y-3">
             <button
