@@ -31,6 +31,10 @@ const userSchema = new Schema({
     type: Date,
     required: true,
     default: Date.now // Automatically sets to current date/time on creation
+  },
+  balance:{
+    type:String,
+    default:'0'
   }
 })
 

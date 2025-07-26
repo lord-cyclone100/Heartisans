@@ -1,7 +1,8 @@
 import { SignOutButton } from "@clerk/clerk-react"
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FaWallet } from "react-icons/fa";
 
 export const UserDashBoard = () => {
   const [user,setUser] = useState(null)
@@ -38,6 +39,11 @@ export const UserDashBoard = () => {
     <section>
       <div className="">
         <div className="w-full h-[10vh]"></div>
+        <div className="w-full h-[5vh] flex items-center justify-end">
+          <NavLink to={`/wallet/${user._id}`} className={`h-[100%] ${user.isArtisan || user.isAdmin ? 'block':'hidden'}`}><button className="h-[90%] w-[8vh] bg-emerald-400 rounded-2xl flex items-center justify-center">
+            <FaWallet size={20}/>
+          </button></NavLink>
+        </div>
         <div className="flex flex-col items-center py-20">
           <div className="size-40 rounded-full bg-amber-300 overflow-hidden">
             <img src={user.imageUrl} alt="" />

@@ -662,6 +662,18 @@ app.post('/payment/verify', async (req, res) => {
 //   res.send('Payment Failed!');
 // });
 
+
+app.get('/api/wallet/:id', async (req, res) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ balance: user.balance, userName: user.userName, email: user.email });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch wallet" });
+  }
+});
+
+
 connectDB().then(()=>{
   server.listen(port,()=>{
     console.log(`Server running on port ${port}`);

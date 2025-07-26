@@ -20,6 +20,7 @@ import { CheckoutForm } from './pages/CheckoutForm'
 import { PaymentSuccess } from './pages/PaymentSuccess'
 import { PaymentFailed } from './pages/PaymentFailed'
 import { PaymentPage } from './pages/PaymentPage'
+import { WalletPage } from './pages/WalletPage'
 
 export const App = () => {
 
@@ -104,6 +105,10 @@ export const App = () => {
         {
           path:"/payment-failure",
           element:<PaymentFailed/>,
+        },
+        {
+          path:"/wallet/:id",
+          element:<WalletPage/>,
         },
         {
           path:"/admin",
