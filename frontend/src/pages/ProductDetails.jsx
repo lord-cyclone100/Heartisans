@@ -1,15 +1,21 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard";
+import { useTranslation } from 'react-i18next';
+import { useContentTranslation } from '../hooks/useContentTranslation';
 
 export const ProductDetails = () => {
+  const { t } = useTranslation();
+  const { translateCategory, translateState } = useContentTranslation();
   const { id } = useParams();
+  const navigate = useNavigate();
   const [card, setCard] = useState(null);
   const { user } = useUser();
   const [mongoUserId, setMongoUserId] = useState("");
   const [inCart, setInCart] = useState(false);
+  const [sellerId, setSellerId] = useState("");
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/shopcards/${id}`)
@@ -34,6 +40,14 @@ export const ProductDetails = () => {
       .catch(() => setInCart(false));
   }, [mongoUserId, card]);
 
+  // Fetch seller's _id based on seller name
+  useEffect(() => {
+    if (!card?.productSellerName) return;
+    axios.get(`http://localhost:5000/api/user/username/${card.productSellerName}`)
+      .then(res => setSellerId(res.data._id))
+      .catch(() => setSellerId("Not Available"));
+  }, [card]);
+
   const handleAddToCart = async () => {
     if (!mongoUserId || !card) return;
     await axios.post("http://localhost:5000/api/cart/add", {
@@ -56,7 +70,37 @@ export const ProductDetails = () => {
     setInCart(false);
   };
 
-  if (!card) return <div className="text-center mt-10">Loading...</div>;
+  const handleBuyNow = () => {
+    if (!user) {
+      alert(t('auth.login'));
+      return;
+    }
+    
+    if (mongoUserId === sellerId) {
+      alert(t('product.cannotBuyOwn'));
+      return;
+    }
+    
+    navigate('/checkout', {
+      state: {
+        total: card.productPrice,
+        sellerId: sellerId,
+        sellerName: card.productSellerName,
+        productDetails: {
+          id: card._id,
+          name: card.productName,
+          price: card.productPrice,
+          image: card.productImageUrl,
+          category: card.productCategory
+        }
+      }
+    });
+  };
+
+  // Check if current user is the seller
+  const isUserSeller = mongoUserId && sellerId && mongoUserId === sellerId;
+
+  if (!card) return <div className="text-center mt-10">{t('common.loading')}</div>;
 
   return (
     <>
@@ -73,22 +117,33 @@ export const ProductDetails = () => {
                 <p className="text-xl mt-2 lg:text-[3rem] text-wrap">{card.productDescription}</p>
               </div>
               <div>
-                <p className="mt-2">Seller: {card.productSellerName}</p>
-                <p className="mt-2">Category: {card.productCategory}</p>
-                <p className="mt-2">State: {card.productState}</p>
-                <p className="mt-2">Material: {card.productMaterial}</p>
-                <p className="mt-2">Weight: {card.productWeight}</p>
-                <p className="mt-2">Color: {card.productColor}</p>
+                <p className="mt-2">{t('product.seller')}: {card.productSellerName}</p>
+                <p className="mt-2">{t('product.sellerId')}: {sellerId || t('common.loading')}</p>
+                <p className="mt-2">{t('product.category')}: 
+                  <span className="ml-2 bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                    {translateCategory(card.productCategory)}
+                  </span>
+                </p>
+                <p className="mt-2">{t('product.state')}: 
+                  <span className="ml-2 bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">
+                    {translateState(card.productState)}
+                  </span>
+                </p>
+                <p className="mt-2">{t('product.material')}: {card.productMaterial}</p>
+                <p className="mt-2">{t('product.weight')}: {card.productWeight}g</p>
+                <p className="mt-2">{t('product.color')}: {card.productColor}</p>
               </div>
               <h3 className="mt-2 font-bold text-[2rem]">Rs {card.productPrice}</h3>
-              <p className="mt-2">{card.isCodAvailable ? "COD Available" : "COD Not Available"}</p>
+              <p className="mt-2">{card.isCodAvailable ? t('product.codAvailable') : t('product.codNotAvailable')}</p>
               <div className="flex gap-8">
-                {inCart ? (
-                  <button className="btn btn-error text-2xl p-6" onClick={handleRemoveFromCart}>Remove from Cart</button>
-                ) : (
-                  <button className="btn btn-success text-2xl p-6" onClick={handleAddToCart}>Add to Cart</button>
-                )}
-                <button className="btn btn-success text-2xl p-6">Buy Now</button>
+                <button 
+                  className={`btn text-2xl p-6 ${isUserSeller ? 'btn-disabled' : 'btn-success'}`}
+                  onClick={handleBuyNow}
+                  disabled={isUserSeller}
+                  title={isUserSeller ? t('product.cannotBuyOwn') : t('product.buyNow')}
+                >
+                  {isUserSeller ? t('dashboard.yourProduct') : t('product.buyNow')}
+                </button>
               </div>
             </div>
           </div>

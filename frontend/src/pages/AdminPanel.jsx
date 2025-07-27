@@ -1,294 +1,553 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard"
+import { useTranslation } from 'react-i18next'
+import { FaUsers, FaShoppingBag, FaGavel, FaChartBar, FaEye, FaEdit, FaTrash, FaCrown, FaUserShield, FaTimes } from 'react-icons/fa'
 
 export const AdminPanel = () => {
-  const [cards, setCards] = useState([])
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState('users')
+  const [loading, setLoading] = useState(true)
+  
+  // Data states
   const [users, setUsers] = useState([])
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [activeTab, setActiveTab] = useState('overview')
-  
-  useEffect(()=>{
-    // Fetch products
-    axios.get("http://localhost:5000/api/shopcards")
-    .then(res=>{
-      setCards(res.data)
-      if(res.data.length > 0) setSelectedProduct(res.data[0])
+  const [shopCards, setShopCards] = useState([])
+  const [auctions, setAuctions] = useState([])
+  const [carts, setCarts] = useState([])
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalProducts: 0,
+    totalAuctions: 0,
+    totalArtisans: 0,
+    totalSubscriptions: 0
+  })
+
+  // Fetch all data on component mount
+  useEffect(() => {
+    fetchAllData()
+  }, [])
+
+  const fetchAllData = async () => {
+    setLoading(true)
+    try {
+      const [usersRes, shopCardsRes, auctionsRes] = await Promise.all([
+        axios.get("http://localhost:5000/api/users"), // We'll need to create this endpoint
+        axios.get("http://localhost:5000/api/shopcards"),
+        axios.get("http://localhost:5000/api/auctions")
+      ])
+
+      setUsers(usersRes.data || [])
+      setShopCards(shopCardsRes.data || [])
+      setAuctions(auctionsRes.data || [])
+
+      // Calculate stats
+      const userData = usersRes.data || []
+      setStats({
+        totalUsers: userData.length,
+        totalProducts: shopCardsRes.data?.length || 0,
+        totalAuctions: auctionsRes.data?.length || 0,
+        totalArtisans: userData.filter(user => user.isArtisan).length,
+        totalSubscriptions: userData.filter(user => user.hasArtisanSubscription).length
+      })
+
+    } catch (error) {
+      console.error('Error fetching admin data:', error)
+      // Fallback to individual API calls for existing endpoints
+      try {
+        const shopCardsRes = await axios.get("http://localhost:5000/api/shopcards")
+        setShopCards(shopCardsRes.data || [])
+        const auctionsRes = await axios.get("http://localhost:5000/api/auctions")
+        setAuctions(auctionsRes.data || [])
+        
+        setStats(prevStats => ({
+          ...prevStats,
+          totalProducts: shopCardsRes.data?.length || 0,
+          totalAuctions: auctionsRes.data?.length || 0,
+        }))
+      } catch (fallbackError) {
+        console.error('Error in fallback fetch:', fallbackError)
+      }
+    }
+    setLoading(false)
+  }
+
+  const tabs = [
+    { id: 'overview', name: t('admin.overview'), icon: FaChartBar },
+    { id: 'users', name: t('admin.users'), icon: FaUsers },
+    { id: 'products', name: t('admin.products'), icon: FaShoppingBag },
+    { id: 'auctions', name: t('admin.auctions'), icon: FaGavel }
+  ]
+
+  // Admin action functions
+  const deleteUser = async (userId) => {
+    if (window.confirm(t('admin.confirmDeleteUser'))) {
+      try {
+        await axios.delete(`http://localhost:5000/api/user/${userId}`)
+        setUsers(users.filter(user => user._id !== userId))
+        // Update stats
+        const updatedUsers = users.filter(user => user._id !== userId)
+        setStats(prevStats => ({
+          ...prevStats,
+          totalUsers: updatedUsers.length,
+          totalArtisans: updatedUsers.filter(user => user.isArtisan).length,
+          totalSubscriptions: updatedUsers.filter(user => user.hasArtisanSubscription).length
+        }))
+        alert(t('admin.userDeleted'))
+      } catch (error) {
+        console.error('Error deleting user:', error)
+        alert(t('admin.errorDeletingUser'))
+      }
+    }
+  }
+
+  const deleteProduct = async (productId) => {
+    if (window.confirm(t('admin.confirmDeleteProduct'))) {
+      try {
+        await axios.delete(`http://localhost:5000/api/shopcards/${productId}`)
+        setShopCards(shopCards.filter(product => product._id !== productId))
+        setStats(prevStats => ({
+          ...prevStats,
+          totalProducts: prevStats.totalProducts - 1
+        }))
+        alert(t('admin.productDeleted'))
+      } catch (error) {
+        console.error('Error deleting product:', error)
+        alert(t('admin.errorDeletingProduct'))
+      }
+    }
+  }
+
+  const deleteAuction = async (auctionId) => {
+    if (window.confirm(t('admin.confirmDeleteAuction'))) {
+      try {
+        await axios.delete(`http://localhost:5000/api/auctions/${auctionId}`)
+        setAuctions(auctions.filter(auction => auction._id !== auctionId))
+        setStats(prevStats => ({
+          ...prevStats,
+          totalAuctions: prevStats.totalAuctions - 1
+        }))
+        alert(t('admin.auctionDeleted'))
+      } catch (error) {
+        console.error('Error deleting auction:', error)
+        alert(t('admin.errorDeletingAuction'))
+      }
+    }
+  }
+
+  const terminateSubscription = async (userId) => {
+    if (window.confirm(t('admin.confirmTerminateSubscription'))) {
+      try {
+        await axios.patch(`http://localhost:5000/api/user/${userId}/subscription`, {
+          hasArtisanSubscription: false,
+          subscriptionType: null,
+          subscriptionDate: null
+        })
+        // Update local state
+        setUsers(users.map(user => 
+          user._id === userId 
+            ? { ...user, hasArtisanSubscription: false, subscriptionType: null, subscriptionDate: null }
+            : user
+        ))
+        setStats(prevStats => ({
+          ...prevStats,
+          totalSubscriptions: prevStats.totalSubscriptions - 1
+        }))
+        alert(t('admin.subscriptionTerminated'))
+      } catch (error) {
+        console.error('Error terminating subscription:', error)
+        alert(t('admin.errorTerminatingSubscription'))
+      }
+    }
+  }
+
+  const filteredData = (data, searchFields) => {
+    return data
+  }
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     })
-    .catch(()=>setCards([]))
-    
-    // Fetch users (admin function)
-    axios.get("http://localhost:5000/api/users")
-    .then(res=>setUsers(res.data))
-    .catch(()=>setUsers([]))
-  },[])
-  
-  const totalRevenue = cards.reduce((sum, card) => sum + (card.productPrice || 0), 0)
-  const artisans = users.filter(user => user.isArtisan)
-  
-  return(
-    <>
-      <div className="w-full h-[10vh]"></div>
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
-          {/* Admin Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8 rounded-lg mb-8">
-            <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-            <p className="text-indigo-100">Platform management and SAP business intelligence</p>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <h3 className="text-2xl font-bold">{cards.length}</h3>
-                <p className="text-indigo-200">Total Products</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <h3 className="text-2xl font-bold">{users.length}</h3>
-                <p className="text-indigo-200">Total Users</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <h3 className="text-2xl font-bold">{artisans.length}</h3>
-                <p className="text-indigo-200">Verified Artisans</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <h3 className="text-2xl font-bold">₹{totalRevenue.toLocaleString()}</h3>
-                <p className="text-indigo-200">Total Inventory Value</p>
-              </div>
+  }
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR'
+    }).format(amount)
+  }
+
+  // Overview Component
+  const OverviewTab = () => (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="bg-blue-50 p-8 rounded-xl border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-600 text-lg font-semibold">{t('admin.totalUsers')}</p>
+              <p className="text-4xl font-bold text-blue-900 mt-2">{stats.totalUsers}</p>
             </div>
+            <FaUsers className="text-blue-500 text-3xl" />
           </div>
-          
-          {/* Tab Navigation */}
-          <div className="bg-white rounded-lg shadow-lg mb-8">
-            <div className="border-b border-gray-200">
-              <nav className="flex space-x-8 px-6">
-                {[
-                  { id: 'overview', label: 'Overview', icon: '📊' },
-                  { id: 'products', label: 'Product Management', icon: '🛍️' },
-                  { id: 'users', label: 'User Management', icon: '👥' },
-                  { id: 'analytics', label: 'SAP Analytics', icon: '📈' }
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors duration-200 ${
-                      activeTab === tab.id
-                        ? 'border-indigo-500 text-indigo-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="mr-2">{tab.icon}</span>
-                    {tab.label}
-                  </button>
-                ))}
-              </nav>
+        </div>
+        
+        <div className="bg-green-50 p-8 rounded-xl border border-green-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-600 text-lg font-semibold">{t('admin.totalProducts')}</p>
+              <p className="text-4xl font-bold text-green-900 mt-2">{stats.totalProducts}</p>
             </div>
-            
-            {/* Tab Content */}
-            <div className="p-6">
-              {/* Overview Tab */}
-              {activeTab === 'overview' && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold">Platform Overview</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-lg">
-                      <h3 className="text-lg font-semibold mb-4">Recent Products</h3>
-                      <div className="space-y-3">
-                        {cards.slice(0, 5).map((card) => (
-                          <div key={card._id} className="flex items-center space-x-3">
-                            <img src={card.productImageUrl} alt="" className="w-10 h-10 rounded object-cover" />
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">{card.productName}</p>
-                              <p className="text-xs text-gray-600">₹{card.productPrice}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-lg">
-                      <h3 className="text-lg font-semibold mb-4">Platform Statistics</h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span>Active Products:</span>
-                          <span className="font-semibold">{cards.length}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Total Users:</span>
-                          <span className="font-semibold">{users.length}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Verified Artisans:</span>
-                          <span className="font-semibold">{artisans.length}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Avg. Product Price:</span>
-                          <span className="font-semibold">
-                            ₹{cards.length > 0 ? Math.round(totalRevenue / cards.length) : 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Products Tab */}
-              {activeTab === 'products' && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">Product Management</h2>
-                    <span className="text-gray-600">{cards.length} products total</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {cards.map((card) => (
-                      <div key={card._id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <img 
-                          src={card.productImageUrl} 
-                          alt={card.productName}
-                          className="w-full h-32 object-cover rounded-lg mb-3"
-                        />
-                        <h3 className="font-semibold text-sm mb-1">{card.productName}</h3>
-                        <p className="text-xs text-gray-600 mb-1">{card.productCategory}</p>
-                        <p className="text-xs text-gray-600 mb-2">Seller: {card.productSellerName}</p>
-                        <p className="text-blue-600 font-bold">₹{card.productPrice}</p>
-                        <button
-                          onClick={() => {
-                            setSelectedProduct(card);
-                            setActiveTab('analytics');
-                          }}
-                          className="mt-2 w-full bg-indigo-600 text-white py-1 px-2 rounded text-xs hover:bg-indigo-700 transition-colors"
-                        >
-                          View Analytics
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Users Tab */}
-              {activeTab === 'users' && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">User Management</h2>
-                    <span className="text-gray-600">{users.length} users total</span>
-                  </div>
-                  
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map((user) => (
-                          <tr key={user._id}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
-                                <div className="ml-4">
-                                  <div className="text-sm font-medium text-gray-900">{user.userName}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                user.isArtisan 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}>
-                                {user.isArtisan ? 'Artisan' : 'User'}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {user.joiningDate && new Date(user.joiningDate).toLocaleDateString()}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-              
-              {/* Analytics Tab */}
-              {activeTab === 'analytics' && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold">SAP Analytics Cloud - Admin View</h2>
-                  
-                  {cards.length > 0 && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold mb-3">Select Product for Analysis</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        {cards.map((card) => (
-                          <div
-                            key={card._id}
-                            onClick={() => setSelectedProduct(card)}
-                            className={`cursor-pointer p-2 rounded border-2 transition-all ${
-                              selectedProduct?._id === card._id
-                                ? 'border-indigo-500 bg-indigo-50'
-                                : 'border-gray-200 hover:border-indigo-300'
-                            }`}
-                          >
-                            <img
-                              src={card.productImageUrl}
-                              alt={card.productName}
-                              className="w-full h-16 object-cover rounded mb-1"
-                            />
-                            <p className="text-xs font-medium truncate">{card.productName}</p>
-                            <p className="text-xs text-indigo-600">₹{card.productPrice}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {selectedProduct ? (
-                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 border-b">
-                        <h3 className="text-lg font-bold">
-                          Admin Analytics: {selectedProduct.productName}
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          Comprehensive business intelligence for platform optimization
-                        </p>
-                      </div>
-                      <SAPAnalyticsDashboard
-                        productData={{
-                          name: selectedProduct.productName,
-                          category: selectedProduct.productCategory,
-                          material: selectedProduct.productMaterial,
-                          region: selectedProduct.productState,
-                          basePrice: selectedProduct.productPrice,
-                          seller: selectedProduct.productSellerName,
-                          weight: selectedProduct.productWeight,
-                          color: selectedProduct.productColor
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <h3 className="text-xl font-semibold text-gray-600 mb-2">Select a Product</h3>
-                      <p className="text-gray-500">Choose a product above to view detailed analytics</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+            <FaShoppingBag className="text-green-500 text-3xl" />
           </div>
-          
-          {cards.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Data Available</h3>
-              <p className="text-gray-500">Platform data will appear here once products and users are added</p>
+        </div>
+        
+        <div className="bg-purple-50 p-8 rounded-xl border border-purple-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-600 text-lg font-semibold">{t('admin.totalAuctions')}</p>
+              <p className="text-4xl font-bold text-purple-900 mt-2">{stats.totalAuctions}</p>
             </div>
-          )}
+            <FaGavel className="text-purple-500 text-3xl" />
+          </div>
+        </div>
+        
+        <div className="bg-orange-50 p-8 rounded-xl border border-orange-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-orange-600 text-lg font-semibold">{t('admin.totalArtisans')}</p>
+              <p className="text-4xl font-bold text-orange-900 mt-2">{stats.totalArtisans}</p>
+            </div>
+            <FaCrown className="text-orange-500 text-3xl" />
+          </div>
+        </div>
+        
+        <div className="bg-rose-50 p-8 rounded-xl border border-rose-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-rose-600 text-lg font-semibold">{t('admin.activeSubscriptions')}</p>
+              <p className="text-4xl font-bold text-rose-900 mt-2">{stats.totalSubscriptions}</p>
+            </div>
+            <FaUserShield className="text-rose-500 text-3xl" />
+          </div>
         </div>
       </div>
-    </>
+
+      <div className="bg-white p-8 rounded-xl shadow-lg border">
+        <h3 className="text-2xl font-bold text-gray-800 mb-6">{t('admin.recentActivity')}</h3>
+        <div className="space-y-4">
+          {shopCards.slice(0, 5).map((product, index) => (
+            <div key={index} className="flex items-center space-x-6 p-6 bg-gray-50 rounded-lg">
+              <img src={product.productImageUrl} alt={product.productName} className="w-16 h-16 object-cover rounded-lg" />
+              <div className="flex-1">
+                <p className="font-semibold text-gray-800 text-lg">{product.productName}</p>
+                <p className="text-base text-gray-600">{t('admin.addedBy')} {product.productSellerName}</p>
+              </div>
+              <span className="text-lg font-medium text-gray-500">{formatCurrency(product.productPrice)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  // Users Tab Component
+  const UsersTab = () => {
+    const filteredUsers = filteredData(users, ['userName', 'email', 'fullName'])
+    
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <h3 className="text-3xl font-bold text-gray-800">{t('admin.userManagement')}</h3>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.user')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.email')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.role')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.joinDate')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.balance')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.status')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.actions')}</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredUsers.map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50">
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <img className="h-14 w-14 rounded-full" src={user.imageUrl || '/api/placeholder/40/40'} alt="" />
+                        <div className="ml-6">
+                          <div className="text-lg font-semibold text-gray-900">{user.fullName || user.userName}</div>
+                          <div className="text-base text-gray-500">@{user.userName}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 whitespace-nowrap text-lg text-gray-900">{user.email}</td>
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        {user.isAdmin && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">Admin</span>}
+                        {user.isArtisan && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-purple-100 text-purple-800">Artisan</span>}
+                        {!user.isAdmin && !user.isArtisan && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-800">User</span>}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 whitespace-nowrap text-lg text-gray-900">{formatDate(user.joiningDate)}</td>
+                    <td className="px-8 py-6 whitespace-nowrap text-lg font-semibold text-gray-900">{formatCurrency(user.balance)}</td>
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      {user.hasArtisanSubscription ? (
+                        <div className="flex items-center space-x-3">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                            {t('admin.subscribed')} ({user.subscriptionType})
+                          </span>
+                          <button 
+                            onClick={() => terminateSubscription(user._id)}
+                            className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-full transition-colors"
+                            title={t('admin.terminateSubscription')}
+                          >
+                            <FaTimes size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-800">
+                          {t('admin.free')}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-8 py-6 whitespace-nowrap text-lg font-medium">
+                      <div className="flex space-x-4">
+                        <button className="text-blue-600 hover:text-blue-900 p-3 hover:bg-blue-50 rounded-full transition-colors" title={t('admin.view')}>
+                          <FaEye size={18} />
+                        </button>
+                        <button className="text-green-600 hover:text-green-900 p-3 hover:bg-green-50 rounded-full transition-colors" title={t('admin.edit')}>
+                          <FaEdit size={18} />
+                        </button>
+                        <button 
+                          onClick={() => deleteUser(user._id)}
+                          className="text-red-600 hover:text-red-900 p-3 hover:bg-red-50 rounded-full transition-colors"
+                          title={t('admin.delete')}
+                        >
+                          <FaTrash size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Products Tab Component
+  const ProductsTab = () => {
+    const filteredProducts = filteredData(shopCards, ['productName', 'productSellerName', 'productCategory', 'productState'])
+    
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <h3 className="text-3xl font-bold text-gray-800">{t('admin.productManagement')}</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProducts.map((product) => (
+            <div key={product._id} className="bg-white rounded-xl shadow-lg overflow-hidden border hover:shadow-xl transition-shadow">
+              <img 
+                src={product.productImageUrl} 
+                alt={product.productName}
+                className="w-full h-56 object-cover"
+              />
+              <div className="p-6">
+                <h4 className="font-bold text-gray-800 mb-3 text-xl">{product.productName}</h4>
+                <p className="text-lg text-gray-600 mb-3">{t('admin.seller')}: {product.productSellerName}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-2xl font-bold text-green-600">{formatCurrency(product.productPrice)}</span>
+                  <span className="text-base bg-blue-100 text-blue-800 px-3 py-1 rounded-lg font-medium">{product.productCategory}</span>
+                </div>
+                <p className="text-base text-gray-500 mb-4">{product.productState}</p>
+                <div className="flex space-x-3">
+                  <button className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-lg text-base font-semibold hover:bg-blue-600 transition-colors">
+                    <FaEye className="inline mr-2" size={16} /> {t('admin.view')}
+                  </button>
+                  <button className="flex-1 bg-green-500 text-white py-3 px-4 rounded-lg text-base font-semibold hover:bg-green-600 transition-colors">
+                    <FaEdit className="inline mr-2" size={16} /> {t('admin.edit')}
+                  </button>
+                  <button 
+                    onClick={() => deleteProduct(product._id)}
+                    className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg text-base font-semibold hover:bg-red-600 transition-colors"
+                  >
+                    <FaTrash className="inline mr-2" size={16} /> {t('admin.delete')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Auctions Tab Component
+  const AuctionsTab = () => {
+    const filteredAuctions = filteredData(auctions, ['productName', 'sellerName', 'status'])
+    
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <h3 className="text-3xl font-bold text-gray-800">{t('admin.auctionManagement')}</h3>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.product')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.seller')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.basePrice')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.currentBid')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.bids')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.startTime')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.duration')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.status')}</th>
+                  <th className="px-8 py-6 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">{t('admin.actions')}</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredAuctions.map((auction) => {
+                  const currentBid = auction.bids && auction.bids.length > 0 
+                    ? Math.max(...auction.bids.map(bid => bid.amount))
+                    : auction.basePrice
+                  const now = new Date()
+                  const auctionEnd = new Date(new Date(auction.startTime).getTime() + auction.duration * 60 * 1000)
+                  const isActive = now >= new Date(auction.startTime) && now <= auctionEnd
+                  const isEnded = now > auctionEnd
+                  
+                  return (
+                    <tr key={auction._id} className="hover:bg-gray-50">
+                      <td className="px-8 py-6 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <img className="h-14 w-14 rounded-lg object-cover" src={auction.productImageUrl} alt="" />
+                          <div className="ml-6">
+                            <div className="text-lg font-semibold text-gray-900">{auction.productName}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6 whitespace-nowrap text-lg text-gray-900">{auction.sellerName}</td>
+                      <td className="px-8 py-6 whitespace-nowrap text-lg font-semibold text-gray-900">{formatCurrency(auction.basePrice)}</td>
+                      <td className="px-8 py-6 whitespace-nowrap text-lg font-bold text-green-600">{formatCurrency(currentBid)}</td>
+                      <td className="px-8 py-6 whitespace-nowrap text-lg font-medium text-gray-900">{auction.bids ? auction.bids.length : 0}</td>
+                      <td className="px-8 py-6 whitespace-nowrap text-lg text-gray-900">{formatDate(auction.startTime)}</td>
+                      <td className="px-8 py-6 whitespace-nowrap text-lg text-gray-900">{auction.duration} {t('admin.minutes')}</td>
+                      <td className="px-8 py-6 whitespace-nowrap">
+                        {isActive ? (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                            {t('admin.active')}
+                          </span>
+                        ) : isEnded ? (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                            {t('admin.ended')}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+                            {t('admin.scheduled')}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-8 py-6 whitespace-nowrap text-lg font-medium">
+                        <div className="flex space-x-4">
+                          <button className="text-blue-600 hover:text-blue-900 p-3 hover:bg-blue-50 rounded-full transition-colors" title={t('admin.view')}>
+                            <FaEye size={18} />
+                          </button>
+                          <button className="text-green-600 hover:text-green-900 p-3 hover:bg-green-50 rounded-full transition-colors" title={t('admin.edit')}>
+                            <FaEdit size={18} />
+                          </button>
+                          <button 
+                            onClick={() => deleteAuction(auction._id)}
+                            className="text-red-600 hover:text-red-900 p-3 hover:bg-red-50 rounded-full transition-colors"
+                            title={t('admin.delete')}
+                          >
+                            <FaTrash size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">{t('common.loading')}</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="w-full h-[10vh]"></div>
+      
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-8">
+            <h1 className="text-4xl font-bold text-gray-900">{t('admin.adminPanel')}</h1>
+            <p className="mt-3 text-xl text-gray-600">{t('admin.manageYourPlatform')}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-12 py-6">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id)
+                  }}
+                  className={`flex items-center space-x-3 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <Icon className="text-lg" />
+                  <span>{tab.name}</span>
+                </button>
+              )
+            })}
+          </nav>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'users' && <UsersTab />}
+        {activeTab === 'products' && <ProductsTab />}
+        {activeTab === 'auctions' && <AuctionsTab />}
+      </div>
+    </div>
   )
 }

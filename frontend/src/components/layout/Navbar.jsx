@@ -1,13 +1,16 @@
 import { SignUpButton } from '../elements/SignUpButton';
+import { LanguageSelector } from '../elements/LanguageSelector';
 import { NavLink } from "react-router-dom"
 import { useUser } from '@clerk/clerk-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { HamBurgerMenu } from '../elements/HamBurgerMenu';
 import { FaCartShopping } from "react-icons/fa6";
 
 export const Navbar = () => {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [dbUser, setDbUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
 
@@ -47,16 +50,17 @@ export const Navbar = () => {
               <li><NavLink to="/resale">Resale</NavLink></li>
               <li><NavLink to="/sap-analytics" className="text-blue-300 hover:text-white-100">SAP Analytics</NavLink></li>
               {dbUser?.isAdmin && (
-                <li><NavLink to="/admin">Dashboard</NavLink></li>
+                <li><NavLink to="/admin">{t('nav.admin')}</NavLink></li>
               )}
             </ul>
           </div>
-          <div className='flex items-start relative'>
+          <LanguageSelector />
+          {/* <div className='flex items-start relative'>
             <NavLink to='/cart'><FaCartShopping size={20} /></NavLink>
             <div className='size-6 rounded-full bg-red-500 flex items-center justify-center absolute left-5 bottom-5'>
               {cartCount}
             </div>
-          </div>
+          </div> */}
           <SignUpButton/>
           <HamBurgerMenu/>
         </div>

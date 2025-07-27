@@ -5,6 +5,7 @@ import { userModel } from './models/userModel.js';
 import { shopCardModel } from './models/shopCardModel.js';
 import { auctionModel } from './models/auctionModel.js';
 import { cartModel } from './models/cartModel.js';
+import { orderModel } from './models/orderModel.js';
 import { v2 as cloudinary } from 'cloudinary';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -616,6 +617,57 @@ app.get('/api/user/email/:email', async (req, res) => {
   }
 });
 
+// Get user by userName
+app.get('/api/user/username/:username', async (req, res) => {
+  try {
+    const user = await userModel.findOne({ userName: req.params.username });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+// GET all users (for admin panel)
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await userModel.find({}).sort({ joiningDate: -1 });
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// DELETE user by id (admin only)
+app.delete('/api/user/:id', async (req, res) => {
+  try {
+    const user = await userModel.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
+// UPDATE user subscription (admin only)
+app.patch('/api/user/:id/subscription', async (req, res) => {
+  try {
+    const { hasArtisanSubscription, subscriptionType, subscriptionDate } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { hasArtisanSubscription, subscriptionType, subscriptionDate },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error('Error updating subscription:', err);
+    res.status(500).json({ error: "Failed to update subscription" });
+  }
+});
+
 app.post('/api/shopcards', async (req, res) => {
   try {
     const card = await shopCardModel.create(req.body);
@@ -661,6 +713,18 @@ app.get('/api/shopcards/:id', async (req, res) => {
     res.json(card);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch product" });
+  }
+});
+
+// DELETE shop card by id (admin only)
+app.delete('/api/shopcards/:id', async (req, res) => {
+  try {
+    const card = await shopCardModel.findByIdAndDelete(req.params.id);
+    if (!card) return res.status(404).json({ error: "Product not found" });
+    res.json({ message: "Product deleted successfully" });
+  } catch (err) {
+    console.error('Error deleting product:', err);
+    res.status(500).json({ error: "Failed to delete product" });
   }
 });
 
@@ -744,6 +808,18 @@ app.post('/api/auctions/:id/bid', async (req, res) => {
     res.json(auction);
   } catch (err) {
     res.status(500).json({ error: "Failed to place bid" });
+  }
+});
+
+// DELETE auction by id (admin only)
+app.delete('/api/auctions/:id', async (req, res) => {
+  try {
+    const auction = await auctionModel.findByIdAndDelete(req.params.id);
+    if (!auction) return res.status(404).json({ error: "Auction not found" });
+    res.json({ message: "Auction deleted successfully" });
+  } catch (err) {
+    console.error('Error deleting auction:', err);
+    res.status(500).json({ error: "Failed to delete auction" });
   }
 });
 
@@ -850,8 +926,15 @@ const generateOrderId = () => {
 
 app.post('/create-order', async (req, res) => {
   try{
-    const { name, mobile, amount } = req.body;
+    const { name, mobile, amount, address, sellerId, sellerName, productDetails, isSubscription } = req.body;
     const orderId = generateOrderId();
+
+    // Get buyer ID from email if available (assuming it's sent from frontend)
+    let buyerId = null;
+    if (req.body.buyerEmail) {
+      const buyer = await userModel.findOne({ email: req.body.buyerEmail });
+      buyerId = buyer?._id;
+    }
 
     const orderPayload = {
       order_id: orderId,
@@ -860,16 +943,14 @@ app.post('/create-order', async (req, res) => {
       customer_details: {
         customer_id: `CUST_${Date.now()}`,
         customer_name: name,
-        customer_email: "test@example.com", // Replace with actual email if available
+        customer_email: req.body.buyerEmail || "test@example.com",
         customer_phone: mobile.toString()
       },
       order_meta: {
         return_url: `http://localhost:5173/payment-success?order_id=${orderId}`,
-        // notify_url: `http://localhost:5000/api/payment/webhook`,
         payment_methods: "cc,dc,upi"
       },
       order_expiry_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      // order_note: `Booking for ${patientName} - ${reason}`,
     };
 
     console.log('Creating Cashfree order with data:', orderPayload);
@@ -878,6 +959,37 @@ app.post('/create-order', async (req, res) => {
     console.log('Cashfree response:', cashfreeResponse.data);
 
     if (cashfreeResponse.data.payment_session_id) {
+      // Save order to database
+      const orderData = {
+        orderId: orderId,
+        buyerId: buyerId,
+        productDetails: {
+          productId: productDetails?.id,
+          productName: productDetails?.name,
+          productPrice: productDetails?.price,
+          productCategory: productDetails?.category,
+          productImage: productDetails?.image
+        },
+        customerDetails: {
+          name: name,
+          email: req.body.buyerEmail || "test@example.com",
+          mobile: mobile,
+          address: address
+        },
+        amount: parseFloat(amount),
+        status: 'pending',
+        isSubscription: isSubscription || false
+      };
+
+      // Only add sellerId if it's not null or empty (for regular product purchases)
+      if (sellerId && sellerId.trim() !== '') {
+        orderData.sellerId = sellerId;
+      }
+
+      const order = await orderModel.create(orderData);
+
+      console.log('Order saved to database:', order._id);
+
       res.json({
         success: true,
         message: 'Order created successfully',
@@ -891,7 +1003,7 @@ app.post('/create-order', async (req, res) => {
   }
 
   catch(error) {
-    console.error('Booking error:', error);
+    console.error('Order creation error:', error);
     
     // Log detailed error information
     if (error.response) {
@@ -904,7 +1016,7 @@ app.post('/create-order', async (req, res) => {
     }
     
     res.status(500).json({ 
-      message: 'Failed to create booking',
+      message: 'Failed to create order',
       error: error.message,
       details: error.response?.data || 'No additional details available'
     });
@@ -919,14 +1031,14 @@ app.post('/create-order', async (req, res) => {
 
 app.post('/payment/verify', async (req, res) => {
   try {
-    console.log("Hello");
+    console.log("Verifying payment...");
     const { orderId } = req.body;
 
     if (!orderId) {
       return res.status(400).json({ message: 'Order ID is required' });
     }
 
-    console.log(`Verifying pay for order: ${orderId}`);
+    console.log(`Verifying payment for order: ${orderId}`);
 
     // Get order details from Cashfree using SDK
     const cashfreeResponse = await cashfree.PGFetchOrder(orderId);
@@ -935,101 +1047,112 @@ app.post('/payment/verify', async (req, res) => {
     const orderStatus = cashfreeResponse.data.order_status;
     const paymentDetails = cashfreeResponse.data.payment_details || {};
 
-    
-
-    // // Update booking status in database
-    // const booking = await Booking.findOne({ orderId });
-    // if (booking) {
-    //   console.log(`Updating booking ${orderId} from status: ${booking.status} to: ${orderStatus}`);
+    // Find the order in our database
+    const order = await orderModel.findOne({ orderId });
+    if (order) {
+      console.log(`Updating order ${orderId} from status: ${order.status} to: ${orderStatus}`);
       
-    //   // Handle different payment statuses
-    //   switch (orderStatus) {
-    //     case 'PAID':
-    //       booking.status = 'paid';
-    //       booking.paymentId = paymentDetails.payment_id || paymentDetails.auth_id || 'PAYMENT_COMPLETED';
-    //       booking.paymentMethod = paymentDetails.payment_method;
-    //       booking.paymentTime = paymentDetails.payment_time;
-    //       booking.bankReference = paymentDetails.bank_reference;
-    //       console.log(`Payment verified as successful for order ${orderId}`);
-    //       break;
+      // Handle different payment statuses
+      switch (orderStatus) {
+        case 'PAID':
+          order.status = 'paid';
+          order.paymentDetails = {
+            paymentId: paymentDetails.payment_id || paymentDetails.auth_id || 'PAYMENT_COMPLETED',
+            paymentMethod: paymentDetails.payment_method,
+            paymentTime: paymentDetails.payment_time,
+            bankReference: paymentDetails.bank_reference
+          };
+          order.updatedAt = new Date();
           
-    //     case 'EXPIRED':
-    //       booking.status = 'cancelled';
-    //       console.log(`Payment expired for order ${orderId}`);
-    //       break;
+          // Handle subscription vs regular product purchase
+          if (order.isSubscription) {
+            // Handle subscription payment
+            const buyerUser = await userModel.findById(order.buyerId);
+            if (buyerUser) {
+              await userModel.findByIdAndUpdate(order.buyerId, {
+                hasArtisanSubscription: true,
+                subscriptionDate: new Date()
+              });
+              console.log(`User ${buyerUser.userName} subscribed to Artisan Plan`);
+            }
+
+            // Increase balance for all admin users by Rs 1000
+            await userModel.updateMany(
+              { isAdmin: true },
+              { $inc: { balance: 1000 } }
+            );
+            console.log(`All admin users received Rs 1000 for subscription payment`);
+          } else {
+            // Handle regular product purchase - increase seller balance
+            if (order.sellerId) {
+              const seller = await userModel.findById(order.sellerId);
+              if (seller) {
+                const currentBalance = seller.balance || 0;
+                const newBalance = currentBalance + order.amount;
+                seller.balance = newBalance;
+                await seller.save();
+                console.log(`Seller ${seller.userName} balance updated from ${currentBalance} to ${newBalance}`);
+              } else {
+                console.error(`Seller not found for ID: ${order.sellerId}`);
+              }
+            }
+          }
           
-    //     case 'FAILED':
-    //       booking.status = 'failed';
-    //       booking.paymentMessage = paymentDetails.payment_message;
-    //       console.log(`Payment failed for order ${orderId}`);
-    //       break;
+          console.log(`Payment verified as successful for order ${orderId}`);
+          break;
           
-    //     case 'PENDING':
-    //       booking.status = 'pending';
-    //       console.log(`Payment still pending for order ${orderId}`);
-    //       break;
+        case 'EXPIRED':
+          order.status = 'expired';
+          order.updatedAt = new Date();
+          console.log(`Payment expired for order ${orderId}`);
+          break;
           
-    //     default:
-    //       console.log(`Unknown payment status for order ${orderId}: ${orderStatus}`);
-    //       booking.status = orderStatus.toLowerCase();
-    //   }
+        case 'FAILED':
+          order.status = 'failed';
+          order.updatedAt = new Date();
+          console.log(`Payment failed for order ${orderId}`);
+          break;
+          
+        case 'PENDING':
+          order.status = 'pending';
+          order.updatedAt = new Date();
+          console.log(`Payment still pending for order ${orderId}`);
+          break;
+          
+        default:
+          console.log(`Unknown payment status for order ${orderId}: ${orderStatus}`);
+          order.status = orderStatus.toLowerCase();
+          order.updatedAt = new Date();
+      }
       
-    //   await booking.save();
-    //   console.log(`Booking ${orderId} updated successfully`);
+      await order.save();
+      console.log(`Order ${orderId} updated successfully`);
 
-    //   // Return both verification result and booking data
-    //   res.json({
-    //     success: true,
-    //     orderStatus: orderStatus,
-    //     bookingStatus: booking.status,
-    //     paymentDetails: paymentDetails,
-    //     booking: {
-    //       id: booking._id,
-    //       patientName: booking.patientName,
-    //       email: booking.email,
-    //       mobileNumber: booking.mobileNumber,
-    //       bookingDateTime: booking.bookingDateTime,
-    //       reason: booking.reason,
-    //       status: booking.status,
-    //       orderId: booking.orderId,
-    //       amount: booking.amount,
-    //       paymentId: booking.paymentId,
-    //       paymentMethod: booking.paymentMethod,
-    //       paymentTime: booking.paymentTime,
-    //       bankReference: booking.bankReference,
-    //       paymentMessage: booking.paymentMessage,
-    //       createdAt: booking.createdAt,
-    //       updatedAt: booking.updatedAt
-    //     }
-    //   });
-    // } else {
-    //   console.error(`Booking not found for orderId: ${orderId}`);
-    //   res.status(404).json({
-    //     success: false,
-    //     message: 'Booking not found',
-    //     orderStatus: orderStatus
-    //   });
-    // }
-
-
-
-
-  res.json({
-      success: orderStatus === 'PAID',
-      orderStatus,
-      paymentDetails,
-      orderId,
-      amount: cashfreeResponse.data.order_amount,
-      paymentMethod: paymentDetails.payment_method,
-      paymentId: paymentDetails.payment_id || paymentDetails.auth_id,
-      paymentTime: paymentDetails.payment_time,
-      bankReference: paymentDetails.bank_reference,
-      paymentMessage: paymentDetails.payment_message,
-    });
-
-
-
-
+      // Return verification result and order data
+      res.json({
+        success: orderStatus === 'PAID',
+        orderStatus: orderStatus,
+        paymentDetails: paymentDetails,
+        order: {
+          id: order._id,
+          orderId: order.orderId,
+          productDetails: order.productDetails,
+          customerDetails: order.customerDetails,
+          amount: order.amount,
+          status: order.status,
+          paymentDetails: order.paymentDetails,
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt
+        }
+      });
+    } else {
+      console.error(`Order not found for orderId: ${orderId}`);
+      res.status(404).json({
+        success: false,
+        message: 'Order not found',
+        orderStatus: orderStatus
+      });
+    }
 
   } catch (error) {
     console.error('Payment verification error:', error);
@@ -1045,7 +1168,7 @@ app.post('/payment/verify', async (req, res) => {
     
     res.status(500).json({ 
       success: false,
-      message: 'Failed to vrify payment',
+      message: 'Failed to verify payment',
       error: error.message,
       details: error.response?.data || 'No additional details available'
     });
@@ -1094,6 +1217,291 @@ app.post('/payment/verify', async (req, res) => {
 // app.get('/payment-failure', (req, res) => {
 //   res.send('Payment Failed!');
 // });
+
+
+app.get('/api/wallet/:id', async (req, res) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ balance: user.balance || 0, userName: user.userName, email: user.email });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch wallet" });
+  }
+});
+
+// Get all orders for a user (buyer or seller)
+app.get('/api/orders/user/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { type } = req.query; // 'buyer' or 'seller'
+    
+    let query = {};
+    if (type === 'buyer') {
+      query.buyerId = userId;
+    } else if (type === 'seller') {
+      query.sellerId = userId;
+    } else {
+      query = { $or: [{ buyerId: userId }, { sellerId: userId }] };
+    }
+    
+    const orders = await orderModel.find(query)
+      .populate('buyerId', 'userName email')
+      .populate('sellerId', 'userName email')
+      .sort({ createdAt: -1 });
+    
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+
+// Get specific order details
+app.get('/api/orders/:orderId', async (req, res) => {
+  try {
+    const order = await orderModel.findOne({ orderId: req.params.orderId })
+      .populate('buyerId', 'userName email')
+      .populate('sellerId', 'userName email');
+    
+    if (!order) return res.status(404).json({ error: "Order not found" });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch order" });
+  }
+});
+
+// Subscription-specific order creation endpoint
+app.post('/create-subscription-order', async (req, res) => {
+  try{
+    const { name, mobile, amount, address, subscriptionPlan } = req.body;
+    const orderId = generateOrderId();
+
+    // Determine plan details
+    const isYearlyPlan = subscriptionPlan === 'yearly';
+    const planName = isYearlyPlan ? 'Artisan Plan - Yearly' : 'Artisan Plan - Monthly';
+    const expectedAmount = isYearlyPlan ? 2000 : 200;
+
+    // Validate amount matches plan
+    if (parseFloat(amount) !== expectedAmount) {
+      return res.status(400).json({ 
+        message: `Invalid amount for ${subscriptionPlan} plan. Expected: Rs ${expectedAmount}` 
+      });
+    }
+
+    // Get buyer ID from email if available
+    let buyerId = null;
+    if (req.body.buyerEmail) {
+      const buyer = await userModel.findOne({ email: req.body.buyerEmail });
+      buyerId = buyer?._id;
+    }
+
+    const orderPayload = {
+      order_id: orderId,
+      order_amount: parseFloat(amount),
+      order_currency: "INR",
+      customer_details: {
+        customer_id: `CUST_${Date.now()}`,
+        customer_name: name,
+        customer_email: req.body.buyerEmail || "test@example.com",
+        customer_phone: mobile.toString()
+      },
+      order_meta: {
+        return_url: `http://localhost:5173/subscription-success?order_id=${orderId}`,
+        payment_methods: "cc,dc,upi"
+      },
+      order_expiry_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    };
+
+    console.log('Creating Cashfree subscription order with data:', orderPayload);
+
+    const cashfreeResponse = await cashfree.PGCreateOrder(orderPayload);
+    console.log('Cashfree subscription response:', cashfreeResponse.data);
+
+    if (cashfreeResponse.data.payment_session_id) {
+      // Save subscription order to database
+      const order = await orderModel.create({
+        orderId: orderId,
+        buyerId: buyerId,
+        // No sellerId for subscription orders
+        productDetails: {
+          productId: `artisan-subscription-${subscriptionPlan}`,
+          productName: planName,
+          productPrice: amount.toString(),
+          productCategory: 'Subscription',
+          productImage: null
+        },
+        customerDetails: {
+          name: name,
+          email: req.body.buyerEmail || "test@example.com",
+          mobile: mobile,
+          address: address
+        },
+        amount: parseFloat(amount),
+        status: 'pending',
+        isSubscription: true,
+        subscriptionType: subscriptionPlan
+      });
+
+      console.log('Subscription order saved to database:', order._id);
+
+      res.json({
+        success: true,
+        message: 'Subscription order created successfully',
+        orderId: orderId,
+        paymentUrl: cashfreeResponse.data.payment_link,
+        paymentSessionId: cashfreeResponse.data.payment_session_id
+      });
+    } else {
+      throw new Error('Failed to create subscription payment session');
+    }
+  }
+  catch(error) {
+    console.error('Subscription order creation error:', error);
+    
+    res.status(500).json({ 
+      message: 'Failed to create subscription order',
+      error: error.message
+    });
+  }
+});
+
+// Subscription-specific payment verification endpoint
+app.post('/subscription/payment/verify', async (req, res) => {
+  try {
+    console.log("=== SUBSCRIPTION PAYMENT VERIFICATION START ===");
+    const { orderId } = req.body;
+
+    if (!orderId) {
+      return res.status(400).json({ message: 'Order ID is required' });
+    }
+
+    console.log(`Verifying subscription payment for order: ${orderId}`);
+
+    // Find the subscription order in our database first
+    const order = await orderModel.findOne({ orderId, isSubscription: true });
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Subscription order not found'
+      });
+    }
+
+    console.log(`Found subscription order ${orderId} with current status: ${order.status}`);
+    
+    // If already processed, return success without double processing
+    if (order.status === 'paid') {
+      console.log(`Subscription order ${orderId} already processed - returning cached result`);
+      return res.json({
+        success: true,
+        orderStatus: 'PAID',
+        message: 'Already processed',
+        order: {
+          id: order._id,
+          orderId: order.orderId,
+          amount: order.amount,
+          status: order.status
+        }
+      });
+    }
+
+    // Get order details from Cashfree using SDK
+    const cashfreeResponse = await cashfree.PGFetchOrder(orderId);
+    console.log('Cashfree subscription order details:', cashfreeResponse.data);
+    
+    const orderStatus = cashfreeResponse.data.order_status;
+    const paymentDetails = cashfreeResponse.data.payment_details || {};
+
+    if (orderStatus === 'PAID') {
+      // Use atomic operation to update order status only if it's still pending
+      const updatedOrder = await orderModel.findOneAndUpdate(
+        { orderId, isSubscription: true, status: 'pending' },
+        {
+          status: 'paid',
+          paymentDetails: {
+            paymentId: paymentDetails.payment_id || 'SUBSCRIPTION_COMPLETED',
+            paymentMethod: paymentDetails.payment_method,
+            paymentTime: paymentDetails.payment_time
+          },
+          updatedAt: new Date()
+        },
+        { new: true }
+      );
+
+      // If updatedOrder is null, it means the order was already processed
+      if (!updatedOrder) {
+        console.log(`Subscription order ${orderId} was already processed by another request`);
+        return res.json({
+          success: true,
+          orderStatus: 'PAID',
+          message: 'Already processed',
+          order: {
+            id: order._id,
+            orderId: order.orderId,
+            amount: order.amount,
+            status: 'paid'
+          }
+        });
+      }
+      
+      // Process subscription (only if not already subscribed)
+      const buyerUser = await userModel.findById(order.buyerId);
+      if (buyerUser && !buyerUser.hasArtisanSubscription) {
+        // Get subscription type from order
+        const subscriptionType = order.subscriptionType;
+        const isYearlyPlan = subscriptionType === 'yearly';
+        const subscriptionEndDate = new Date();
+        
+        if (isYearlyPlan) {
+          subscriptionEndDate.setFullYear(subscriptionEndDate.getFullYear() + 1);
+        } else {
+          subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
+        }
+        
+        // Update user subscription
+        await userModel.findByIdAndUpdate(order.buyerId, {
+          hasArtisanSubscription: true,
+          subscriptionDate: new Date(),
+          subscriptionType: subscriptionType,
+          subscriptionEndDate: subscriptionEndDate
+        });
+        console.log(`User ${buyerUser.userName} subscribed to Artisan Plan (${subscriptionType})`);
+        
+        // Calculate admin bonus based on subscription type
+        const adminBonus = isYearlyPlan ? 2000 : 200;
+        
+        // Update admin balances (only once)
+        const adminUpdateResult = await userModel.updateMany(
+          { isAdmin: true },
+          { $inc: { balance: adminBonus } }
+        );
+        console.log(`Updated ${adminUpdateResult.modifiedCount} admin users with Rs ${adminBonus} for ${subscriptionType} subscription`);
+      } else if (buyerUser && buyerUser.hasArtisanSubscription) {
+        console.log(`User ${buyerUser.userName} already has subscription - skipping admin balance update`);
+      }
+      
+      console.log(`Subscription payment verified successfully for order ${orderId}`);
+    }
+
+    res.json({
+      success: orderStatus === 'PAID',
+      orderStatus: orderStatus,
+      order: {
+        id: order._id,
+        orderId: order.orderId,
+        amount: order.amount,
+        status: order.status
+      }
+    });
+
+  } catch (error) {
+    console.error('Subscription payment verification error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to verify subscription payment',
+      error: error.message
+    });
+  }
+});
+
 
 connectDB().then(()=>{
   server.listen(port,()=>{

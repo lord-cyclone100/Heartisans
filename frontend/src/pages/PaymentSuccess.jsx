@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
 export const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
-  const [booking, setBooking] = useState(null);
+  const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const hasVerified = useRef(false); // Flag to prevent double execution
 
   const orderId = searchParams.get('order_id');
 
   useEffect(() => {
-    if (orderId) {
+    if (orderId && !hasVerified.current) {
+      hasVerified.current = true; // Set flag before calling
       verifyPayment();
-    } else {
+    } else if (!orderId) {
       setError('No order ID found');
       setLoading(false);
     }
@@ -21,7 +23,8 @@ export const PaymentSuccess = () => {
 
   const verifyPayment = async () => {
     try {
-      // Single API call: verify payment and get booking data
+      console.log('Verifying regular product payment for order:', orderId);
+      
       const response = await fetch('http://localhost:5000/payment/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -31,11 +34,12 @@ export const PaymentSuccess = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setBooking(data.booking);
+        setOrder(data.order);
       } else {
         setError(data.message || 'Payment verification failed');
       }
-    } catch {
+    } catch (error) {
+      console.error('Payment verification error:', error);
       setError('Failed to verify payment');
     } finally {
       setLoading(false);
@@ -88,7 +92,17 @@ export const PaymentSuccess = () => {
             </svg>
           </div>
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Payment Successful!</h2>
-          <p className="text-gray-600 mb-6">Your order has been booked successfully.</p>
+          <p className="text-gray-600 mb-6">Your order has been placed successfully.</p>
+
+          {order && (
+            <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+              <h3 className="font-semibold mb-2">Order Details:</h3>
+              <p className="text-sm text-gray-600">Order ID: {order.orderId}</p>
+              <p className="text-sm text-gray-600">Product: {order.productDetails?.productName}</p>
+              <p className="text-sm text-gray-600">Amount: Rs {order.amount}</p>
+              <p className="text-sm text-gray-600">Status: {order.status}</p>
+            </div>
+          )}
 
           <div className="space-y-3">
             <button

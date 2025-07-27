@@ -1,16 +1,21 @@
 import { SignOutButton } from "@clerk/clerk-react"
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard";
+import { FaWallet } from "react-icons/fa";
+import { ArtisanPlanModal } from "../components/elements/ArtisanPlanModal";
+import { useTranslation } from 'react-i18next'
 
 export const UserDashBoard = () => {
+  const { t } = useTranslation()
   const [user,setUser] = useState(null)
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [userProducts, setUserProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showArtisanPlanModal, setShowArtisanPlanModal] = useState(false);
   const navigate = useNavigate();
   // console.log(typeof id);
 
@@ -53,13 +58,22 @@ export const UserDashBoard = () => {
   };
 
   if (!user) {
-    return <div className="text-center mt-10">Unauthorized or loading...</div>;
+    return <div className="text-center mt-10">{t('dashboard.unauthorized')}</div>;
   }
 
   return(
     <>
     <section className="min-h-screen bg-gray-50">
       <div className="w-full h-[10vh]"></div>
+      
+      {/* Wallet Button */}
+      <div className="w-full h-[5vh] flex items-center justify-end px-4">
+        <NavLink to={`/wallet/${user._id}`} className={`h-[100%] ${user.isArtisan || user.isAdmin ? 'block':'hidden'}`}>
+          <button className="h-[90%] w-[8vh] bg-emerald-400 rounded-2xl flex items-center justify-center hover:bg-emerald-500 transition-colors">
+            <FaWallet size={20}/>
+          </button>
+        </NavLink>
+      </div>
       
       {/* User Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
@@ -69,10 +83,10 @@ export const UserDashBoard = () => {
               <img src={user.imageUrl} alt={user.userName} className="w-full h-full object-cover" />
             </div>
             <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold mb-2">Welcome back, {user.userName}!</h1>
+              <h1 className="text-3xl font-bold mb-2">{t('dashboard.welcome')}, {user.userName}!</h1>
               <p className="text-blue-100 mb-2">{user.email}</p>
               <p className="text-blue-200 text-sm">
-                Member since: {user.joiningDate && new Date(user.joiningDate).toLocaleDateString('en-GB')}
+                {t('dashboard.dateJoined')}: {user.joiningDate && new Date(user.joiningDate).toLocaleDateString('en-GB')}
               </p>
               <div className="flex items-center gap-2 mt-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -91,10 +105,10 @@ export const UserDashBoard = () => {
         <div className="container mx-auto px-4">
           <div className="flex space-x-8">
             {[
-              { id: 'profile', label: 'Profile', icon: '👤' },
-              { id: 'products', label: 'My Products', icon: '🛍️', artisanOnly: true },
+              { id: 'profile', label: t('dashboard.profile') || 'Profile', icon: '👤' },
+              { id: 'products', label: t('dashboard.myProducts') || 'My Products', icon: '🛍️', artisanOnly: true },
               { id: 'analytics', label: 'SAP Analytics', icon: '📊', artisanOnly: true },
-              { id: 'actions', label: 'Quick Actions', icon: '⚡' }
+              { id: 'actions', label: t('dashboard.quickActions') || 'Quick Actions', icon: '⚡' }
             ].map((tab) => (
               (!tab.artisanOnly || user.isArtisan) && (
                 <button
@@ -120,45 +134,84 @@ export const UserDashBoard = () => {
         {/* Profile Tab */}
         {activeTab === 'profile' && (
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">Profile Settings</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('dashboard.profileSettings') || 'Profile Settings'}</h2>
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-2">Username</label>
+                  <label className="block text-gray-700 font-semibold mb-2">{t('dashboard.username') || 'Username'}</label>
                   <input type="text" value={user.userName} disabled className="w-full p-3 border rounded-lg bg-gray-50" />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-2">Email</label>
+                  <label className="block text-gray-700 font-semibold mb-2">{t('dashboard.email') || 'Email'}</label>
                   <input type="email" value={user.email} disabled className="w-full p-3 border rounded-lg bg-gray-50" />
                 </div>
               </div>
               
               <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold mb-4">Artisan Status</h3>
+                <h3 className="text-lg font-semibold mb-4">{t('dashboard.artisanStatus') || 'Artisan Status'}</h3>
                 <div className="flex gap-4">
                   <button
                     className="btn btn-success"
                     disabled={user.isArtisan}
                     onClick={() => handleArtisanStatus(true)}
                   >
-                    {user.isArtisan ? '✓ Artisan Verified' : 'Apply as Artisan'}
+                    {user.isArtisan ? '✓ Artisan Verified' : t('dashboard.applyArtisan')}
                   </button>
                   {user.isArtisan && (
                     <button
                       className="btn btn-warning"
                       onClick={() => handleArtisanStatus(false)}
                     >
-                      Revoke Artisan Status
+                      {t('dashboard.revoke')}
                     </button>
                   )}
                 </div>
                 {user.isArtisan && (
                   <div className="mt-4 p-4 bg-green-50 rounded-lg">
                     <p className="text-green-800 text-sm">
-                      🎉 Congratulations! You have access to advanced features including product analytics, seller tools, and SAP business intelligence.
+                      🎉 {t('dashboard.congratulations') || 'Congratulations! You have access to advanced features including product analytics, seller tools, and SAP business intelligence.'}
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Quick Action Buttons in Profile */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4">{t('dashboard.quickActions') || 'Quick Actions'}</h3>
+                <div className="flex gap-4 flex-wrap">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleProtectedRedirect("/auctionform")}
+                  >
+                    {t('dashboard.startAuction')}
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => handleProtectedRedirect("/sellform")}
+                  >
+                    {t('dashboard.sellOnHeartisans')}
+                  </button>
+                  <button
+                    className={`btn ${
+                      !user.isArtisan 
+                        ? 'btn-disabled' 
+                        : user.hasArtisanSubscription 
+                          ? 'btn-success' 
+                          : 'btn-accent'
+                    }`}
+                    disabled={!user.isArtisan || user.hasArtisanSubscription}
+                    onClick={() => user.isArtisan && !user.hasArtisanSubscription && setShowArtisanPlanModal(true)}
+                    title={
+                      !user.isArtisan 
+                        ? t('dashboard.becomeArtisan')
+                        : user.hasArtisanSubscription 
+                          ? t('dashboard.subscribed')
+                          : t('dashboard.artisanPlan')
+                    }
+                  >
+                    {user.hasArtisanSubscription ? t('dashboard.subscribed') : t('dashboard.artisanPlan')}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -167,7 +220,7 @@ export const UserDashBoard = () => {
         {/* My Products Tab */}
         {activeTab === 'products' && user.isArtisan && (
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">My Products</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('dashboard.myProducts') || 'My Products'}</h2>
             {userProducts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {userProducts.map((product) => (
@@ -187,20 +240,20 @@ export const UserDashBoard = () => {
                       }}
                       className="mt-3 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                      View Analytics
+                      {t('dashboard.viewAnalytics') || 'View Analytics'}
                     </button>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <h3 className="text-xl font-semibold text-gray-600 mb-4">No Products Yet</h3>
-                <p className="text-gray-500 mb-6">Start selling your handcrafted items to see them here</p>
+                <h3 className="text-xl font-semibold text-gray-600 mb-4">{t('dashboard.noProducts') || 'No Products Yet'}</h3>
+                <p className="text-gray-500 mb-6">{t('dashboard.startSelling') || 'Start selling your handcrafted items to see them here'}</p>
                 <button
                   onClick={() => handleProtectedRedirect("/sellform")}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  Add Your First Product
+                  {t('dashboard.addFirstProduct') || 'Add Your First Product'}
                 </button>
               </div>
             )}
@@ -212,7 +265,7 @@ export const UserDashBoard = () => {
           <div className="space-y-6">
             {userProducts.length > 0 && (
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-2xl font-bold mb-4">Select Product for Analytics</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('dashboard.selectProduct') || 'Select Product for Analytics'}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {userProducts.map((product) => (
                     <div
@@ -243,7 +296,7 @@ export const UserDashBoard = () => {
                   <h3 className="text-xl font-bold text-gray-800">
                     SAP Analytics: {selectedProduct.productName}
                   </h3>
-                  <p className="text-gray-600">Get enterprise-grade insights for your product</p>
+                  <p className="text-gray-600">{t('dashboard.enterpriseInsights') || 'Get enterprise-grade insights for your product'}</p>
                 </div>
                 <SAPAnalyticsDashboard
                   productData={{
@@ -260,8 +313,8 @@ export const UserDashBoard = () => {
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-                <h3 className="text-xl font-semibold text-gray-600 mb-4">No Product Selected</h3>
-                <p className="text-gray-500">Select a product above to view its analytics</p>
+                <h3 className="text-xl font-semibold text-gray-600 mb-4">{t('dashboard.noProductSelected') || 'No Product Selected'}</h3>
+                <p className="text-gray-500">{t('dashboard.selectProductAbove') || 'Select a product above to view its analytics'}</p>
               </div>
             )}
           </div>
@@ -270,75 +323,75 @@ export const UserDashBoard = () => {
         {/* Quick Actions Tab */}
         {activeTab === 'actions' && (
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('dashboard.quickActions') || 'Quick Actions'}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="text-3xl mb-4">🛍️</div>
-                <h3 className="text-lg font-semibold mb-2">Sell Products</h3>
-                <p className="text-gray-600 text-sm mb-4">List your handcrafted items on the marketplace</p>
+                <h3 className="text-lg font-semibold mb-2">{t('dashboard.sellProducts') || 'Sell Products'}</h3>
+                <p className="text-gray-600 text-sm mb-4">{t('dashboard.listHandcrafted') || 'List your handcrafted items on the marketplace'}</p>
                 <button
                   className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   onClick={() => handleProtectedRedirect("/sellform")}
                 >
-                  Start Selling
+                  {t('dashboard.startSelling') || 'Start Selling'}
                 </button>
               </div>
               
               <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="text-3xl mb-4">🏺</div>
-                <h3 className="text-lg font-semibold mb-2">Start Auction</h3>
-                <p className="text-gray-600 text-sm mb-4">Create auctions for unique or limited items</p>
+                <h3 className="text-lg font-semibold mb-2">{t('dashboard.startAuction') || 'Start Auction'}</h3>
+                <p className="text-gray-600 text-sm mb-4">{t('dashboard.createAuctions') || 'Create auctions for unique or limited items'}</p>
                 <button
                   className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors"
                   onClick={() => handleProtectedRedirect("/auctionform")}
                 >
-                  Create Auction
+                  {t('dashboard.createAuction') || 'Create Auction'}
                 </button>
               </div>
               
               <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="text-3xl mb-4">📊</div>
                 <h3 className="text-lg font-semibold mb-2">SAP Analytics</h3>
-                <p className="text-gray-600 text-sm mb-4">View comprehensive business intelligence</p>
+                <p className="text-gray-600 text-sm mb-4">{t('dashboard.comprehensiveBI') || 'View comprehensive business intelligence'}</p>
                 <button
                   className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
                   onClick={() => navigate("/sap-analytics")}
                 >
-                  View Analytics
+                  {t('dashboard.viewAnalytics') || 'View Analytics'}
                 </button>
               </div>
               
               <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="text-3xl mb-4">🛒</div>
-                <h3 className="text-lg font-semibold mb-2">My Cart</h3>
-                <p className="text-gray-600 text-sm mb-4">View and manage your shopping cart</p>
+                <h3 className="text-lg font-semibold mb-2">{t('dashboard.myCart') || 'My Cart'}</h3>
+                <p className="text-gray-600 text-sm mb-4">{t('dashboard.manageCart') || 'View and manage your shopping cart'}</p>
                 <button
                   className="w-full bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition-colors"
                   onClick={() => navigate("/cart")}
                 >
-                  Go to Cart
+                  {t('dashboard.goToCart') || 'Go to Cart'}
                 </button>
               </div>
               
               <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="text-3xl mb-4">🏪</div>
-                <h3 className="text-lg font-semibold mb-2">Browse Shop</h3>
-                <p className="text-gray-600 text-sm mb-4">Discover amazing handcrafted products</p>
+                <h3 className="text-lg font-semibold mb-2">{t('dashboard.browseShop') || 'Browse Shop'}</h3>
+                <p className="text-gray-600 text-sm mb-4">{t('dashboard.discoverProducts') || 'Discover amazing handcrafted products'}</p>
                 <button
                   className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
                   onClick={() => navigate("/shop")}
                 >
-                  Browse Products
+                  {t('dashboard.browseProducts') || 'Browse Products'}
                 </button>
               </div>
               
               <div className="p-6 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="text-3xl mb-4">🚪</div>
-                <h3 className="text-lg font-semibold mb-2">Sign Out</h3>
-                <p className="text-gray-600 text-sm mb-4">Securely log out of your account</p>
+                <h3 className="text-lg font-semibold mb-2">{t('dashboard.signOut') || 'Sign Out'}</h3>
+                <p className="text-gray-600 text-sm mb-4">{t('dashboard.secureLogout') || 'Securely log out of your account'}</p>
                 <SignOutButton>
                   <button className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
-                    Log Out
+                    {t('auth.logout') || 'Log Out'}
                   </button>
                 </SignOutButton>
               </div>
@@ -352,8 +405,8 @@ export const UserDashBoard = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-md">
             <div className="text-4xl mb-4">🔒</div>
-            <h2 className="text-xl font-bold mb-4">Artisan Access Required</h2>
-            <p className="text-gray-600 mb-6">You must be a verified artisan to use this feature. Apply for artisan status to unlock advanced tools and analytics.</p>
+            <h2 className="text-xl font-bold mb-4">{t('dashboard.artisanRequired') || 'Artisan Access Required'}</h2>
+            <p className="text-gray-600 mb-6">{t('dashboard.mustBeArtisan') || 'You must be a verified artisan to use this feature. Apply for artisan status to unlock advanced tools and analytics.'}</p>
             <div className="flex gap-3">
               <button 
                 className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors" 
@@ -362,18 +415,23 @@ export const UserDashBoard = () => {
                   setActiveTab('profile');
                 }}
               >
-                Apply as Artisan
+                {t('dashboard.applyArtisan') || 'Apply as Artisan'}
               </button>
               <button 
                 className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors" 
                 onClick={() => setShowModal(false)}
               >
-                Close
+                {t('common.close') || 'Close'}
               </button>
             </div>
           </div>
         </div>
       )}
+      <ArtisanPlanModal 
+        isOpen={showArtisanPlanModal}
+        onClose={() => setShowArtisanPlanModal(false)}
+        user={user}
+      />
     </>
   )
 }

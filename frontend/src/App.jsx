@@ -18,9 +18,11 @@ import { AuctionDetails } from './pages/AuctionDetails'
 import { CartPage } from './pages/CartPage'
 import { CheckoutForm } from './pages/CheckoutForm'
 import { PaymentSuccess } from './pages/PaymentSuccess'
+import { SubscriptionSuccess } from './pages/SubscriptionSuccess'
 import { PaymentFailed } from './pages/PaymentFailed'
 import { PaymentPage } from './pages/PaymentPage'
 import SAPAnalyticsPage from './pages/SAPAnalyticsPage'
+import { WalletPage } from './pages/WalletPage'
 
 export const App = () => {
 
@@ -103,8 +105,16 @@ export const App = () => {
           element:<PaymentSuccess/>,
         },
         {
+          path:"/subscription-success",
+          element:<SubscriptionSuccess/>,
+        },
+        {
           path:"/payment-failure",
           element:<PaymentFailed/>,
+        },
+        {
+          path:"/wallet/:id",
+          element:<WalletPage/>,
         },
         {
           path:"/admin",

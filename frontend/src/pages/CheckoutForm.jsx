@@ -11,33 +11,58 @@ export const CheckoutForm = () => {
   const navigate = useNavigate()
   const location = useLocation();
   const total = location.state?.total || 0;
+  const sellerId = location.state?.sellerId || '';
+  const sellerName = location.state?.sellerName || '';
+  const productDetails = location.state?.productDetails || null;
+  const isSubscription = location.state?.isSubscription || false;
+  const subscriptionPlan = location.state?.subscriptionPlan || 'yearly'; // Default to yearly
 
   const handlePayment = async(e) => {
     e.preventDefault();
     const data = {
       name:user.fullName,
       mobile:phoneNumber,
-      amount:total
+      amount:total,
+      address: address,
+      buyerEmail: user?.emailAddresses?.[0]?.emailAddress
     }
-    // console.log(data);
+
+    // Add additional fields for regular product purchases
+    if (!isSubscription) {
+      data.sellerId = sellerId;
+      data.sellerName = sellerName;
+      data.productDetails = productDetails;
+      data.isSubscription = false;
+    } else {
+      // Add subscription-specific fields
+      data.subscriptionPlan = subscriptionPlan;
+    }
+
     try {
-      console.log("Hello");
-      const response = await axios.post("http://localhost:5000/create-order",data)
+      console.log("Processing payment...", { isSubscription });
+      
+      // Use different endpoints for subscription vs regular purchases
+      const endpoint = isSubscription 
+        ? "http://localhost:5000/create-subscription-order"
+        : "http://localhost:5000/create-order";
+      
+      const response = await axios.post(endpoint, data);
       console.log("Payment API response:", response.data);
       const responseData = response.data;
-      // window.location.href = response.data.url
+      
       if (responseData.paymentSessionId && responseData.orderId) {
         // Navigate to payment page with order details
         navigate('/payment', { 
           state: { 
             orderId: responseData.orderId,
             paymentSessionId: responseData.paymentSessionId,
-            bookingData: data
+            bookingData: data,
+            isSubscription: isSubscription
           }
         })
       }
     } catch (error) {
-      console.log(error);
+      console.log("Payment error:", error);
     }
   }
 
@@ -48,6 +73,29 @@ export const CheckoutForm = () => {
           <div className="h-[10vh] w-full"></div>
           <div className="max-w-lg mx-auto bg-white rounded shadow p-8 mt-10">
             <h2 className="text-2xl font-bold mb-6">Checkout</h2>
+            
+            {/* Product Details Section */}
+            {productDetails && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-semibold mb-3">Product Details</h3>
+                <div className="flex items-center gap-4 mb-3">
+                  <img 
+                    src={productDetails.image} 
+                    alt={productDetails.name}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div>
+                    <p className="font-medium">{productDetails.name}</p>
+                    <p className="text-sm text-gray-600">Category: {productDetails.category}</p>
+                    <p className="text-lg font-bold text-green-600">Rs {productDetails.price}</p>
+                  </div>
+                </div>
+                <div className="border-t pt-3 mt-3">
+                  <p className="text-sm"><span className="font-medium">Seller:</span> {sellerName}</p>
+                  <p className="text-sm"><span className="font-medium">Seller ID:</span> {sellerId || 'Loading...'}</p>
+                </div>
+              </div>
+            )}
             
             <form onSubmit={handlePayment}>
               <div className="mb-4">

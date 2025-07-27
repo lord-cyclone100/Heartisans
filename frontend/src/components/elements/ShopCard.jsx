@@ -1,6 +1,11 @@
 import { NavLink } from "react-router-dom"
+import { useTranslation } from 'react-i18next'
+import { useContentTranslation } from '../../hooks/useContentTranslation'
 
 export const ShopCard = ({card}) => {
+  const { t } = useTranslation()
+  const { translateCategory, translateState } = useContentTranslation()
+  
   return(
     <>
       <div className="card bg-base-100 w-96 h-[30rem] shadow-2xl border-1 relative">
@@ -13,15 +18,15 @@ export const ShopCard = ({card}) => {
         <div className="card-body">
           <h2 className="card-title">
             {card.productName}
-            <div className="badge badge-secondary">NEW</div>
+            <div className="badge badge-secondary">{t('products.new')}</div>
           </h2>
           <p>{card.productSellerName}</p>
           <h1>{`Rs ${card.productPrice}`}</h1>
           <div className="card-actions justify-end">
-            <div className="badge badge-outline">{card.productCategory}</div>
-            <div className="badge badge-outline">{card.productState}</div>
+            <div className="badge badge-outline">{translateCategory(card.productCategory)}</div>
+            <div className="badge badge-outline">{translateState(card.productState)}</div>
           </div>
-          <NavLink to={`/shop/${card.productCategory}/${card._id}`} ><button className="btn btn-accent w-[100%]">Details</button></NavLink>
+          <NavLink to={`/shop/${card.productCategory}/${card._id}`} ><button className="btn btn-accent w-[100%]">{t('products.details')}</button></NavLink>
         </div>
       </div>
     </>
