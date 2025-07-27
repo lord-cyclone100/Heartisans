@@ -40,6 +40,11 @@ const orderSchema = new Schema({
     type: Boolean,
     default: false
   },
+  subscriptionType: {
+    type: String,
+    enum: ['monthly', 'yearly'],
+    required: function() { return this.isSubscription; }
+  },
   adminBonusProcessed: {
     type: Boolean,
     default: false

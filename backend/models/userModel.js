@@ -43,6 +43,15 @@ const userSchema = new Schema({
   subscriptionDate: {
     type: Date,
     required: false
+  },
+  subscriptionType: {
+    type: String,
+    enum: ['monthly', 'yearly'],
+    required: false
+  },
+  subscriptionEndDate: {
+    type: Date,
+    required: false
   }
 })
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,13 +7,15 @@ export const PaymentSuccess = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const hasVerified = useRef(false); // Flag to prevent double execution
 
   const orderId = searchParams.get('order_id');
 
   useEffect(() => {
-    if (orderId) {
+    if (orderId && !hasVerified.current) {
+      hasVerified.current = true; // Set flag before calling
       verifyPayment();
-    } else {
+    } else if (!orderId) {
       setError('No order ID found');
       setLoading(false);
     }
@@ -21,46 +23,20 @@ export const PaymentSuccess = () => {
 
   const verifyPayment = async () => {
     try {
-      // First, try to check if this is a subscription order
-      let isSubscriptionOrder = false;
+      console.log('Verifying regular product payment for order:', orderId);
       
-      // Try subscription verification first
-      const subscriptionResponse = await fetch('http://localhost:5000/subscription/payment/verify', {
+      const response = await fetch('http://localhost:5000/payment/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId })
       });
 
-      if (subscriptionResponse.ok) {
-        const subscriptionData = await subscriptionResponse.json();
-        if (subscriptionData.success !== undefined) {
-          // This is a subscription order
-          isSubscriptionOrder = true;
-          if (subscriptionData.success) {
-            setOrder(subscriptionData.order);
-          } else {
-            setError(subscriptionData.message || 'Subscription payment verification failed');
-          }
-          setLoading(false);
-          return;
-        }
-      }
+      const data = await response.json();
 
-      // If not a subscription, try regular payment verification
-      if (!isSubscriptionOrder) {
-        const response = await fetch('http://localhost:5000/payment/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId })
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          setOrder(data.order);
-        } else {
-          setError(data.message || 'Payment verification failed');
-        }
+      if (response.ok && data.success) {
+        setOrder(data.order);
+      } else {
+        setError(data.message || 'Payment verification failed');
       }
     } catch (error) {
       console.error('Payment verification error:', error);

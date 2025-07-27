@@ -15,6 +15,7 @@ export const CheckoutForm = () => {
   const sellerName = location.state?.sellerName || '';
   const productDetails = location.state?.productDetails || null;
   const isSubscription = location.state?.isSubscription || false;
+  const subscriptionPlan = location.state?.subscriptionPlan || 'yearly'; // Default to yearly
 
   const handlePayment = async(e) => {
     e.preventDefault();
@@ -32,6 +33,9 @@ export const CheckoutForm = () => {
       data.sellerName = sellerName;
       data.productDetails = productDetails;
       data.isSubscription = false;
+    } else {
+      // Add subscription-specific fields
+      data.subscriptionPlan = subscriptionPlan;
     }
 
     try {

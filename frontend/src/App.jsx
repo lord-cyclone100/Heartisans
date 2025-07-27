@@ -18,6 +18,7 @@ import { AuctionDetails } from './pages/AuctionDetails'
 import { CartPage } from './pages/CartPage'
 import { CheckoutForm } from './pages/CheckoutForm'
 import { PaymentSuccess } from './pages/PaymentSuccess'
+import { SubscriptionSuccess } from './pages/SubscriptionSuccess'
 import { PaymentFailed } from './pages/PaymentFailed'
 import { PaymentPage } from './pages/PaymentPage'
 import { WalletPage } from './pages/WalletPage'
@@ -101,6 +102,10 @@ export const App = () => {
         {
           path:"/payment-success",
           element:<PaymentSuccess/>,
+        },
+        {
+          path:"/subscription-success",
+          element:<SubscriptionSuccess/>,
         },
         {
           path:"/payment-failure",

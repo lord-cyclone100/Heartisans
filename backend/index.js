@@ -775,8 +775,20 @@ app.get('/api/orders/:orderId', async (req, res) => {
 // Subscription-specific order creation endpoint
 app.post('/create-subscription-order', async (req, res) => {
   try{
-    const { name, mobile, amount, address } = req.body;
+    const { name, mobile, amount, address, subscriptionPlan } = req.body;
     const orderId = generateOrderId();
+
+    // Determine plan details
+    const isYearlyPlan = subscriptionPlan === 'yearly';
+    const planName = isYearlyPlan ? 'Artisan Plan - Yearly' : 'Artisan Plan - Monthly';
+    const expectedAmount = isYearlyPlan ? 2000 : 200;
+
+    // Validate amount matches plan
+    if (parseFloat(amount) !== expectedAmount) {
+      return res.status(400).json({ 
+        message: `Invalid amount for ${subscriptionPlan} plan. Expected: Rs ${expectedAmount}` 
+      });
+    }
 
     // Get buyer ID from email if available
     let buyerId = null;
@@ -796,7 +808,7 @@ app.post('/create-subscription-order', async (req, res) => {
         customer_phone: mobile.toString()
       },
       order_meta: {
-        return_url: `http://localhost:5173/payment-success?order_id=${orderId}`,
+        return_url: `http://localhost:5173/subscription-success?order_id=${orderId}`,
         payment_methods: "cc,dc,upi"
       },
       order_expiry_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
@@ -814,8 +826,8 @@ app.post('/create-subscription-order', async (req, res) => {
         buyerId: buyerId,
         // No sellerId for subscription orders
         productDetails: {
-          productId: 'artisan-subscription',
-          productName: 'Artisan Plan Subscription',
+          productId: `artisan-subscription-${subscriptionPlan}`,
+          productName: planName,
           productPrice: amount.toString(),
           productCategory: 'Subscription',
           productImage: null
@@ -828,7 +840,8 @@ app.post('/create-subscription-order', async (req, res) => {
         },
         amount: parseFloat(amount),
         status: 'pending',
-        isSubscription: true
+        isSubscription: true,
+        subscriptionType: subscriptionPlan
       });
 
       console.log('Subscription order saved to database:', order._id);
@@ -866,58 +879,24 @@ app.post('/subscription/payment/verify', async (req, res) => {
 
     console.log(`Verifying subscription payment for order: ${orderId}`);
 
-    // Get order details from Cashfree using SDK
-    const cashfreeResponse = await cashfree.PGFetchOrder(orderId);
-    console.log('Cashfree subscription order details:', cashfreeResponse.data);
-    
-    const orderStatus = cashfreeResponse.data.order_status;
-    const paymentDetails = cashfreeResponse.data.payment_details || {};
-
-    // Find the subscription order in our database
+    // Find the subscription order in our database first
     const order = await orderModel.findOne({ orderId, isSubscription: true });
-    if (order) {
-      console.log(`Found subscription order ${orderId} with current status: ${order.status}`);
-      
-      if (orderStatus === 'PAID') {
-        // Check if order is already processed
-        if (order.status === 'paid') {
-          console.log(`Subscription order ${orderId} already processed`);
-          return res.json({ success: true, message: 'Already processed' });
-        }
-        
-        order.status = 'paid';
-        order.paymentDetails = {
-          paymentId: paymentDetails.payment_id || 'SUBSCRIPTION_COMPLETED',
-          paymentMethod: paymentDetails.payment_method,
-          paymentTime: paymentDetails.payment_time
-        };
-        order.updatedAt = new Date();
-        
-        // Process subscription
-        const buyerUser = await userModel.findById(order.buyerId);
-        if (buyerUser && !buyerUser.hasArtisanSubscription) {
-          // Update user subscription
-          await userModel.findByIdAndUpdate(order.buyerId, {
-            hasArtisanSubscription: true,
-            subscriptionDate: new Date()
-          });
-          console.log(`User ${buyerUser.userName} subscribed to Artisan Plan`);
-          
-          // Update admin balances (only once)
-          const adminUpdateResult = await userModel.updateMany(
-            { isAdmin: true },
-            { $inc: { balance: 1000 } }
-          );
-          console.log(`Updated ${adminUpdateResult.modifiedCount} admin users with Rs 1000`);
-        }
-        
-        await order.save();
-        console.log(`Subscription payment verified successfully for order ${orderId}`);
-      }
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Subscription order not found'
+      });
+    }
 
-      res.json({
-        success: orderStatus === 'PAID',
-        orderStatus: orderStatus,
+    console.log(`Found subscription order ${orderId} with current status: ${order.status}`);
+    
+    // If already processed, return success without double processing
+    if (order.status === 'paid') {
+      console.log(`Subscription order ${orderId} already processed - returning cached result`);
+      return res.json({
+        success: true,
+        orderStatus: 'PAID',
+        message: 'Already processed',
         order: {
           id: order._id,
           orderId: order.orderId,
@@ -925,12 +904,96 @@ app.post('/subscription/payment/verify', async (req, res) => {
           status: order.status
         }
       });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: 'Subscription order not found'
-      });
     }
+
+    // Get order details from Cashfree using SDK
+    const cashfreeResponse = await cashfree.PGFetchOrder(orderId);
+    console.log('Cashfree subscription order details:', cashfreeResponse.data);
+    
+    const orderStatus = cashfreeResponse.data.order_status;
+    const paymentDetails = cashfreeResponse.data.payment_details || {};
+
+    if (orderStatus === 'PAID') {
+      // Use atomic operation to update order status only if it's still pending
+      const updatedOrder = await orderModel.findOneAndUpdate(
+        { orderId, isSubscription: true, status: 'pending' },
+        {
+          status: 'paid',
+          paymentDetails: {
+            paymentId: paymentDetails.payment_id || 'SUBSCRIPTION_COMPLETED',
+            paymentMethod: paymentDetails.payment_method,
+            paymentTime: paymentDetails.payment_time
+          },
+          updatedAt: new Date()
+        },
+        { new: true }
+      );
+
+      // If updatedOrder is null, it means the order was already processed
+      if (!updatedOrder) {
+        console.log(`Subscription order ${orderId} was already processed by another request`);
+        return res.json({
+          success: true,
+          orderStatus: 'PAID',
+          message: 'Already processed',
+          order: {
+            id: order._id,
+            orderId: order.orderId,
+            amount: order.amount,
+            status: 'paid'
+          }
+        });
+      }
+      
+      // Process subscription (only if not already subscribed)
+      const buyerUser = await userModel.findById(order.buyerId);
+      if (buyerUser && !buyerUser.hasArtisanSubscription) {
+        // Get subscription type from order
+        const subscriptionType = order.subscriptionType;
+        const isYearlyPlan = subscriptionType === 'yearly';
+        const subscriptionEndDate = new Date();
+        
+        if (isYearlyPlan) {
+          subscriptionEndDate.setFullYear(subscriptionEndDate.getFullYear() + 1);
+        } else {
+          subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
+        }
+        
+        // Update user subscription
+        await userModel.findByIdAndUpdate(order.buyerId, {
+          hasArtisanSubscription: true,
+          subscriptionDate: new Date(),
+          subscriptionType: subscriptionType,
+          subscriptionEndDate: subscriptionEndDate
+        });
+        console.log(`User ${buyerUser.userName} subscribed to Artisan Plan (${subscriptionType})`);
+        
+        // Calculate admin bonus based on subscription type
+        const adminBonus = isYearlyPlan ? 2000 : 200;
+        
+        // Update admin balances (only once)
+        const adminUpdateResult = await userModel.updateMany(
+          { isAdmin: true },
+          { $inc: { balance: adminBonus } }
+        );
+        console.log(`Updated ${adminUpdateResult.modifiedCount} admin users with Rs ${adminBonus} for ${subscriptionType} subscription`);
+      } else if (buyerUser && buyerUser.hasArtisanSubscription) {
+        console.log(`User ${buyerUser.userName} already has subscription - skipping admin balance update`);
+      }
+      
+      console.log(`Subscription payment verified successfully for order ${orderId}`);
+    }
+
+    res.json({
+      success: orderStatus === 'PAID',
+      orderStatus: orderStatus,
+      order: {
+        id: order._id,
+        orderId: order.orderId,
+        amount: order.amount,
+        status: order.status
+      }
+    });
 
   } catch (error) {
     console.error('Subscription payment verification error:', error);
