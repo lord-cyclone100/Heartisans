@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SAPAnalyticsDashboard from '../components/elements/SAPAnalyticsDashboard';
+import { useTranslation } from 'react-i18next';
 
 const SAPAnalyticsPage = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,12 +27,12 @@ const SAPAnalyticsPage = () => {
 
   // Demo product for testing
   const demoProduct = {
-    name: 'Traditional Rajasthani Handicraft',
-    category: 'Handicrafts',
+    name: t('sap.demoProductName') || 'Traditional Rajasthani Handicraft',
+    category: t('sap.demoProductCategory') || 'Handicrafts',
     material: 'Wood and Metal',
     region: 'Rajasthan',
     basePrice: 1500,
-    seller: 'Demo Artisan',
+    seller: t('sap.demoArtisan') || 'Demo Artisan',
     weight: '2kg',
     color: 'Multi-color'
   };
@@ -39,6 +41,9 @@ const SAPAnalyticsPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="ml-4 text-xl font-semibold text-gray-600">
+          {t('common.loading') || 'Loading...'}
+        </div>
       </div>
     );
   }
@@ -52,34 +57,34 @@ const SAPAnalyticsPage = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              SAP Analytics Cloud
+              {t('sap.title') || 'SAP Analytics Cloud'}
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-6">
-              Enterprise-Grade Business Intelligence & Analytics
+              {t('sap.subtitle') || 'Enterprise-Grade Business Intelligence & Analytics'}
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <span className="flex items-center">
                   <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  Market Intelligence
+                  {t('sap.marketIntelligence') || 'Market Intelligence'}
                 </span>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <span className="flex items-center">
                   <div className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></div>
-                  Pricing Analytics
+                  {t('sap.pricingAnalytics') || 'Pricing Analytics'}
                 </span>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <span className="flex items-center">
                   <div className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></div>
-                  Customer Insights
+                  {t('sap.customerInsights') || 'Customer Insights'}
                 </span>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <span className="flex items-center">
                   <div className="w-2 h-2 bg-orange-400 rounded-full mr-2 animate-pulse"></div>
-                  Demand Forecasting
+                  {t('sap.demandForecasting') || 'Demand Forecasting'}
                 </span>
               </div>
             </div>
@@ -92,7 +97,7 @@ const SAPAnalyticsPage = () => {
         {products.length > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">
-              📊 Select Product for Analytics
+              📊 {t('sap.selectProduct') || 'Select Product for Analytics'}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
               {products.slice(0, 8).map((product) => (
@@ -122,7 +127,7 @@ const SAPAnalyticsPage = () => {
             {/* Demo Product Option */}
             <div className="border-t pt-4">
               <h3 className="text-lg font-semibold mb-3 text-gray-700">
-                🚀 Or Try Demo Analytics
+                🚀 {t('sap.tryDemo') || 'Or Try Demo Analytics'}
               </h3>
               <div
                 onClick={() => setSelectedProduct(demoProduct)}
@@ -150,16 +155,16 @@ const SAPAnalyticsPage = () => {
         {products.length === 0 && (
           <div className="bg-white rounded-lg shadow-lg p-8 mb-8 text-center">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">
-              🚀 Experience SAP Analytics Cloud
+              🚀 {t('sap.experienceTitle') || 'Experience SAP Analytics Cloud'}
             </h2>
             <p className="text-gray-600 mb-6">
-              No products found in the database. Try our demo analytics to see the full capabilities.
+              {t('sap.noProductsMessage') || 'No products found in the database. Try our demo analytics to see the full capabilities.'}
             </p>
             <button
               onClick={() => setSelectedProduct(demoProduct)}
               className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-200"
             >
-              Launch Demo Analytics
+              {t('sap.launchDemo') || 'Launch Demo Analytics'}
             </button>
           </div>
         )}
@@ -171,7 +176,7 @@ const SAPAnalyticsPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-bold text-gray-800">
-                    Analytics Dashboard: {selectedProduct.productName || selectedProduct.name}
+                    {t('sap.analyticsDashboard') || 'Analytics Dashboard'}: {selectedProduct.productName || selectedProduct.name}
                   </h3>
                   <p className="text-gray-600">
                     Category: {selectedProduct.productCategory || selectedProduct.category} • 
@@ -181,7 +186,7 @@ const SAPAnalyticsPage = () => {
                 <div className="text-right">
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>SAP Integration Active</span>
+                    <span>{t('sap.integrationActive') || 'SAP Integration Active'}</span>
                   </div>
                 </div>
               </div>
@@ -205,36 +210,36 @@ const SAPAnalyticsPage = () => {
         {/* SAP Integration Info */}
         <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
           <h3 className="text-lg font-bold text-gray-800 mb-4">
-            🌟 SAP Integration Capabilities
+            🌟 {t('sap.integrationCapabilities') || 'SAP Integration Capabilities'}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-blue-600 text-xl">🔍</span>
               </div>
-              <h4 className="font-semibold text-sm">Market Intelligence</h4>
-              <p className="text-xs text-gray-600">Real-time market analysis</p>
+              <h4 className="font-semibold text-sm">{t('sap.marketIntelligence') || 'Market Intelligence'}</h4>
+              <p className="text-xs text-gray-600">{t('sap.marketAnalysis') || 'Real-time market analysis'}</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-green-600 text-xl">💰</span>
               </div>
-              <h4 className="font-semibold text-sm">Pricing Analytics</h4>
-              <p className="text-xs text-gray-600">Optimal pricing strategies</p>
+              <h4 className="font-semibold text-sm">{t('sap.pricingAnalytics') || 'Pricing Analytics'}</h4>
+              <p className="text-xs text-gray-600">{t('sap.pricingStrategies') || 'Optimal pricing strategies'}</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-purple-600 text-xl">👥</span>
               </div>
-              <h4 className="font-semibold text-sm">Customer Insights</h4>
-              <p className="text-xs text-gray-600">Behavioral segmentation</p>
+              <h4 className="font-semibold text-sm">{t('sap.customerInsights') || 'Customer Insights'}</h4>
+              <p className="text-xs text-gray-600">{t('sap.behavioralSegmentation') || 'Behavioral segmentation'}</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <span className="text-orange-600 text-xl">🔮</span>
               </div>
-              <h4 className="font-semibold text-sm">Demand Forecasting</h4>
-              <p className="text-xs text-gray-600">Predictive analytics</p>
+              <h4 className="font-semibold text-sm">{t('sap.demandForecasting') || 'Demand Forecasting'}</h4>
+              <p className="text-xs text-gray-600">{t('sap.predictiveAnalytics') || 'Predictive analytics'}</p>
             </div>
           </div>
         </div>
