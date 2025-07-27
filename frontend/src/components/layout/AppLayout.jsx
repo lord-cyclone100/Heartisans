@@ -1,6 +1,7 @@
 import { Outlet, useNavigation } from "react-router-dom"
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
+import { BotpressChatbot } from "../elements/BotpressChatbot";
 
 export const AppLayout = () => {
 	const navigation = useNavigation();
@@ -13,6 +14,7 @@ export const AppLayout = () => {
 			<Navbar/>
 			<Outlet/>
 			<Footer/>
+			<BotpressChatbot />
 		</>
 	)
 }

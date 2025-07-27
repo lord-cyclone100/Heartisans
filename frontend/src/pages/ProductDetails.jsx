@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
+import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard";
 import { useTranslation } from 'react-i18next';
 import { useContentTranslation } from '../hooks/useContentTranslation';
 
@@ -146,6 +147,28 @@ export const ProductDetails = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+      
+      {/* SAP Analytics Cloud Dashboard */}
+      <section className="bg-gray-50 py-10">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">Business Intelligence & Analytics</h2>
+            <p className="text-gray-600">Powered by SAP Analytics Cloud - Enterprise-grade insights for this product</p>
+          </div>
+          <SAPAnalyticsDashboard 
+            productData={{
+              name: card.productName,
+              category: card.productCategory,
+              material: card.productMaterial,
+              region: card.productState,
+              basePrice: card.productPrice,
+              seller: card.productSellerName,
+              weight: card.productWeight,
+              color: card.productColor
+            }} 
+          />
         </div>
       </section>
     </>

@@ -45,9 +45,10 @@ export const Navbar = () => {
         <div className='flex  gap-[4vw] items-center'>
           <div className='hidden lg:block'>
             <ul className={`menu menu-horizontal px-1 text-2xl gap-[2vw] ${user ? "flex" : "hidden"}`}>
-              <li><NavLink to="/shop">{t('nav.shop')}</NavLink></li>
-              <li><NavLink to="/auction">{t('nav.auction')}</NavLink></li>
-              <li><NavLink to="/resale">{t('nav.resale')}</NavLink></li>
+              <li><NavLink to="/shop">Shop</NavLink></li>
+              <li><NavLink to="/auction">Auction</NavLink></li>
+              <li><NavLink to="/resale">Resale</NavLink></li>
+              <li><NavLink to="/sap-analytics" className="text-blue-300 hover:text-white-100">SAP Analytics</NavLink></li>
               {dbUser?.isAdmin && (
                 <li><NavLink to="/admin">{t('nav.admin')}</NavLink></li>
               )}

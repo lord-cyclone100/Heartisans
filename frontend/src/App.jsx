@@ -21,6 +21,7 @@ import { PaymentSuccess } from './pages/PaymentSuccess'
 import { SubscriptionSuccess } from './pages/SubscriptionSuccess'
 import { PaymentFailed } from './pages/PaymentFailed'
 import { PaymentPage } from './pages/PaymentPage'
+import SAPAnalyticsPage from './pages/SAPAnalyticsPage'
 import { WalletPage } from './pages/WalletPage'
 
 export const App = () => {
@@ -118,6 +119,10 @@ export const App = () => {
         {
           path:"/admin",
           element:<AdminPanel/>,
+        },
+        {
+          path:"/sap-analytics",
+          element:<SAPAnalyticsPage/>,
         },
         {
           path:"/dashboard/:id",
