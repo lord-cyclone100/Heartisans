@@ -50,12 +50,12 @@ export const Navbar = () => {
               )}
             </ul>
           </div>
-          <div className='flex items-start relative'>
+          {/* <div className='flex items-start relative'>
             <NavLink to='/cart'><FaCartShopping size={20} /></NavLink>
             <div className='size-6 rounded-full bg-red-500 flex items-center justify-center absolute left-5 bottom-5'>
               {cartCount}
             </div>
-          </div>
+          </div> */}
           <SignUpButton/>
           <HamBurgerMenu/>
         </div>

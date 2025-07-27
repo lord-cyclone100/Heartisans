@@ -31,6 +31,18 @@ const userSchema = new Schema({
     type: Date,
     required: true,
     default: Date.now // Automatically sets to current date/time on creation
+  },
+  balance:{
+    type:Number,
+    default:0
+  },
+  hasArtisanSubscription:{
+    type:Boolean,
+    default:false
+  },
+  subscriptionDate: {
+    type: Date,
+    required: false
   }
 })
 

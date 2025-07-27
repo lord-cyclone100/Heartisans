@@ -1,14 +1,16 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 
 export const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [card, setCard] = useState(null);
   const { user } = useUser();
   const [mongoUserId, setMongoUserId] = useState("");
   const [inCart, setInCart] = useState(false);
+  const [sellerId, setSellerId] = useState("");
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/shopcards/${id}`)
@@ -33,6 +35,14 @@ export const ProductDetails = () => {
       .catch(() => setInCart(false));
   }, [mongoUserId, card]);
 
+  // Fetch seller's _id based on seller name
+  useEffect(() => {
+    if (!card?.productSellerName) return;
+    axios.get(`http://localhost:5000/api/user/username/${card.productSellerName}`)
+      .then(res => setSellerId(res.data._id))
+      .catch(() => setSellerId("Not Available"));
+  }, [card]);
+
   const handleAddToCart = async () => {
     if (!mongoUserId || !card) return;
     await axios.post("http://localhost:5000/api/cart/add", {
@@ -55,6 +65,36 @@ export const ProductDetails = () => {
     setInCart(false);
   };
 
+  const handleBuyNow = () => {
+    if (!user) {
+      alert("Please sign in to continue with purchase");
+      return;
+    }
+    
+    if (mongoUserId === sellerId) {
+      alert("You cannot buy your own product");
+      return;
+    }
+    
+    navigate('/checkout', {
+      state: {
+        total: card.productPrice,
+        sellerId: sellerId,
+        sellerName: card.productSellerName,
+        productDetails: {
+          id: card._id,
+          name: card.productName,
+          price: card.productPrice,
+          image: card.productImageUrl,
+          category: card.productCategory
+        }
+      }
+    });
+  };
+
+  // Check if current user is the seller
+  const isUserSeller = mongoUserId && sellerId && mongoUserId === sellerId;
+
   if (!card) return <div className="text-center mt-10">Loading...</div>;
 
   return (
@@ -73,6 +113,7 @@ export const ProductDetails = () => {
               </div>
               <div>
                 <p className="mt-2">Seller: {card.productSellerName}</p>
+                <p className="mt-2">Seller Id: {sellerId || 'Loading...'}</p>
                 <p className="mt-2">Category: {card.productCategory}</p>
                 <p className="mt-2">State: {card.productState}</p>
                 <p className="mt-2">Material: {card.productMaterial}</p>
@@ -82,12 +123,19 @@ export const ProductDetails = () => {
               <h3 className="mt-2 font-bold text-[2rem]">Rs {card.productPrice}</h3>
               <p className="mt-2">{card.isCodAvailable ? "COD Available" : "COD Not Available"}</p>
               <div className="flex gap-8">
-                {inCart ? (
+                {/* {inCart ? (
                   <button className="btn btn-error text-2xl p-6" onClick={handleRemoveFromCart}>Remove from Cart</button>
                 ) : (
                   <button className="btn btn-success text-2xl p-6" onClick={handleAddToCart}>Add to Cart</button>
-                )}
-                <button className="btn btn-success text-2xl p-6">Buy Now</button>
+                )} */}
+                <button 
+                  className={`btn text-2xl p-6 ${isUserSeller ? 'btn-disabled' : 'btn-success'}`}
+                  onClick={handleBuyNow}
+                  disabled={isUserSeller}
+                  title={isUserSeller ? "You cannot buy your own product" : "Buy this product"}
+                >
+                  {isUserSeller ? "Your Product" : "Buy Now"}
+                </button>
               </div>
             </div>
           </div>

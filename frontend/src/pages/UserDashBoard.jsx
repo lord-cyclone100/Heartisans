@@ -1,12 +1,15 @@
 import { SignOutButton } from "@clerk/clerk-react"
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FaWallet } from "react-icons/fa";
+import { ArtisanPlanModal } from "../components/elements/ArtisanPlanModal";
 
 export const UserDashBoard = () => {
   const [user,setUser] = useState(null)
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
+  const [showArtisanPlanModal, setShowArtisanPlanModal] = useState(false);
   const navigate = useNavigate();
   // console.log(typeof id);
 
@@ -38,6 +41,11 @@ export const UserDashBoard = () => {
     <section>
       <div className="">
         <div className="w-full h-[10vh]"></div>
+        <div className="w-full h-[5vh] flex items-center justify-end">
+          <NavLink to={`/wallet/${user._id}`} className={`h-[100%] ${user.isArtisan || user.isAdmin ? 'block':'hidden'}`}><button className="h-[90%] w-[8vh] bg-emerald-400 rounded-2xl flex items-center justify-center">
+            <FaWallet size={20}/>
+          </button></NavLink>
+        </div>
         <div className="flex flex-col items-center py-20">
           <div className="size-40 rounded-full bg-amber-300 overflow-hidden">
             <img src={user.imageUrl} alt="" />
@@ -76,6 +84,26 @@ export const UserDashBoard = () => {
               >
                 Sell on Heartisans
               </button>
+              <button
+                className={`btn ${
+                  !user.isArtisan 
+                    ? 'btn-disabled' 
+                    : user.hasArtisanSubscription 
+                      ? 'btn-success' 
+                      : 'btn-accent'
+                }`}
+                disabled={!user.isArtisan || user.hasArtisanSubscription}
+                onClick={() => user.isArtisan && !user.hasArtisanSubscription && setShowArtisanPlanModal(true)}
+                title={
+                  !user.isArtisan 
+                    ? "Become an artisan to access this feature"
+                    : user.hasArtisanSubscription 
+                      ? "You are already subscribed to the Artisan Plan"
+                      : "Access your artisan plan"
+                }
+              >
+                {user.hasArtisanSubscription ? 'Subscribed' : 'Artisan Plan'}
+              </button>
             </div>
           <SignOutButton>
             <button className="btn btn-error mt-4">Log Out</button>
@@ -94,6 +122,11 @@ export const UserDashBoard = () => {
           </div>
         </div>
       )}
+      <ArtisanPlanModal 
+        isOpen={showArtisanPlanModal}
+        onClose={() => setShowArtisanPlanModal(false)}
+        user={user}
+      />
     </>
   )
 }

@@ -26,6 +26,11 @@ const shopCardSchema = new Schema({
     required:true,
     // unique:true,
   },
+  sellerId:{
+    type: Schema.Types.ObjectId,
+    ref: 'Heartisans_user',
+    required: false, // Making it optional for backward compatibility
+  },
   productImageUrl: {
     type: String,
     required: false,
