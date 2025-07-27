@@ -20,6 +20,7 @@ import { CheckoutForm } from './pages/CheckoutForm'
 import { PaymentSuccess } from './pages/PaymentSuccess'
 import { PaymentFailed } from './pages/PaymentFailed'
 import { PaymentPage } from './pages/PaymentPage'
+import SAPAnalyticsPage from './pages/SAPAnalyticsPage'
 
 export const App = () => {
 
@@ -108,6 +109,10 @@ export const App = () => {
         {
           path:"/admin",
           element:<AdminPanel/>,
+        },
+        {
+          path:"/sap-analytics",
+          element:<SAPAnalyticsPage/>,
         },
         {
           path:"/dashboard/:id",

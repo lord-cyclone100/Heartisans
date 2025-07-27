@@ -45,6 +45,7 @@ export const Navbar = () => {
               <li><NavLink to="/shop">Shop</NavLink></li>
               <li><NavLink to="/auction">Auction</NavLink></li>
               <li><NavLink to="/resale">Resale</NavLink></li>
+              <li><NavLink to="/sap-analytics" className="text-blue-300 hover:text-white-100">SAP Analytics</NavLink></li>
               {dbUser?.isAdmin && (
                 <li><NavLink to="/admin">Dashboard</NavLink></li>
               )}
