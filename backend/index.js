@@ -195,6 +195,46 @@ app.get('/api/user/username/:username', async (req, res) => {
   }
 });
 
+// GET all users (for admin panel)
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await userModel.find({}).sort({ joiningDate: -1 });
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// DELETE user by id (admin only)
+app.delete('/api/user/:id', async (req, res) => {
+  try {
+    const user = await userModel.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
+// UPDATE user subscription (admin only)
+app.patch('/api/user/:id/subscription', async (req, res) => {
+  try {
+    const { hasArtisanSubscription, subscriptionType, subscriptionDate } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { hasArtisanSubscription, subscriptionType, subscriptionDate },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error('Error updating subscription:', err);
+    res.status(500).json({ error: "Failed to update subscription" });
+  }
+});
+
 app.post('/api/shopcards', async (req, res) => {
   try {
     const card = await shopCardModel.create(req.body);
@@ -240,6 +280,18 @@ app.get('/api/shopcards/:id', async (req, res) => {
     res.json(card);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch product" });
+  }
+});
+
+// DELETE shop card by id (admin only)
+app.delete('/api/shopcards/:id', async (req, res) => {
+  try {
+    const card = await shopCardModel.findByIdAndDelete(req.params.id);
+    if (!card) return res.status(404).json({ error: "Product not found" });
+    res.json({ message: "Product deleted successfully" });
+  } catch (err) {
+    console.error('Error deleting product:', err);
+    res.status(500).json({ error: "Failed to delete product" });
   }
 });
 
@@ -323,6 +375,18 @@ app.post('/api/auctions/:id/bid', async (req, res) => {
     res.json(auction);
   } catch (err) {
     res.status(500).json({ error: "Failed to place bid" });
+  }
+});
+
+// DELETE auction by id (admin only)
+app.delete('/api/auctions/:id', async (req, res) => {
+  try {
+    const auction = await auctionModel.findByIdAndDelete(req.params.id);
+    if (!auction) return res.status(404).json({ error: "Auction not found" });
+    res.json({ message: "Auction deleted successfully" });
+  } catch (err) {
+    console.error('Error deleting auction:', err);
+    res.status(500).json({ error: "Failed to delete auction" });
   }
 });
 
