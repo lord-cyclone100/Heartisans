@@ -1,13 +1,16 @@
 import { SignUpButton } from '../elements/SignUpButton';
+import { LanguageSelector } from '../elements/LanguageSelector';
 import { NavLink } from "react-router-dom"
 import { useUser } from '@clerk/clerk-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { HamBurgerMenu } from '../elements/HamBurgerMenu';
 import { FaCartShopping } from "react-icons/fa6";
 
 export const Navbar = () => {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [dbUser, setDbUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
 
@@ -42,14 +45,15 @@ export const Navbar = () => {
         <div className='flex  gap-[4vw] items-center'>
           <div className='hidden lg:block'>
             <ul className={`menu menu-horizontal px-1 text-2xl gap-[2vw] ${user ? "flex" : "hidden"}`}>
-              <li><NavLink to="/shop">Shop</NavLink></li>
-              <li><NavLink to="/auction">Auction</NavLink></li>
-              <li><NavLink to="/resale">Resale</NavLink></li>
+              <li><NavLink to="/shop">{t('nav.shop')}</NavLink></li>
+              <li><NavLink to="/auction">{t('nav.auction')}</NavLink></li>
+              <li><NavLink to="/resale">{t('nav.resale')}</NavLink></li>
               {dbUser?.isAdmin && (
-                <li><NavLink to="/admin">Dashboard</NavLink></li>
+                <li><NavLink to="/admin">{t('nav.admin')}</NavLink></li>
               )}
             </ul>
           </div>
+          <LanguageSelector />
           {/* <div className='flex items-start relative'>
             <NavLink to='/cart'><FaCartShopping size={20} /></NavLink>
             <div className='size-6 rounded-full bg-red-500 flex items-center justify-center absolute left-5 bottom-5'>

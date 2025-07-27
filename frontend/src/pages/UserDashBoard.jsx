@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaWallet } from "react-icons/fa";
 import { ArtisanPlanModal } from "../components/elements/ArtisanPlanModal";
+import { useTranslation } from 'react-i18next'
 
 export const UserDashBoard = () => {
+  const { t } = useTranslation()
   const [user,setUser] = useState(null)
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
@@ -34,7 +36,7 @@ export const UserDashBoard = () => {
   };
 
   if (!user) {
-    return <div className="text-center mt-10">Unauthorized or loading...</div>;
+    return <div className="text-center mt-10">{t('dashboard.unauthorized')}</div>;
   }
   return(
     <>
@@ -50,10 +52,10 @@ export const UserDashBoard = () => {
           <div className="size-40 rounded-full bg-amber-300 overflow-hidden">
             <img src={user.imageUrl} alt="" />
           </div>
-          <p>Welcome {user.userName}</p>
+          <p>{t('dashboard.welcome')} {user.userName}</p>
           <p>{user.email}</p>
           <p>
-            Date joined :- {user.joiningDate && new Date(user.joiningDate).toLocaleDateString('en-GB')}
+            {t('dashboard.dateJoined')} :- {user.joiningDate && new Date(user.joiningDate).toLocaleDateString('en-GB')}
           </p>
           <div className="flex gap-4 mt-4">
             <button
@@ -61,14 +63,14 @@ export const UserDashBoard = () => {
               disabled={user.isArtisan}
               onClick={() => handleArtisanStatus(true)}
             >
-              Apply as Artisan
+              {t('dashboard.applyArtisan')}
             </button>
             <button
               className="btn btn-warning"
               disabled={!user.isArtisan}
               onClick={() => handleArtisanStatus(false)}
             >
-              Revoke
+              {t('dashboard.revoke')}
             </button>
           </div>
           <div className="flex gap-4 mt-8">
@@ -76,13 +78,13 @@ export const UserDashBoard = () => {
                 className="btn btn-primary"
                 onClick={() => handleProtectedRedirect("/auctionform")}
               >
-                Start Auction
+                {t('dashboard.startAuction')}
               </button>
               <button
                 className="btn btn-secondary"
                 onClick={() => handleProtectedRedirect("/sellform")}
               >
-                Sell on Heartisans
+                {t('dashboard.sellOnHeartisans')}
               </button>
               <button
                 className={`btn ${
@@ -96,17 +98,17 @@ export const UserDashBoard = () => {
                 onClick={() => user.isArtisan && !user.hasArtisanSubscription && setShowArtisanPlanModal(true)}
                 title={
                   !user.isArtisan 
-                    ? "Become an artisan to access this feature"
+                    ? t('dashboard.becomeArtisan')
                     : user.hasArtisanSubscription 
-                      ? "You are already subscribed to the Artisan Plan"
-                      : "Access your artisan plan"
+                      ? t('dashboard.subscribed')
+                      : t('dashboard.artisanPlan')
                 }
               >
-                {user.hasArtisanSubscription ? 'Subscribed' : 'Artisan Plan'}
+                {user.hasArtisanSubscription ? t('dashboard.subscribed') : t('dashboard.artisanPlan')}
               </button>
             </div>
           <SignOutButton>
-            <button className="btn btn-error mt-4">Log Out</button>
+            <button className="btn btn-error mt-4">{t('auth.logout')}</button>
           </SignOutButton>
         </div>
       </div>
@@ -114,10 +116,10 @@ export const UserDashBoard = () => {
     {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">Access Denied</h2>
-            <p>You must be an Artisan to use this feature.</p>
+            <h2 className="text-xl font-bold mb-4">{t('common.error')}</h2>
+            <p>{t('dashboard.becomeArtisan')}</p>
             <button className="btn btn-primary mt-4" onClick={() => setShowModal(false)}>
-              Close
+              {t('common.close')}
             </button>
           </div>
         </div>

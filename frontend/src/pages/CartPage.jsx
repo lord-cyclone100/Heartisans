@@ -3,8 +3,10 @@ import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { CartSummary } from "../components/elements/CartSummary";
+import { useTranslation } from 'react-i18next';
 
 export const CartPage = () => {
+  const { t } = useTranslation();
   const { user } = useUser();
   const [cart, setCart] = useState(null);
   const [mongoUserId, setMongoUserId] = useState("");
@@ -41,7 +43,7 @@ export const CartPage = () => {
       <section>
         <div>
           <div className="h-[10vh] w-full"></div>
-          <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('cart.title')}</h2>
           
           {cart && cart.items.length > 0 ? (
             <ul>
@@ -51,25 +53,25 @@ export const CartPage = () => {
                   <div>
                     <div className="font-bold">{item.productName}</div>
                     <div>Rs {item.productPrice}</div>
-                    <div>Quantity: {item.quantity}</div>
+                    <div>{t('common.quantity')}: {item.quantity}</div>
                   </div>
                   <button
                     className="btn btn-primary ml-4"
                     onClick={() => handleVisit(item.productCategory,item.productId)}
                   >
-                    Visit
+                    {t('products.details')}
                   </button>
                   <button
                     className="btn btn-error ml-2"
                     onClick={() => handleRemove(item.productId)}
                   >
-                    Remove
+                    {t('product.removeFromCart')}
                   </button>
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="text-gray-500">Your cart is empty.</div>
+            <div className="text-gray-500">{t('cart.empty')}</div>
           )}
           <CartSummary
             cart={cart}
