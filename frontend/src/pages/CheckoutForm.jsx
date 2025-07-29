@@ -68,82 +68,163 @@ export const CheckoutForm = () => {
 
   return (
     <>
-      <section>
-        <div>
-          <div className="h-[10vh] w-full"></div>
-          <div className="max-w-lg mx-auto bg-white rounded shadow p-8 mt-10">
-            <h2 className="text-2xl font-bold mb-6">Checkout</h2>
-            
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-20">
+        <div className="w-full h-20"></div>
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+              Checkout
+            </h1>
+            <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 max-w-3xl mx-auto">
+              Complete your purchase and support authentic artisan craftsmanship.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
             {/* Product Details Section */}
             {productDetails && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-semibold mb-3">Product Details</h3>
-                <div className="flex items-center gap-4 mb-3">
-                  <img 
-                    src={productDetails.image} 
-                    alt={productDetails.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div>
-                    <p className="font-medium">{productDetails.name}</p>
-                    <p className="text-sm text-gray-600">Category: {productDetails.category}</p>
-                    <p className="text-lg font-bold text-green-600">Rs {productDetails.price}</p>
+              <div className="mb-8">
+                <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Order Summary</h3>
+                
+                <div className="space-y-6">
+                  <div className="flex items-center gap-6">
+                    <div className="flex-shrink-0">
+                      <img 
+                        src={productDetails.image} 
+                        alt={productDetails.name}
+                        className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl shadow-md"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                        {productDetails.name}
+                      </h4>
+                      <p className="text-base sm:text-lg text-gray-600 mb-2">
+                        Category: {productDetails.category}
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-bold text-green-600">
+                        ₹{productDetails.price.toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="border-t pt-3 mt-3">
-                  <p className="text-sm"><span className="font-medium">Seller:</span> {sellerName}</p>
-                  <p className="text-sm"><span className="font-medium">Seller ID:</span> {sellerId || 'Loading...'}</p>
+                  
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 mb-1">Seller</p>
+                        <p className="text-lg font-semibold text-gray-900">{sellerName}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 mb-1">Seller ID</p>
+                        <p className="text-lg font-semibold text-gray-900">{sellerId || 'Loading...'}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white">
+                    <p className="text-lg font-medium opacity-90 mb-2">Total Amount</p>
+                    <p className="text-3xl sm:text-4xl font-bold">₹{total.toLocaleString()}</p>
+                  </div>
                 </div>
               </div>
             )}
-            
-            <form onSubmit={handlePayment}>
-              <div className="mb-4">
-                <label className="block mb-1 font-semibold">Username</label>
-                <input
-                  type="text"
-                  value={user?.fullName || ""}
-                  disabled
-                  className="input input-bordered w-full bg-gray-100"
-                />
+
+            {/* Divider */}
+            <div className="border-t border-gray-200 my-8"></div>
+
+            {/* Checkout Form */}
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Billing Information</h3>
+              
+              <form onSubmit={handlePayment} className="space-y-6">
+                {/* Username */}
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={user?.fullName || ""}
+                    disabled
+                    className="w-full px-4 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-600 text-lg"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={user?.emailAddresses?.[0]?.emailAddress || ""}
+                    disabled
+                    className="w-full px-4 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-600 text-lg"
+                  />
+                </div>
+
+                {/* Phone Number */}
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={e => setPhoneNumber(e.target.value)}
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </div>
+
+                {/* Address */}
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Delivery Address *
+                  </label>
+                  <textarea
+                    value={address}
+                    onChange={e => setAddress(e.target.value)}
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 resize-none text-lg"
+                    placeholder="Enter your complete delivery address"
+                    rows={4}
+                    required
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <div className="pt-4">
+                  <button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-8 rounded-xl font-bold text-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  >
+                    Pay ₹{total.toLocaleString()} Now
+                    <svg className="w-5 h-5 ml-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Security Notice */}
+          <div className="mt-12 bg-white rounded-2xl shadow-xl p-6 border border-green-100">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="bg-green-100 rounded-full p-3">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
               </div>
-              <div className="mb-4">
-                <label className="block mb-1 font-semibold">Email</label>
-                <input
-                  type="email"
-                  value={user?.emailAddresses?.[0]?.emailAddress || ""}
-                  disabled
-                  className="input input-bordered w-full bg-gray-100"
-                />
+              <div className="text-center">
+                <p className="text-lg font-semibold text-gray-900">Secure Payment</p>
+                <p className="text-base text-gray-600">Your payment information is encrypted and secure</p>
               </div>
-              <div className="mb-4">
-                <label className="block mb-1 font-semibold">Phone Number</label>
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={e => setPhoneNumber(e.target.value)}
-                  className="input input-bordered w-full"
-                  placeholder="Enter your phone number"
-                  required
-                />
-              </div>
-              <div className="mb-6">
-                <label className="block mb-1 font-semibold">Address</label>
-                <textarea
-                  value={address}
-                  onChange={e => setAddress(e.target.value)}
-                  className="textarea textarea-bordered w-full"
-                  placeholder="Enter your address"
-                  required
-                />
-              </div>
-              <div className="">
-                <div className="text-xl font-bold mb-6">Total Amount: Rs {total}</div>
-                <button type="submit" className="btn btn-success w-full text-lg" >
-                  Pay Now
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
       </section>

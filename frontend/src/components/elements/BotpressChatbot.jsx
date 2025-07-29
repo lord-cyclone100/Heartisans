@@ -15,6 +15,9 @@ export const BotpressChatbot = () => {
       return;
     }
 
+    // Store original font size to restore it
+    const originalFontSize = document.documentElement.style.fontSize || '62.5%';
+
     const loadBotpressScripts = () => {
       // Remove any existing scripts first
       const existingInject = document.getElementById('botpress-webchat-inject');
@@ -40,6 +43,25 @@ export const BotpressChatbot = () => {
         
         configScript.onload = () => {
           console.log('Botpress config script loaded');
+          
+          // Restore our font-size after chatbot loads
+          setTimeout(() => {
+            document.documentElement.style.fontSize = originalFontSize;
+            // Force maintain our custom font size
+            const style = document.createElement('style');
+            style.innerHTML = `
+              html { 
+                font-size: 62.5% !important; 
+              }
+              /* Isolate chatbot styles */
+              [id*="bp-web-widget"], [class*="bp-"], [id*="botpress"] {
+                font-size: 16px !important;
+                line-height: 1.4 !important;
+              }
+            `;
+            document.head.appendChild(style);
+          }, 100);
+          
           window.botpressWebChatLoaded = true;
         };
         

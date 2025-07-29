@@ -127,77 +127,168 @@ useEffect(() => {
 
   if (!auction) {
     return (
-      <section>
-        <div className="w-full h-[10vh]"></div>
-        <div className="text-center mt-10">Loading or not found...</div>
-      </section>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center font-mhlk">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-500 mx-auto mb-4"></div>
+          <p className="text-2xl text-green-700 font-semibold">Loading auction details...</p>
+        </div>
+      </div>
     );
   }
 
   return (
     <>
-      <section>
-        <div>
-          <div className="w-full h-[10vh]"></div>
-          <div className="max-w-xl mx-auto bg-white rounded shadow p-6">
-            <img
-              src={auction.productImageUrl}
-              alt={auction.productName}
-              className="size-full object-cover mb-4"
-            />
-            <h2 className="text-2xl font-bold mb-2">{auction.productName}</h2>
-            <p className="mb-2">{auction.productDescription}</p>
-            <p className="mb-1">Base Price: Rs {auction.basePrice}</p>
-            <p className="mb-1">
-              Current Highest Bid: Rs {highestBid}
-            </p>
-            <p className="mb-1">
-              Starts: {new Date(auction.startTime).toLocaleString()}
-            </p>
-            <p className="mb-1">Duration: {auction.duration} minutes</p>
-            <p className="mb-1">Seller: {auction.sellerName}</p>
-
-            {/* Bid input and button */}
-            <div className="flex gap-2 mt-4">
-              <input
-                type="number"
-                min={
-                  auction.bids.length === 0
-                    ? auction.basePrice
-                    : highestBid + 1
-                }
-                value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)}
-                placeholder={
-                  auction.bids.length === 0
-                    ? `Enter bid ≥ Rs ${auction.basePrice}`
-                    : `Enter bid > Rs ${highestBid}`
-                }
-                className="input input-bordered flex-1"
-              />
-              <button
-                className="btn btn-primary"
-                disabled={bidDisabled}
-                onClick={handleBid}
-              >
-                Bid
-              </button>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-40 font-mhlk">
+        <div className="w-full h-20"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            {/* Auction Image and Basic Info */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div className="relative">
+                  <img
+                    src={auction.productImageUrl}
+                    alt={auction.productName}
+                    className="w-full h-80 lg:h-96 object-cover"
+                  />
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      Live Auction
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="p-6 space-y-4">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                    {auction.productName}
+                  </h1>
+                  <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
+                    {auction.productDescription}
+                  </p>
+                  
+                  {/* Current Bid Display */}
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm opacity-90">Base Price</p>
+                        <p className="text-2xl font-bold">₹{auction.basePrice}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm opacity-90">Current Highest</p>
+                        <p className="text-2xl font-bold">₹{highestBid}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Auction Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm font-medium text-gray-500 mb-1">Seller</p>
+                      <p className="text-lg font-semibold text-gray-900">{auction.sellerName}</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm font-medium text-gray-500 mb-1">Duration</p>
+                      <p className="text-lg font-semibold text-gray-900">{auction.duration} minutes</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-xl p-4 md:col-span-2">
+                      <p className="text-sm font-medium text-gray-500 mb-1">Start Time</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {new Date(auction.startTime).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            {isCurrentUserHighestBidder && (
-              <div className="mt-2 text-center text-green-600">
-                You are currently the highest bidder!
+            
+            {/* Bidding Section */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Place Your Bid</h2>
+                
+                {/* Status Messages */}
+                {isCurrentUserHighestBidder && (
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                      <p className="text-green-800 font-semibold text-lg">
+                        You are currently the highest bidder!
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {isAuctionCreator && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                      <p className="text-orange-800 font-semibold text-lg">
+                        You cannot bid on your own auction.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {msg && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                      <p className="text-red-800 font-semibold text-lg">{msg}</p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Bid Input */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bid Amount (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min={
+                        auction.bids.length === 0
+                          ? auction.basePrice
+                          : highestBid + 1
+                      }
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      placeholder={
+                        auction.bids.length === 0
+                          ? `Enter bid ≥ ₹${auction.basePrice}`
+                          : `Enter bid > ₹${highestBid}`
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+                    />
+                  </div>
+                  
+                  <button
+                    className={`w-full py-4 px-8 rounded-xl text-xl font-bold transition-all duration-300 transform hover:scale-105 ${
+                      bidDisabled
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl'
+                    }`}
+                    disabled={bidDisabled}
+                    onClick={handleBid}
+                  >
+                    Place Bid
+                  </button>
+                </div>
               </div>
-            )}
-            {msg && (
-              <div className="mt-2 text-center text-red-500">{msg}</div>
-            )}
-            {isAuctionCreator && (
-              <div className="mt-2 text-center text-orange-600">
-                You cannot bid on your own auction.
+              
+              {/* Leaderboard */}
+              <div className="bg-white rounded-2xl shadow-xl border border-green-100 overflow-hidden">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6">
+                  <h3 className="text-xl font-bold text-white">Bid Leaderboard</h3>
+                </div>
+                <AuctionLeaderBoard leaderboard={leaderboard} mongoUserId={mongoUserId} />
               </div>
-            )}
-
-            <AuctionLeaderBoard leaderboard={leaderboard} mongoUserId={mongoUserId} />
+            </div>
           </div>
         </div>
       </section>

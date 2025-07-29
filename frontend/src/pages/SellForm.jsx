@@ -39,7 +39,9 @@ export const SellForm = () => {
     }
   };
 
-  const generateAIDescription = async () => {
+
+
+    const generateAIDescription = async () => {
     if (!form.productName.trim()) {
       setMsg("Please enter a product name first");
       return;
@@ -174,6 +176,10 @@ export const SellForm = () => {
     setMsg("SAP AI suggested price applied!");
   };
 
+
+
+
+
   const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
@@ -229,321 +235,401 @@ export const SellForm = () => {
 
   return (
     <>
-      <section>
-        <div>
-          <div className="w-full h-[10vh]"></div>
-          <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-            <h2 className="text-2xl font-bold mb-4">Sell on Heartisans</h2>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="text"
-                name="productName"
-                placeholder="Product Name"
-                value={form.productName}
-                onChange={handleChange}
-                required
-                className="input input-bordered"
-              />
-              
-              {/* SAP AI Price Prediction Section */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Product Price (₹)</label>
-                  <button
-                    type="button"
-                    onClick={generateSAPPricePrediction}
-                    disabled={isPredictingPrice || !form.productName.trim() || !form.productCategory}
-                    className="btn btn-sm btn-outline btn-accent"
-                  >
-                    {isPredictingPrice ? (
-                      <>
-                        <span className="loading loading-spinner loading-xs"></span>
-                        SAP AI Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        🧠 SAP AI Price
-                      </>
-                    )}
-                  </button>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-20">
+        <div className="w-full h-20"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-4">
+              Sell on Heartisans
+            </h1>
+            <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 max-w-3xl mx-auto">
+              Share your beautiful handcrafted products with the world. List your items and reach customers who appreciate authentic artisan work.
+            </p>
+          </div>
+
+          {/* Form Container */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Product Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Product Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="productName"
+                    placeholder="Enter your product name"
+                    value={form.productName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
                 </div>
                 
+                {/* Product Price Section with SAP AI */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-base sm:text-lg font-medium text-gray-700">
+                      Product Price (₹) *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={generateSAPPricePrediction}
+                      disabled={isPredictingPrice || !form.productName.trim() || !form.productCategory}
+                      className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isPredictingPrice ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                          SAP AI Analyzing...
+                        </div>
+                      ) : (
+                        <>
+                          🧠 SAP AI Price
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  
+                  <input
+                    type="text"
+                    name="productPrice"
+                    placeholder="Enter your product price in rupees"
+                    value={form.productPrice}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                  
+                  {/* SAP AI Pricing Insights Panel */}
+                  {pricePrediction && showPricingInsights && (
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 mt-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-blue-600 text-white p-3 rounded-lg">
+                            🧠
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-lg text-blue-900">SAP AI Price Intelligence</h3>
+                            <p className="text-sm text-blue-600">Powered by SAP Business Technology Platform</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowPricingInsights(false)}
+                          className="px-3 py-1 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-300"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      {/* Key Metrics Row */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        {/* Suggested Price */}
+                        <div className="bg-white p-4 rounded-lg border shadow-sm">
+                          <h4 className="font-semibold text-sm text-gray-600 mb-2">SAP Recommended Price</h4>
+                          <p className="text-2xl font-bold text-green-600">₹{pricePrediction.suggestedPrice?.toLocaleString()}</p>
+                          <p className="text-xs text-gray-500 mb-2">
+                            Range: ₹{pricePrediction.priceRange?.min?.toLocaleString()} - ₹{pricePrediction.priceRange?.max?.toLocaleString()}
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => useSAPPrice(pricePrediction.suggestedPrice)}
+                              className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                            >
+                              Use This Price
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => useSAPPrice(pricePrediction.priceRange?.min)}
+                              className="px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                            >
+                              Use Min
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => useSAPPrice(pricePrediction.priceRange?.max)}
+                              className="px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                            >
+                              Use Max
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Market Position */}
+                        <div className="bg-white p-4 rounded-lg border shadow-sm">
+                          <h4 className="font-semibold text-sm text-gray-600 mb-2">Market Position</h4>
+                          <span className={`badge text-white text-sm px-3 py-2 ${
+                            pricePrediction.marketPosition === 'premium' ? 'bg-purple-500' :
+                            pricePrediction.marketPosition === 'mid-range' ? 'bg-blue-500' :
+                            'bg-green-500'
+                          }`}>
+                            {pricePrediction.marketPosition?.toUpperCase()}
+                          </span>
+                          <p className="text-xs text-gray-500 mt-2">
+                            Confidence: {pricePrediction.confidence}%
+                          </p>
+                          <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                            <div 
+                              className="bg-blue-500 h-2 rounded-full transition-all"
+                              style={{ width: `${pricePrediction.confidence}%` }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        {/* Profit Analysis */}
+                        <div className="bg-white p-4 rounded-lg border shadow-sm">
+                          <h4 className="font-semibold text-sm text-gray-600 mb-2">Profit Analysis</h4>
+                          {pricePrediction.sapBusinessInsights?.profitAnalysis && (
+                            <>
+                              <p className="text-xl font-bold text-green-600">
+                                {pricePrediction.sapBusinessInsights.profitAnalysis.grossMargin}%
+                              </p>
+                              <p className="text-xs text-gray-500">Gross Margin</p>
+                              <div className="mt-2">
+                                <span className={`badge badge-sm ${
+                                  pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore > 80 ? 'badge-success' :
+                                  pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore > 60 ? 'badge-warning' :
+                                  'badge-error'
+                                }`}>
+                                  Health: {pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore}/100
+                                </span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* SAP Business Intelligence Section */}
+                      {pricePrediction.sapBusinessInsights && (
+                        <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-blue-800">
+                            <span>📊</span>
+                            SAP Business Intelligence
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Demand Forecast */}
+                            <div>
+                              <h5 className="font-medium text-sm mb-2 text-gray-700">Demand Forecast</h5>
+                              <div className="flex items-center gap-3 mb-2">
+                                <div className="flex-1 bg-gray-200 rounded-full h-3">
+                                  <div 
+                                    className="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full transition-all"
+                                    style={{ width: `${pricePrediction.sapBusinessInsights.demandForecast?.score || 70}%` }}
+                                  ></div>
+                                </div>
+                                <span className="text-sm font-medium">{pricePrediction.sapBusinessInsights.demandForecast?.score || 70}/100</span>
+                              </div>
+                              <p className="text-xs text-gray-600">
+                                Trend: <span className="font-medium">{pricePrediction.sapBusinessInsights.demandForecast?.trend || 'stable'}</span> | 
+                                Seasonality: <span className="font-medium">{pricePrediction.sapBusinessInsights.demandForecast?.seasonality || 'medium'}</span>
+                              </p>
+                            </div>
+
+                            {/* Competitive Analysis */}
+                            <div>
+                              <h5 className="font-medium text-sm mb-2 text-gray-700">Competitive Position</h5>
+                              <p className="text-lg font-bold text-blue-600 mb-1">
+                                {pricePrediction.sapBusinessInsights.competitiveAnalysis?.position || 'challenger'}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                Competitors: {pricePrediction.sapBusinessInsights.competitiveAnalysis?.competitorCount || 15} | 
+                                Differentiation: {pricePrediction.sapBusinessInsights.competitiveAnalysis?.differentiationFactor || 75}%
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Enhanced Performance KPIs */}
+                      {pricePrediction.sapEnrichment?.performanceKPIs && (
+                        <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
+                          <h4 className="font-semibold mb-3 text-blue-800">📈 Performance KPIs</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-green-600">₹{pricePrediction.sapEnrichment.performanceKPIs.revenueProjection?.toLocaleString()}</p>
+                              <p className="text-xs text-gray-600">Monthly Revenue</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-blue-600">{pricePrediction.sapEnrichment.performanceKPIs.marketSharePotential}%</p>
+                              <p className="text-xs text-gray-600">Market Share</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-purple-600">₹{pricePrediction.sapEnrichment.performanceKPIs.customerAcquisitionCost}</p>
+                              <p className="text-xs text-gray-600">Acquisition Cost</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-lg font-bold text-orange-600">{pricePrediction.sapEnrichment.performanceKPIs.returnOnInvestment}%</p>
+                              <p className="text-xs text-gray-600">ROI</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Price Factors & Recommendations */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Price Factors */}
+                        <div className="bg-white p-4 rounded-lg border shadow-sm">
+                          <h4 className="font-semibold mb-2 text-gray-800">Price Influencing Factors</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {pricePrediction.pricingFactors?.map((factor, index) => (
+                              <span key={index} className="badge badge-outline badge-sm">
+                                {factor}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* SAP Recommendations */}
+                        <div className="bg-white p-4 rounded-lg border shadow-sm">
+                          <h4 className="font-semibold mb-2 text-gray-800">SAP AI Recommendations</h4>
+                          <ul className="text-sm space-y-1">
+                            {pricePrediction.recommendations?.slice(0, 3).map((rec, index) => (
+                              <li key={index} className="flex items-start gap-2">
+                                <span className="text-blue-500 mt-1">•</span>
+                                <span className="text-gray-700">{rec}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* SAP Metadata Footer */}
+                      <div className="mt-4 pt-4 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <span>🕒 {new Date(pricePrediction.timestamp).toLocaleString()}</span>
+                          <span>📊 Confidence: {pricePrediction.confidence}%</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                          <span className="font-medium text-blue-600">{pricePrediction.sapVersion}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Location and Category */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    State *
+                  </label>
+                  <select
+                    name="productState"
+                    value={form.productState}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 bg-white text-lg"
+                  >
+                    <option value="">Select your state</option>
+                    {shopStates.map((state) => (
+                      <option key={state.name} value={state.name}>{state.name}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Category *
+                  </label>
+                  <select
+                    name="productCategory"
+                    value={form.productCategory}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 bg-white text-lg"
+                  >
+                    <option value="">Select product category</option>
+                    {shopCategories.map((cat) => (
+                      <option key={cat.name} value={cat.name}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Seller Info */}
+              <div className="space-y-2">
+                <label className="block text-base sm:text-lg font-medium text-gray-700">
+                  Seller Name
+                </label>
                 <input
                   type="text"
-                  name="productPrice"
-                  placeholder="Product Price"
-                  value={form.productPrice}
+                  name="productSellerName"
+                  value={form.productSellerName}
+                  disabled
+                  className="w-full px-4 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-600 text-lg"
+                />
+              </div>
+
+              {/* Product Image */}
+              <div className="space-y-2">
+                <label className="block text-base sm:text-lg font-medium text-gray-700">
+                  Product Image *
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    name="productImage"
+                    accept=".jpg,.jpeg,.png"
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-base file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 text-lg"
+                  />
+                </div>
+                <p className="text-base text-gray-500">Upload a clear image of your product (JPG, JPEG, PNG)</p>
+              </div>
+
+              {/* Product Description */}
+              {/* <div className="space-y-2">
+                <label className="block text-base sm:text-lg font-medium text-gray-700">
+                  Product Description *
+                </label>
+                <textarea
+                  name="productDescription"
+                  placeholder="Describe your product, its features, craftsmanship, and what makes it special..."
+                  value={form.productDescription}
                   onChange={handleChange}
                   required
-                  className="input input-bordered"
+                  rows={4}
+                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 resize-none text-lg"
                 />
-                
-                {/* SAP AI Pricing Insights Panel */}
-                {pricePrediction && showPricingInsights && (
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 mt-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-blue-600 text-white p-3 rounded-lg">
-                          🧠
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-lg text-blue-900">SAP AI Price Intelligence</h3>
-                          <p className="text-sm text-blue-600">Powered by SAP Business Technology Platform</p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowPricingInsights(false)}
-                        className="btn btn-ghost btn-sm"
-                      >
-                        ✕
-                      </button>
-                    </div>
+              </div> */}
 
-                    {/* Key Metrics Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                      {/* Suggested Price */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold text-sm text-gray-600 mb-2">SAP Recommended Price</h4>
-                        <p className="text-2xl font-bold text-green-600">₹{pricePrediction.suggestedPrice?.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Range: ₹{pricePrediction.priceRange?.min?.toLocaleString()} - ₹{pricePrediction.priceRange?.max?.toLocaleString()}
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => useSAPPrice(pricePrediction.suggestedPrice)}
-                            className="btn btn-xs btn-primary"
-                          >
-                            Use This Price
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => useSAPPrice(pricePrediction.priceRange?.min)}
-                            className="btn btn-xs btn-outline"
-                          >
-                            Use Min
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => useSAPPrice(pricePrediction.priceRange?.max)}
-                            className="btn btn-xs btn-outline"
-                          >
-                            Use Max
-                          </button>
-                        </div>
-                      </div>
 
-                      {/* Market Position */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Market Position</h4>
-                        <span className={`badge text-white text-sm px-3 py-2 ${
-                          pricePrediction.marketPosition === 'premium' ? 'bg-purple-500' :
-                          pricePrediction.marketPosition === 'mid-range' ? 'bg-blue-500' :
-                          'bg-green-500'
-                        }`}>
-                          {pricePrediction.marketPosition?.toUpperCase()}
-                        </span>
-                        <p className="text-xs text-gray-500 mt-2">
-                          Confidence: {pricePrediction.confidence}%
-                        </p>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                          <div 
-                            className="bg-blue-500 h-2 rounded-full transition-all"
-                            style={{ width: `${pricePrediction.confidence}%` }}
-                          ></div>
-                        </div>
-                      </div>
 
-                      {/* Profit Analysis */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Profit Analysis</h4>
-                        {pricePrediction.sapBusinessInsights?.profitAnalysis && (
-                          <>
-                            <p className="text-xl font-bold text-green-600">
-                              {pricePrediction.sapBusinessInsights.profitAnalysis.grossMargin}%
-                            </p>
-                            <p className="text-xs text-gray-500">Gross Margin</p>
-                            <div className="mt-2">
-                              <span className={`badge badge-sm ${
-                                pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore > 80 ? 'badge-success' :
-                                pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore > 60 ? 'badge-warning' :
-                                'badge-error'
-                              }`}>
-                                Health: {pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore}/100
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
 
-                    {/* SAP Business Intelligence Section */}
-                    {pricePrediction.sapBusinessInsights && (
-                      <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
-                        <h4 className="font-semibold mb-3 flex items-center gap-2 text-blue-800">
-                          <span>📊</span>
-                          SAP Business Intelligence
-                        </h4>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Demand Forecast */}
-                          <div>
-                            <h5 className="font-medium text-sm mb-2 text-gray-700">Demand Forecast</h5>
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className="flex-1 bg-gray-200 rounded-full h-3">
-                                <div 
-                                  className="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full transition-all"
-                                  style={{ width: `${pricePrediction.sapBusinessInsights.demandForecast?.score || 70}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-sm font-medium">{pricePrediction.sapBusinessInsights.demandForecast?.score || 70}/100</span>
-                            </div>
-                            <p className="text-xs text-gray-600">
-                              Trend: <span className="font-medium">{pricePrediction.sapBusinessInsights.demandForecast?.trend || 'stable'}</span> | 
-                              Seasonality: <span className="font-medium">{pricePrediction.sapBusinessInsights.demandForecast?.seasonality || 'medium'}</span>
-                            </p>
-                          </div>
 
-                          {/* Competitive Analysis */}
-                          <div>
-                            <h5 className="font-medium text-sm mb-2 text-gray-700">Competitive Position</h5>
-                            <p className="text-lg font-bold text-blue-600 mb-1">
-                              {pricePrediction.sapBusinessInsights.competitiveAnalysis?.position || 'challenger'}
-                            </p>
-                            <p className="text-xs text-gray-600">
-                              Competitors: {pricePrediction.sapBusinessInsights.competitiveAnalysis?.competitorCount || 15} | 
-                              Differentiation: {pricePrediction.sapBusinessInsights.competitiveAnalysis?.differentiationFactor || 75}%
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Enhanced Performance KPIs */}
-                    {pricePrediction.sapEnrichment?.performanceKPIs && (
-                      <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
-                        <h4 className="font-semibold mb-3 text-blue-800">📈 Performance KPIs</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-green-600">₹{pricePrediction.sapEnrichment.performanceKPIs.revenueProjection?.toLocaleString()}</p>
-                            <p className="text-xs text-gray-600">Monthly Revenue</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-blue-600">{pricePrediction.sapEnrichment.performanceKPIs.marketSharePotential}%</p>
-                            <p className="text-xs text-gray-600">Market Share</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-purple-600">₹{pricePrediction.sapEnrichment.performanceKPIs.customerAcquisitionCost}</p>
-                            <p className="text-xs text-gray-600">Acquisition Cost</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-orange-600">{pricePrediction.sapEnrichment.performanceKPIs.returnOnInvestment}%</p>
-                            <p className="text-xs text-gray-600">ROI</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Price Factors & Recommendations */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Price Factors */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold mb-2 text-gray-800">Price Influencing Factors</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {pricePrediction.pricingFactors?.map((factor, index) => (
-                            <span key={index} className="badge badge-outline badge-sm">
-                              {factor}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
 
-                      {/* SAP Recommendations */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold mb-2 text-gray-800">SAP AI Recommendations</h4>
-                        <ul className="text-sm space-y-1">
-                          {pricePrediction.recommendations?.slice(0, 3).map((rec, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-blue-500 mt-1">•</span>
-                              <span className="text-gray-700">{rec}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
 
-                    {/* SAP Metadata Footer */}
-                    <div className="mt-4 pt-4 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <span>🕒 {new Date(pricePrediction.timestamp).toLocaleString()}</span>
-                        <span>📊 Confidence: {pricePrediction.confidence}%</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                        <span className="font-medium text-blue-600">{pricePrediction.sapVersion}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <select
-                name="productState"
-                value={form.productState}
-                onChange={handleChange}
-                required
-                className="select select-bordered"
-              >
-                <option value="">Select State</option>
-                {shopStates.map((state) => (
-                  <option key={state.name} value={state.name}>{state.name}</option>
-                ))}
-              </select>
-              <select
-                name="productCategory"
-                value={form.productCategory}
-                onChange={handleChange}
-                required
-                className="select select-bordered"
-              >
-                <option value="">Select Category</option>
-                {shopCategories.map((cat) => (
-                  <option key={cat.name} value={cat.name}>{cat.name}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                name="productSellerName"
-                value={form.productSellerName}
-                disabled
-                className="input input-bordered bg-gray-100"
-              />
-              <input
-                type="file"
-                name="productImage"
-                accept=".jpg,.jpeg,.png"
-                onChange={handleChange}
-                required
-                className="file-input file-input-bordered"
-              />
-              
-              {/* AI-Enhanced Product Description Section */}
+
+                {/* AI-Enhanced Product Description Section */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Product Description</label>
-                  <div className="flex gap-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Product Description *
+                  </label>
+                  <div className="flex gap-3">
                     <button
                       type="button"
                       onClick={generateAIDescription}
                       disabled={aiLoading || !form.productName.trim()}
-                      className="btn btn-sm btn-outline btn-secondary"
+                      className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {aiLoading ? (
-                        <>
-                          <span className="loading loading-spinner loading-xs"></span>
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
                           Generating...
-                        </>
+                        </div>
                       ) : (
                         <>
                           🤖 Quick AI
@@ -554,13 +640,13 @@ export const SellForm = () => {
                       type="button"
                       onClick={generateSAPAIDescription}
                       disabled={sapAiLoading || !form.productName.trim()}
-                      className="btn btn-sm btn-outline btn-accent"
+                      className="px-4 py-2 text-sm font-medium text-orange-700 bg-orange-100 border border-orange-300 rounded-lg hover:bg-orange-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {sapAiLoading ? (
-                        <>
-                          <span className="loading loading-spinner loading-xs"></span>
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-orange-600 border-t-transparent"></div>
                           SAP AI...
-                        </>
+                        </div>
                       ) : (
                         <>
                           🧠 SAP AI Pro
@@ -572,11 +658,12 @@ export const SellForm = () => {
                 
                 <textarea
                   name="productDescription"
-                  placeholder="Enter product description or use AI to generate one..."
+                  placeholder="Describe your product, its features, craftsmanship, and what makes it special..."
                   value={form.productDescription}
                   onChange={handleChange}
                   required
-                  className="textarea textarea-bordered min-h-[120px]"
+                  rows={4}
+                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 resize-none text-lg"
                 />
                 
                 {/* Quick AI Suggestion Display */}
@@ -590,14 +677,14 @@ export const SellForm = () => {
                         <button
                           type="button"
                           onClick={useAISuggestion}
-                          className="btn btn-xs btn-primary"
+                          className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                         >
                           Use This
                         </button>
                         <button
                           type="button"
                           onClick={() => setAiSuggestion("")}
-                          className="btn btn-xs btn-ghost"
+                          className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-300"
                         >
                           Dismiss
                         </button>
@@ -626,14 +713,14 @@ export const SellForm = () => {
                         <button
                           type="button"
                           onClick={useSAPAISuggestion}
-                          className="btn btn-xs btn-primary"
+                          className="px-3 py-1 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
                         >
                           ✓ Use SAP Content
                         </button>
                         <button
                           type="button"
                           onClick={() => setSapAiSuggestion(null)}
-                          className="btn btn-xs btn-ghost"
+                          className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-300"
                         >
                           ✕ Dismiss
                         </button>
@@ -779,52 +866,126 @@ export const SellForm = () => {
                   </div>
                 )}
               </div>
-              
-              <input
-                type="text"
-                name="productMaterial"
-                placeholder="Product Material"
-                value={form.productMaterial}
-                onChange={handleChange}
-                required
-                className="input input-bordered"
-              />
-              <input
-                type="text"
-                name="productWeight"
-                placeholder="Product Weight"
-                value={form.productWeight}
-                onChange={handleChange}
-                required
-                className="input input-bordered"
-              />
-              <input
-                type="text"
-                name="productColor"
-                placeholder="Product Color"
-                value={form.productColor}
-                onChange={handleChange}
-                required
-                className="input input-bordered"
-              />
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="isCodAvailable"
-                  checked={form.isCodAvailable}
-                  onChange={handleChange}
-                  className="checkbox"
-                />
-                Cash on Delivery Available
-              </label>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </button>
-              {msg && <div className="text-center mt-2">{msg}</div>}
+
+
+
+
+
+
+
+
+
+
+
+
+              {/* Product Details */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Material *
+                  </label>
+                  <input
+                    type="text"
+                    name="productMaterial"
+                    placeholder="e.g., Wood, Clay, Cotton"
+                    value={form.productMaterial}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Weight (grams) *
+                  </label>
+                  <input
+                    type="number"
+                    name="productWeight"
+                    placeholder="Enter weight in grams"
+                    value={form.productWeight}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Primary Color *
+                  </label>
+                  <input
+                    type="text"
+                    name="productColor"
+                    placeholder="e.g., Brown, Blue, Multicolor"
+                    value={form.productColor}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
+              </div>
+
+              {/* Cash on Delivery */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="isCodAvailable"
+                    checked={form.isCodAvailable}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <div>
+                    <span className="text-base sm:text-lg font-medium text-gray-900">Cash on Delivery Available</span>
+                    <p className="text-base text-gray-500">Allow customers to pay when they receive the product</p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className={`w-full py-4 px-8 rounded-xl text-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                    loading
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                  }`}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                      Submitting...
+                    </div>
+                  ) : (
+                    'List Your Product'
+                  )}
+                </button>
+              </div>
+
+              {/* Success/Error Message */}
+              {msg && (
+                <div className={`text-center p-4 rounded-xl ${
+                  msg.includes('successfully') 
+                    ? 'bg-green-50 border border-green-200 text-green-800' 
+                    : 'bg-red-50 border border-red-200 text-red-800'
+                }`}>
+                  <div className="flex items-center justify-center gap-2">
+                    {msg.includes('successfully') ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className="font-medium">{msg}</span>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </div>

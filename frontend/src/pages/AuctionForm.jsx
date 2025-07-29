@@ -44,6 +44,8 @@ export const AuctionForm = () => {
     }
   };
 
+
+
   const generateAIDescription = async () => {
     if (!form.productName.trim()) {
       setMsg("Please enter a product name first");
@@ -184,6 +186,8 @@ export const AuctionForm = () => {
     setMsg(`SAP AI suggested base price applied! (${Math.round(percentage * 100)}% of market value)`);
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -244,38 +248,279 @@ export const AuctionForm = () => {
 
   return (
     <>
-      <section>
-        <div>
-          <div className="w-full h-[10vh]"></div>
-          <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-            <h2 className="text-2xl font-bold mb-4">Start an Auction</h2>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="text"
-                name="productName"
-                placeholder="Product Name"
-                value={form.productName}
-                onChange={handleChange}
-                required
-                className="input input-bordered"
-              />
-              
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-20">
+        <div className="w-full h-20"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-4">
+              Start an Auction
+            </h1>
+            <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 max-w-3xl mx-auto">
+              Create an exciting auction for your handcrafted items. Set your terms and let bidders compete for your unique artisan products.
+            </p>
+          </div>
+
+          {/* Form Container */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Product Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Product Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="productName"
+                    placeholder="Enter your product name"
+                    value={form.productName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
+                
+                {/* <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Base Price (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    name="basePrice"
+                    placeholder="Enter starting bid amount"
+                    value={form.basePrice}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div> */}
+
+
+
+              {/* Base Price Section with SAP AI */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Base Price (₹) *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={generateSAPPricePrediction}
+                    disabled={isPredictingPrice || !form.productName.trim()}
+                    className="px-4 py-2 text-sm font-medium text-purple-700 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isPredictingPrice ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-purple-600 border-t-transparent"></div>
+                        SAP AI Analyzing...
+                      </div>
+                    ) : (
+                      <>
+                        🧠 SAP AI Base Price
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                <input
+                  type="number"
+                  name="basePrice"
+                  placeholder="Enter starting bid amount for auction"
+                  value={form.basePrice}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                />
+                
+                {/* SAP AI Auction Pricing Insights */}
+                {pricePrediction && showPricingInsights && (
+                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-200 mt-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-purple-600 text-white p-3 rounded-lg">
+                          🎯
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg text-purple-900">SAP AI Auction Intelligence</h3>
+                          <p className="text-sm text-purple-600">Optimized for auction dynamics</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowPricingInsights(false)}
+                        className="px-3 py-1 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-300"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    {/* Auction-specific metrics */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      {/* Market Value */}
+                      <div className="bg-white p-4 rounded-lg border shadow-sm">
+                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Market Value</h4>
+                        <p className="text-xl font-bold text-green-600">₹{pricePrediction.suggestedPrice?.toLocaleString()}</p>
+                        <p className="text-xs text-gray-500">SAP AI Estimate</p>
+                      </div>
+
+                      {/* Suggested Base Price */}
+                      <div className="bg-white p-4 rounded-lg border shadow-sm">
+                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Auction Base Price</h4>
+                        <p className="text-xl font-bold text-purple-600">₹{Math.round(pricePrediction.suggestedPrice * 0.7)?.toLocaleString()}</p>
+                        <p className="text-xs text-gray-500">70% of market value</p>
+                        <button
+                          type="button"
+                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.7)}
+                          className="px-3 py-1 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 mt-2"
+                        >
+                          Use This Base
+                        </button>
+                      </div>
+
+                      {/* Expected Final Price */}
+                      <div className="bg-white p-4 rounded-lg border shadow-sm">
+                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Expected Final Price</h4>
+                        <p className="text-xl font-bold text-blue-600">₹{Math.round(pricePrediction.suggestedPrice * 1.2)?.toLocaleString()}</p>
+                        <p className="text-xs text-gray-500">120% of market value</p>
+                      </div>
+                    </div>
+
+                    {/* Auction Strategy Options */}
+                    <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
+                      <h4 className="font-semibold mb-3 text-purple-800">🎯 SAP AI Auction Strategies</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.6)}
+                          className="px-4 py-3 text-sm font-medium text-purple-700 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        >
+                          <div className="text-left">
+                            <div className="font-medium">Aggressive Start</div>
+                            <div className="text-xs">60% base (₹{Math.round(pricePrediction.suggestedPrice * 0.6)?.toLocaleString()})</div>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.7)}
+                          className="px-4 py-3 text-sm font-medium text-white bg-purple-600 border border-purple-600 rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        >
+                          <div className="text-left">
+                            <div className="font-medium">Balanced Start</div>
+                            <div className="text-xs">70% base (₹{Math.round(pricePrediction.suggestedPrice * 0.7)?.toLocaleString()})</div>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.8)}
+                          className="px-4 py-3 text-sm font-medium text-purple-700 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                        >
+                          <div className="text-left">
+                            <div className="font-medium">Conservative Start</div>
+                            <div className="text-xs">80% base (₹{Math.round(pricePrediction.suggestedPrice * 0.8)?.toLocaleString()})</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* SAP Auction Insights */}
+                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                      <h4 className="font-semibold mb-2 text-purple-800">📊 SAP Auction Analytics</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-700 mb-1">Bidding Activity Forecast</h5>
+                          {pricePrediction.sapBusinessInsights?.demandForecast && (
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full"
+                                  style={{ width: `${pricePrediction.sapBusinessInsights.demandForecast.score}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-sm">{pricePrediction.sapBusinessInsights.demandForecast.score}/100</span>
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-700 mb-1">Competition Level</h5>
+                          <span className="badge badge-secondary">
+                            {pricePrediction.sapBusinessInsights?.competitiveAnalysis?.competitorCount || 15} competitors expected
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SAP Metadata */}
+                    <div className="mt-4 pt-4 border-t border-purple-200 text-xs text-purple-600 flex items-center justify-between">
+                      <span>🕒 {new Date(pricePrediction.timestamp).toLocaleString()}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+                        <span className="font-medium">{pricePrediction.sapVersion}</span>
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+
+
+
+              </div>
+
+              {/* Product Image */}
+              <div className="space-y-2">
+                <label className="block text-base sm:text-lg font-medium text-gray-700">
+                  Product Image *
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    name="productImage"
+                    accept=".jpg,.jpeg,.png"
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-base file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 text-lg"
+                  />
+                </div>
+                <p className="text-base text-gray-500">Upload a clear image of your product (JPG, JPEG, PNG)</p>
+              </div>
+
+              {/* Product Description */}
+              {/* <div className="space-y-2">
+                <label className="block text-base sm:text-lg font-medium text-gray-700">
+                  Product Description *
+                </label>
+                <textarea
+                  name="productDescription"
+                  placeholder="Describe your product, its features, craftsmanship, and what makes it special for auction..."
+                  value={form.productDescription}
+                  onChange={handleChange}
+                  required
+                  rows={4}
+                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 resize-none text-lg"
+                />
+              </div> */}
+
               {/* AI-Enhanced Product Description Section */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Product Description</label>
-                  <div className="flex gap-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Product Description *
+                  </label>
+                  <div className="flex gap-3">
                     <button
                       type="button"
                       onClick={generateAIDescription}
                       disabled={aiLoading || !form.productName.trim()}
-                      className="btn btn-sm btn-outline btn-secondary"
+                      className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {aiLoading ? (
-                        <>
-                          <span className="loading loading-spinner loading-xs"></span>
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
                           Generating...
-                        </>
+                        </div>
                       ) : (
                         <>
                           🤖 Quick AI
@@ -286,13 +531,13 @@ export const AuctionForm = () => {
                       type="button"
                       onClick={generateSAPAIDescription}
                       disabled={sapAiLoading || !form.productName.trim()}
-                      className="btn btn-sm btn-outline btn-accent"
+                      className="px-4 py-2 text-sm font-medium text-orange-700 bg-orange-100 border border-orange-300 rounded-lg hover:bg-orange-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {sapAiLoading ? (
-                        <>
-                          <span className="loading loading-spinner loading-xs"></span>
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-orange-600 border-t-transparent"></div>
                           SAP AI...
-                        </>
+                        </div>
                       ) : (
                         <>
                           🧠 SAP AI Pro
@@ -304,11 +549,12 @@ export const AuctionForm = () => {
                 
                 <textarea
                   name="productDescription"
-                  placeholder="Enter product description or use AI to generate one..."
+                  placeholder="Describe your product, its features, craftsmanship, and what makes it special for auction..."
                   value={form.productDescription}
                   onChange={handleChange}
                   required
-                  className="textarea textarea-bordered min-h-[120px]"
+                  rows={4}
+                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 resize-none text-lg"
                 />
                 
                 {/* Quick AI Suggestion Display */}
@@ -322,14 +568,14 @@ export const AuctionForm = () => {
                         <button
                           type="button"
                           onClick={useAISuggestion}
-                          className="btn btn-xs btn-primary"
+                          className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                         >
                           Use This
                         </button>
                         <button
                           type="button"
                           onClick={() => setAiSuggestion("")}
-                          className="btn btn-xs btn-ghost"
+                          className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-300"
                         >
                           Dismiss
                         </button>
@@ -358,14 +604,14 @@ export const AuctionForm = () => {
                         <button
                           type="button"
                           onClick={useSAPAISuggestion}
-                          className="btn btn-xs btn-primary"
+                          className="px-3 py-1 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
                         >
                           ✓ Use SAP Content
                         </button>
                         <button
                           type="button"
                           onClick={() => setSapAiSuggestion(null)}
-                          className="btn btn-xs btn-ghost"
+                          className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-300"
                         >
                           ✕ Dismiss
                         </button>
@@ -432,230 +678,129 @@ export const AuctionForm = () => {
                   </div>
                 )}
               </div>
-              
-              <input
-                type="file"
-                name="productImage"
-                accept=".jpg,.jpeg,.png"
-                onChange={handleChange}
-                required
-                className="file-input file-input-bordered"
-              />
-              <input
-                type="text"
-                name="productMaterial"
-                placeholder="Product Material"
-                value={form.productMaterial}
-                onChange={handleChange}
-                className="input input-bordered"
-              />
-              <input
-                type="text"
-                name="productWeight"
-                placeholder="Product Weight"
-                value={form.productWeight}
-                onChange={handleChange}
-                className="input input-bordered"
-              />
-              <input
-                type="text"
-                name="productColor"
-                placeholder="Product Color"
-                value={form.productColor}
-                onChange={handleChange}
-                className="input input-bordered"
-              />
-              
-              {/* SAP AI Base Price Prediction Section */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Base Price (₹)</label>
-                  <button
-                    type="button"
-                    onClick={generateSAPPricePrediction}
-                    disabled={isPredictingPrice || !form.productName.trim()}
-                    className="btn btn-sm btn-outline btn-accent"
-                  >
-                    {isPredictingPrice ? (
-                      <>
-                        <span className="loading loading-spinner loading-xs"></span>
-                        SAP AI Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        🧠 SAP AI Base Price
-                      </>
-                    )}
-                  </button>
+
+              {/* Product Details */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Material *
+                  </label>
+                  <input
+                    type="text"
+                    name="productMaterial"
+                    placeholder="e.g., Wood, Clay, Cotton"
+                    value={form.productMaterial}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
                 </div>
                 
-                <input
-                  type="number"
-                  name="basePrice"
-                  placeholder="Base Price for Auction"
-                  value={form.basePrice}
-                  onChange={handleChange}
-                  required
-                  className="input input-bordered"
-                />
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Weight (grams)
+                  </label>
+                  <input
+                    type="text"
+                    name="productWeight"
+                    placeholder="Enter weight in grams"
+                    value={form.productWeight}
+                    onChange={handleChange}
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
                 
-                {/* SAP AI Auction Pricing Insights */}
-                {pricePrediction && showPricingInsights && (
-                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-200 mt-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-purple-600 text-white p-3 rounded-lg">
-                          🎯
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-lg text-purple-900">SAP AI Auction Intelligence</h3>
-                          <p className="text-sm text-purple-600">Optimized for auction dynamics</p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowPricingInsights(false)}
-                        className="btn btn-ghost btn-sm"
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    {/* Auction-specific metrics */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                      {/* Market Value */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Market Value</h4>
-                        <p className="text-xl font-bold text-green-600">₹{pricePrediction.suggestedPrice?.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500">SAP AI Estimate</p>
-                      </div>
-
-                      {/* Suggested Base Price */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Auction Base Price</h4>
-                        <p className="text-xl font-bold text-purple-600">₹{Math.round(pricePrediction.suggestedPrice * 0.7)?.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500">70% of market value</p>
-                        <button
-                          type="button"
-                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.7)}
-                          className="btn btn-xs btn-primary mt-2"
-                        >
-                          Use This Base
-                        </button>
-                      </div>
-
-                      {/* Expected Final Price */}
-                      <div className="bg-white p-4 rounded-lg border shadow-sm">
-                        <h4 className="font-semibold text-sm text-gray-600 mb-2">Expected Final Price</h4>
-                        <p className="text-xl font-bold text-blue-600">₹{Math.round(pricePrediction.suggestedPrice * 1.2)?.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500">120% of market value</p>
-                      </div>
-                    </div>
-
-                    {/* Auction Strategy Options */}
-                    <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
-                      <h4 className="font-semibold mb-3 text-purple-800">🎯 SAP AI Auction Strategies</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.6)}
-                          className="btn btn-outline btn-sm"
-                        >
-                          <div className="text-left">
-                            <div className="font-medium">Aggressive Start</div>
-                            <div className="text-xs">60% base (₹{Math.round(pricePrediction.suggestedPrice * 0.6)?.toLocaleString()})</div>
-                          </div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.7)}
-                          className="btn btn-outline btn-sm btn-primary"
-                        >
-                          <div className="text-left">
-                            <div className="font-medium">Balanced Start</div>
-                            <div className="text-xs">70% base (₹{Math.round(pricePrediction.suggestedPrice * 0.7)?.toLocaleString()})</div>
-                          </div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.8)}
-                          className="btn btn-outline btn-sm"
-                        >
-                          <div className="text-left">
-                            <div className="font-medium">Conservative Start</div>
-                            <div className="text-xs">80% base (₹{Math.round(pricePrediction.suggestedPrice * 0.8)?.toLocaleString()})</div>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* SAP Auction Insights */}
-                    <div className="bg-white p-4 rounded-lg border shadow-sm">
-                      <h4 className="font-semibold mb-2 text-purple-800">📊 SAP Auction Analytics</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <h5 className="text-sm font-medium text-gray-700 mb-1">Bidding Activity Forecast</h5>
-                          {pricePrediction.sapBusinessInsights?.demandForecast && (
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                <div 
-                                  className="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full"
-                                  style={{ width: `${pricePrediction.sapBusinessInsights.demandForecast.score}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-sm">{pricePrediction.sapBusinessInsights.demandForecast.score}/100</span>
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <h5 className="text-sm font-medium text-gray-700 mb-1">Competition Level</h5>
-                          <span className="badge badge-secondary">
-                            {pricePrediction.sapBusinessInsights?.competitiveAnalysis?.competitorCount || 15} competitors expected
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* SAP Metadata */}
-                    <div className="mt-4 pt-4 border-t border-purple-200 text-xs text-purple-600 flex items-center justify-between">
-                      <span>🕒 {new Date(pricePrediction.timestamp).toLocaleString()}</span>
-                      <span className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
-                        <span className="font-medium">{pricePrediction.sapVersion}</span>
-                      </span>
-                    </div>
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Primary Color
+                  </label>
+                  <input
+                    type="text"
+                    name="productColor"
+                    placeholder="e.g., Brown, Blue, Multicolor"
+                    value={form.productColor}
+                    onChange={handleChange}
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
               </div>
-              
-              <label>
-                Auction Start Time:
-                <input
-                  type="datetime-local"
-                  name="startTime"
-                  value={form.startTime}
-                  onChange={handleChange}
-                  required
-                  className="input input-bordered"
-                />
-              </label>
-              <input
-                type="number"
-                name="duration"
-                placeholder="Duration (minutes)"
-                value={form.duration}
-                onChange={handleChange}
-                required
-                className="input input-bordered"
-              />
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </button>
-              {msg && <div className="text-center mt-2">{msg}</div>}
+
+              {/* Auction Timing */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Auction Start Time *
+                  </label>
+                  <input
+                    type="datetime-local"
+                    name="startTime"
+                    value={form.startTime}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Duration (minutes) *
+                  </label>
+                  <input
+                    type="number"
+                    name="duration"
+                    placeholder="e.g., 60 for 1 hour"
+                    value={form.duration}
+                    onChange={handleChange}
+                    required
+                    min="1"
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className={`w-full py-4 px-8 rounded-xl text-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                    loading
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                  }`}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                      Creating Auction...
+                    </div>
+                  ) : (
+                    'Start Auction'
+                  )}
+                </button>
+              </div>
+
+              {/* Success/Error Message */}
+              {msg && (
+                <div className={`text-center p-4 rounded-xl ${
+                  msg.includes('successfully') 
+                    ? 'bg-green-50 border border-green-200 text-green-800' 
+                    : 'bg-red-50 border border-red-200 text-red-800'
+                }`}>
+                  <div className="flex items-center justify-center gap-2">
+                    {msg.includes('successfully') ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className="font-medium text-base sm:text-lg">{msg}</span>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </div>

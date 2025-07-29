@@ -142,6 +142,10 @@ app.get('/api/cloudinary-signature', (req, res) => {
   });
 });
 
+
+
+
+
 // Quick AI-powered product description generation (Groq)
 app.post('/api/generate-description', async (req, res) => {
   try {
@@ -567,6 +571,12 @@ app.get('/api/test-sac', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
 app.post('/api/user', async (req, res) => {
   try {
     const { userName, email, imageUrl, fullName } = req.body;
@@ -725,6 +735,30 @@ app.delete('/api/shopcards/:id', async (req, res) => {
   } catch (err) {
     console.error('Error deleting product:', err);
     res.status(500).json({ error: "Failed to delete product" });
+  }
+});
+
+// UPDATE shop card by id (PATCH)
+app.patch('/api/shopcards/:id', async (req, res) => {
+  try {
+    const updateData = req.body;
+    console.log('Updating product with data:', updateData);
+    
+    const card = await shopCardModel.findByIdAndUpdate(
+      req.params.id, 
+      updateData, 
+      { new: true, runValidators: true }
+    );
+    
+    if (!card) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    
+    console.log('Product updated successfully:', card);
+    res.json(card);
+  } catch (err) {
+    console.error('Error updating product:', err);
+    res.status(500).json({ error: "Failed to update product", details: err.message });
   }
 });
 

@@ -12,7 +12,7 @@ export const About = () => {
             
             {/* <hr className=""/> */}
             <p className="px-12 text-[2rem] lg:text-[2.8rem] lg:w-[40vw]">
-              <span className="text-green-500">Heartisans</span> {t('home.aboutDescription')}
+              <span className="text-[#479626]">Heartisans</span> {t('home.aboutDescription')}
             </p>
           </div>
           <div id="jigsaw" className="w-[80vw] lg:w-[60vw]">

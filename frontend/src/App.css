@@ -1,5 +1,10 @@
 html{
-  font-size: 100%;
+  font-size: 62.5% !important;
+}
+
+/* Ensure font-size stays consistent */
+html, body {
+  font-size: 62.5% !important;
 }
 
 #item{

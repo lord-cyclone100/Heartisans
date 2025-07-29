@@ -7,3 +7,5 @@ Description/Details, Materials Used, Weight, Color, COD(Cash on Delivery)
 Auction Card
 
 Cloudinary
+
+#479626

@@ -47,49 +47,51 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     
     if (!marketData) {
       return (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-lg">
-          <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
-            🔍 Market Intelligence
+        <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-12 rounded-2xl border border-green-200">
+          <h3 className="text-2xl sm:text-3xl font-bold text-green-800 mb-8 flex items-center">
+            <span className="text-3xl mr-4">🔍</span>
+            Market Intelligence
           </h3>
-          <p className="text-gray-500">No market intelligence data available</p>
+          <p className="text-xl text-gray-500">No market intelligence data available</p>
         </div>
       );
     }
 
     return (
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
-          🔍 Market Intelligence
+      <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-12 rounded-2xl border border-green-200 font-mhlk">
+        <h3 className="text-2xl sm:text-3xl font-bold text-green-800 mb-8 flex items-center">
+          <span className="text-3xl mr-4">🔍</span>
+          Market Intelligence
         </h3>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700">Market Size</h4>
-              <p className="text-blue-600">{marketData.market_size || 'N/A'}</p>
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-xl text-gray-700 mb-4">Market Size</h4>
+              <p className="text-green-600 text-2xl font-bold">{marketData.market_size || 'N/A'}</p>
             </div>
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700">Growth Rate</h4>
-              <p className="text-blue-600">{marketData.growth_rate || 'N/A'}</p>
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-xl text-gray-700 mb-4">Growth Rate</h4>
+              <p className="text-green-600 text-2xl font-bold">{marketData.growth_rate || 'N/A'}</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700">Competition Level</h4>
-              <p className="text-blue-600">{marketData.competition_level || 'N/A'}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-xl text-gray-700 mb-4">Competition Level</h4>
+              <p className="text-green-600 text-2xl font-bold">{marketData.competition_level || 'N/A'}</p>
             </div>
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700">Source</h4>
-              <p className="text-blue-600 text-xs">{marketData.source || 'SAP Analytics Cloud'}</p>
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-xl text-gray-700 mb-4">Source</h4>
+              <p className="text-green-600 text-lg font-semibold">{marketData.source || 'SAP Analytics Cloud'}</p>
             </div>
           </div>
           
           {marketData.key_insights && Array.isArray(marketData.key_insights) && marketData.key_insights.length > 0 && (
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Key Insights</h4>
-              <ul className="space-y-1">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-xl text-gray-700 mb-6">Key Insights</h4>
+              <ul className="space-y-4">
                 {marketData.key_insights.map((insight, index) => (
-                  <li key={index} className="text-sm text-gray-600 flex items-start">
-                    <span className="text-blue-500 mr-2">•</span>
+                  <li key={index} className="text-lg text-gray-600 flex items-start">
+                    <span className="text-green-500 mr-4 text-xl">•</span>
                     <span>{extractText(insight)}</span>
                   </li>
                 ))}
@@ -98,12 +100,12 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           )}
           
           {marketData.opportunities && Array.isArray(marketData.opportunities) && marketData.opportunities.length > 0 && (
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Market Opportunities</h4>
-              <ul className="space-y-1">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-xl text-gray-700 mb-6">Market Opportunities</h4>
+              <ul className="space-y-4">
                 {marketData.opportunities.map((opportunity, index) => (
-                  <li key={index} className="text-sm text-gray-600 flex items-start">
-                    <span className="text-green-500 mr-2">•</span>
+                  <li key={index} className="text-lg text-gray-600 flex items-start">
+                    <span className="text-emerald-500 mr-4 text-xl">•</span>
                     <span>{extractText(opportunity)}</span>
                   </li>
                 ))}
@@ -120,32 +122,34 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     
     if (!pricingData) {
       return (
-        <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-lg">
-          <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
-            💰 Pricing Analytics
+        <div className="bg-gradient-to-br from-emerald-50 to-green-100 p-12 rounded-2xl border border-green-200">
+          <h3 className="text-2xl sm:text-3xl font-bold text-emerald-800 mb-8 flex items-center">
+            <span className="text-3xl mr-4">💰</span>
+            Pricing Analytics
           </h3>
-          <p className="text-gray-500">No pricing analytics data available</p>
+          <p className="text-xl text-gray-500">No pricing analytics data available</p>
         </div>
       );
     }
 
     return (
-      <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
-          💰 Pricing Analytics
+      <div className="bg-gradient-to-br from-emerald-50 to-green-100 p-12 rounded-2xl border border-green-200">
+        <h3 className="text-2xl sm:text-3xl font-bold text-emerald-800 mb-8 flex items-center">
+          <span className="text-3xl mr-4">💰</span>
+          Pricing Analytics
         </h3>
-        <div className="space-y-4">
+        <div className="space-y-8">
           {pricingData.optimal_price_range && (
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Optimal Price Range</h4>
-              <div className="flex items-center space-x-4">
-                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-xl text-gray-700 mb-6">Optimal Price Range</h4>
+              <div className="flex flex-wrap items-center gap-6">
+                <span className="bg-green-100 text-green-800 px-6 py-3 rounded-full text-lg font-semibold">
                   Min: ₹{pricingData.optimal_price_range?.min || 'N/A'}
                 </span>
-                <span className="bg-green-200 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                <span className="bg-green-200 text-green-800 px-6 py-3 rounded-full text-lg font-bold">
                   Recommended: ₹{pricingData.optimal_price_range?.recommended || pricingData.optimal_price_range?.max || 'N/A'}
                 </span>
-                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                <span className="bg-green-100 text-green-800 px-6 py-3 rounded-full text-lg font-semibold">
                   Max: ₹{pricingData.optimal_price_range?.max || 'N/A'}
                 </span>
               </div>
@@ -457,42 +461,42 @@ const SAPAnalyticsDashboard = ({ productData }) => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
-          <h2 className="text-2xl font-bold mb-2">SAP Analytics Cloud Dashboard</h2>
-          <p className="text-blue-100">Enterprise-grade business intelligence and analytics</p>
-          <div className="flex items-center mt-4 space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-sm">SAP Analytics Cloud</span>
+    <div className="max-w-7xl mx-auto p-8">
+      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-green-100">
+        <div className="bg-gradient-to-r from-green-500 via-emerald-600 to-green-600 text-white p-12">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">SAP Analytics Cloud Dashboard</h2>
+          <p className="text-xl sm:text-2xl text-green-100 leading-relaxed">Enterprise-grade business intelligence and analytics for artisan marketplaces</p>
+          <div className="flex flex-wrap items-center mt-8 gap-6">
+            <div className="flex items-center space-x-3 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
+              <div className="w-3 h-3 bg-green-300 rounded-full animate-pulse"></div>
+              <span className="text-lg font-medium">SAP Analytics Cloud</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-              <span className="text-sm">Real-time Intelligence</span>
+            <div className="flex items-center space-x-3 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
+              <div className="w-3 h-3 bg-emerald-300 rounded-full animate-pulse"></div>
+              <span className="text-lg font-medium">Real-time Intelligence</span>
             </div>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-12">
           {!analytics ? (
             <div className="text-center">
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              <div className="mb-12">
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
                   Generate Comprehensive Analytics
                 </h3>
-                <p className="text-gray-600">
-                  Get market intelligence, pricing analytics, customer insights, and demand forecasting
+                <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  Get market intelligence, pricing analytics, customer insights, and demand forecasting powered by SAP Analytics Cloud
                 </p>
               </div>
               <button
                 onClick={generateAnalytics}
                 disabled={loading}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-200"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-12 py-6 rounded-2xl font-bold text-xl sm:text-2xl hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
               >
                 {loading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="flex items-center space-x-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-4 border-white border-t-transparent"></div>
                     <span>Analyzing with SAP Analytics Cloud...</span>
                   </div>
                 ) : (
@@ -503,20 +507,20 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           ) : (
             <>
               {/* Debug Section - Shows data structure */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <h4 className="text-sm font-semibold text-yellow-800 mb-2">Debug: Analytics Data</h4>
-                <div className="text-xs text-yellow-700 space-y-1">
-                  <div>Success: {String(analytics.success)}</div>
-                  <div>Source: {analytics.source}</div>
-                  <div>Has Analytics: {String(!!analytics.analytics)}</div>
+              <div className="bg-green-50 border border-green-200 rounded-2xl p-8 mb-12">
+                <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-800 mb-4">Debug: Analytics Data</h4>
+                <div className="text-lg sm:text-xl lg:text-2xl text-green-700 space-y-2">
+                  <div className="flex justify-between"><span className="font-medium">Success:</span> <span>{String(analytics.success)}</span></div>
+                  <div className="flex justify-between"><span className="font-medium">Source:</span> <span>{analytics.source}</span></div>
+                  <div className="flex justify-between"><span className="font-medium">Has Analytics:</span> <span>{String(!!analytics.analytics)}</span></div>
                   {analytics.analytics && (
                     <>
-                      <div>Market Intelligence: {String(!!analytics.analytics.market_intelligence)}</div>
-                      <div>Pricing Trends: {String(!!analytics.analytics.pricing_trends)}</div>
-                      <div>Customer Segments: {String(!!analytics.analytics.customer_segments)}</div>
-                      <div>Demand Forecast: {String(!!analytics.analytics.demand_forecast)}</div>
+                      <div className="flex justify-between"><span className="font-medium">Market Intelligence:</span> <span>{String(!!analytics.analytics.market_intelligence)}</span></div>
+                      <div className="flex justify-between"><span className="font-medium">Pricing Trends:</span> <span>{String(!!analytics.analytics.pricing_trends)}</span></div>
+                      <div className="flex justify-between"><span className="font-medium">Customer Segments:</span> <span>{String(!!analytics.analytics.customer_segments)}</span></div>
+                      <div className="flex justify-between"><span className="font-medium">Demand Forecast:</span> <span>{String(!!analytics.analytics.demand_forecast)}</span></div>
                       {analytics.analytics.market_intelligence && (
-                        <div>MI Market Size: {analytics.analytics.market_intelligence.market_size}</div>
+                        <div className="flex justify-between"><span className="font-medium">MI Market Size:</span> <span>{analytics.analytics.market_intelligence.market_size}</span></div>
                       )}
                     </>
                   )}
@@ -524,8 +528,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               </div>
 
               {/* Tab Navigation */}
-              <div className="border-b border-gray-200 mb-6">
-                <nav className="flex space-x-8">
+              <div className="border-b-2 border-green-200 mb-12">
+                <nav className="flex flex-wrap gap-2">
                   {[
                     { id: 'overview', label: 'Overview', icon: '📊' },
                     { id: 'market', label: 'Market Intel', icon: '🔍' },
@@ -537,13 +541,13 @@ const SAPAnalyticsDashboard = ({ productData }) => {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      className={`py-4 px-6 border-b-4 font-bold text-lg transition-all duration-300 rounded-t-xl ${
                         activeTab === tab.id
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'border-green-500 text-green-600 bg-green-50'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-green-300 hover:bg-green-50'
                       }`}
                     >
-                      <span className="mr-2">{tab.icon}</span>
+                      <span className="mr-3 text-xl">{tab.icon}</span>
                       {tab.label}
                     </button>
                   ))}
@@ -551,33 +555,39 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               </div>
 
               {/* Tab Content */}
-              <div className="space-y-6">
+              <div className="space-y-12">
                 {activeTab === 'overview' && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-gradient-to-br from-indigo-50 to-blue-100 p-6 rounded-lg">
-                      <h3 className="text-lg font-bold text-indigo-800 mb-4">📈 Business Overview</h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="font-medium">Overall Outlook:</span>
-                          <span className="text-indigo-600">{analytics.summary?.overall_outlook}</span>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-12 rounded-2xl border border-green-200">
+                      <h3 className="text-2xl sm:text-3xl font-bold text-green-800 mb-8 flex items-center">
+                        <span className="text-3xl mr-4">📈</span>
+                        Business Overview
+                      </h3>
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-center bg-white p-6 rounded-xl">
+                          <span className="font-bold text-lg text-gray-700">Overall Outlook:</span>
+                          <span className="text-green-600 font-semibold text-lg">{analytics.summary?.overall_outlook}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Market Attractiveness:</span>
-                          <span className="text-indigo-600">{analytics.summary?.performance_indicators?.market_attractiveness}</span>
+                        <div className="flex justify-between items-center bg-white p-6 rounded-xl">
+                          <span className="font-bold text-lg text-gray-700">Market Attractiveness:</span>
+                          <span className="text-green-600 font-semibold text-lg">{analytics.summary?.performance_indicators?.market_attractiveness}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Growth Potential:</span>
-                          <span className="text-indigo-600">{analytics.summary?.performance_indicators?.growth_potential}</span>
+                        <div className="flex justify-between items-center bg-white p-6 rounded-xl">
+                          <span className="font-bold text-lg text-gray-700">Growth Potential:</span>
+                          <span className="text-green-600 font-semibold text-lg">{analytics.summary?.performance_indicators?.growth_potential}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-emerald-50 to-green-100 p-6 rounded-lg">
-                      <h3 className="text-lg font-bold text-emerald-800 mb-4">🎯 Key Opportunities</h3>
-                      <ul className="space-y-2">
+                    <div className="bg-gradient-to-br from-emerald-50 to-green-100 p-12 rounded-2xl border border-green-200">
+                      <h3 className="text-2xl sm:text-3xl font-bold text-emerald-800 mb-8 flex items-center">
+                        <span className="text-3xl mr-4">🎯</span>
+                        Key Opportunities
+                      </h3>
+                      <ul className="space-y-4">
                         {analytics.summary?.key_opportunities?.map((opportunity, index) => (
-                          <li key={index} className="flex items-start">
-                            <span className="text-emerald-500 mr-2">✓</span>
-                            <span className="text-emerald-700 text-sm">{opportunity}</span>
+                          <li key={index} className="flex items-start bg-white p-6 rounded-xl">
+                            <span className="text-emerald-500 mr-4 text-xl">✓</span>
+                            <span className="text-emerald-700 text-lg font-medium">{opportunity}</span>
                           </li>
                         ))}
                       </ul>
@@ -591,21 +601,21 @@ const SAPAnalyticsDashboard = ({ productData }) => {
                 {activeTab === 'recommendations' && renderRecommendations()}
               </div>
 
-              <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm text-gray-600">SAP Analytics Cloud Integration Active</span>
+              <div className="mt-12 p-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                  <div className="flex flex-wrap items-center gap-6">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-lg font-semibold text-gray-700">SAP Analytics Cloud Integration Active</span>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-base text-gray-600">
                       Generated: {new Date(analytics.timestamp).toLocaleString()}
                     </span>
                   </div>
                   <button
                     onClick={generateAnalytics}
                     disabled={loading}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                   >
                     Refresh Analytics
                   </button>

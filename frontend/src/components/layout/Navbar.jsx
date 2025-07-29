@@ -36,18 +36,18 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className='h-[10vh] w-full bg-black/70 backdrop-blur-lg border-b border-white/40  px-40 flex items-center justify-between fixed z-10 font-mhlk text-white'>
+      <nav className='h-[10vh] w-full bg-black/70 backdrop-blur-lg border-b border-white/40 px-4 sm:px-8 md:px-16 lg:px-40 flex items-center justify-between fixed z-10 font-mhlk text-white'>
         <div>
           <NavLink to="/">
-            <img src={`${import.meta.env.BASE_URL}photos/primary-logo.svg`} className='h-20' alt="" />
+            <img src={`${import.meta.env.BASE_URL}photos/primary-logo.svg`} className='h-12 sm:h-16 md:h-18 lg:h-20' alt="Heartisans Logo" />
           </NavLink>
         </div>
         <div className='flex  gap-[4vw] items-center'>
           <div className='hidden lg:block'>
             <ul className={`menu menu-horizontal px-1 text-2xl gap-[2vw] ${user ? "flex" : "hidden"}`}>
-              <li><NavLink to="/shop">Shop</NavLink></li>
-              <li><NavLink to="/auction">Auction</NavLink></li>
-              <li><NavLink to="/resale">Resale</NavLink></li>
+              <li><NavLink to="/shop">{t('nav.shop')}</NavLink></li>
+              <li><NavLink to="/auction">{t('nav.auction')}</NavLink></li>
+              <li><NavLink to="/resale">{t('nav.resale')}</NavLink></li>
               <li><NavLink to="/sap-analytics" className="text-blue-300 hover:text-white-100">SAP Analytics</NavLink></li>
               {dbUser?.isAdmin && (
                 <li><NavLink to="/admin">{t('nav.admin')}</NavLink></li>

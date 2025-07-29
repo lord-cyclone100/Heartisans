@@ -3,7 +3,7 @@ import axios from 'axios';
 import SAPAnalyticsDashboard from '../components/elements/SAPAnalyticsDashboard';
 import { useTranslation } from 'react-i18next';
 
-const SAPAnalyticsPage = () => {
+export const SAPAnalyticsPage = () => {
   const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -39,9 +39,9 @@ const SAPAnalyticsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-        <div className="ml-4 text-xl font-semibold text-gray-600">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 font-mhlk">
+        <div className="animate-spin rounded-full h-24 w-24 border-4 border-green-200 border-t-green-500"></div>
+        <div className="ml-6 text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-700">
           {t('common.loading') || 'Loading...'}
         </div>
       </div>
@@ -49,101 +49,96 @@ const SAPAnalyticsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="w-full h-[10vh]"></div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 font-mhlk">
+      <div className="w-full h-20"></div>
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              {t('sap.title') || 'SAP Analytics Cloud'}
-            </h1>
-            <p className="text-xl md:text-2xl text-blue-100 mb-6">
-              {t('sap.subtitle') || 'Enterprise-Grade Business Intelligence & Analytics'}
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  {t('sap.marketIntelligence') || 'Market Intelligence'}
-                </span>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></div>
-                  {t('sap.pricingAnalytics') || 'Pricing Analytics'}
-                </span>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></div>
-                  {t('sap.customerInsights') || 'Customer Insights'}
-                </span>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full mr-2 animate-pulse"></div>
-                  {t('sap.demandForecasting') || 'Demand Forecasting'}
-                </span>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12  font-mhlk">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            {t('sap.title') || 'SAP Analytics Cloud'}
+          </h1>
+          <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
+            {t('sap.subtitle') || 'Enterprise-Grade Business Intelligence & Analytics for Artisan Marketplaces'}
+          </p>
+          <div className="flex flex-wrap justify-center gap-6">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+              <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
+                <div className="w-4 h-4 bg-green-500 rounded-full mr-4 animate-pulse"></div>
+                {t('sap.marketIntelligence') || 'Market Intelligence'}
+              </span>
+            </div>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+              <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
+                <div className="w-4 h-4 bg-emerald-500 rounded-full mr-4 animate-pulse"></div>
+                {t('sap.pricingAnalytics') || 'Pricing Analytics'}
+              </span>
+            </div>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+              <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
+                <div className="w-4 h-4 bg-green-600 rounded-full mr-4 animate-pulse"></div>
+                {t('sap.customerInsights') || 'Customer Insights'}
+              </span>
+            </div>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+              <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
+                <div className="w-4 h-4 bg-emerald-600 rounded-full mr-4 animate-pulse"></div>
+                {t('sap.demandForecasting') || 'Demand Forecasting'}
+              </span>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
         {/* Product Selection */}
         {products.length > 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">
+          <div className="bg-white rounded-2xl shadow-xl p-12 mb-12 border border-green-100">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-12 text-gray-900">
               📊 {t('sap.selectProduct') || 'Select Product for Analytics'}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
               {products.slice(0, 8).map((product) => (
                 <div
                   key={product._id}
                   onClick={() => setSelectedProduct(product)}
-                  className={`cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 transform hover:scale-105 ${
+                  className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${
                     selectedProduct?._id === product._id
-                      ? 'border-blue-500 bg-blue-50 shadow-lg'
-                      : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50 hover:shadow-md'
+                      ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-2xl'
+                      : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
                   }`}
                 >
                   <img
                     src={product.productImageUrl}
                     alt={product.productName}
-                    className="w-full h-24 object-cover rounded-lg mb-2"
+                    className="w-full h-40 object-cover rounded-2xl mb-6"
                   />
-                  <h3 className="font-semibold text-sm text-gray-800 truncate">
+                  <h3 className="font-bold text-lg sm:text-xl lg:text-2xl text-gray-900 mb-3 leading-tight">
                     {product.productName}
                   </h3>
-                  <p className="text-gray-600 text-xs">{product.productCategory}</p>
-                  <p className="text-blue-600 font-bold text-sm">₹{product.productPrice}</p>
+                  <p className="text-gray-600 text-base sm:text-lg lg:text-xl mb-3">{product.productCategory}</p>
+                  <p className="text-green-600 font-bold text-lg sm:text-xl lg:text-2xl">₹{product.productPrice.toLocaleString()}</p>
                 </div>
               ))}
             </div>
             
             {/* Demo Product Option */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-3 text-gray-700">
+            <div className="border-t border-gray-200 pt-8">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 text-gray-900">
                 🚀 {t('sap.tryDemo') || 'Or Try Demo Analytics'}
               </h3>
               <div
                 onClick={() => setSelectedProduct(demoProduct)}
-                className={`cursor-pointer p-4 rounded-lg border-2 transition-all duration-200 inline-block ${
+                className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 inline-block ${
                   selectedProduct === demoProduct
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-300 hover:border-purple-300 hover:bg-purple-50'
+                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-2xl'
+                    : 'border-gray-300 hover:border-green-400 hover:bg-green-50 hover:shadow-xl'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">🎨</span>
+                <div className="flex items-center space-x-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+                    <span className="text-white font-bold text-3xl">🎨</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">{demoProduct.name}</h4>
-                    <p className="text-gray-600 text-sm">{demoProduct.category} • ₹{demoProduct.basePrice}</p>
+                    <h4 className="font-bold text-xl sm:text-2xl lg:text-3xl text-gray-900">{demoProduct.name}</h4>
+                    <p className="text-gray-600 text-lg sm:text-xl lg:text-2xl">{demoProduct.category} • ₹{demoProduct.basePrice.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -153,16 +148,16 @@ const SAPAnalyticsPage = () => {
 
         {/* No Products Fallback */}
         {products.length === 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-8 text-center">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          <div className="bg-white rounded-2xl shadow-xl p-16 mb-12 text-center border border-green-100">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-8 text-gray-900">
               🚀 {t('sap.experienceTitle') || 'Experience SAP Analytics Cloud'}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
               {t('sap.noProductsMessage') || 'No products found in the database. Try our demo analytics to see the full capabilities.'}
             </p>
             <button
               onClick={() => setSelectedProduct(demoProduct)}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-200"
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-12 py-6 rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
             >
               {t('sap.launchDemo') || 'Launch Demo Analytics'}
             </button>
@@ -171,22 +166,22 @@ const SAPAnalyticsPage = () => {
 
         {/* SAP Analytics Dashboard */}
         {selectedProduct && (
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-6 border-b">
-              <div className="flex items-center justify-between">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-green-100 mb-12">
+            <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-100 p-12 border-b border-green-200">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-800">
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-4">
                     {t('sap.analyticsDashboard') || 'Analytics Dashboard'}: {selectedProduct.productName || selectedProduct.name}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-lg sm:text-xl lg:text-2xl text-gray-700">
                     Category: {selectedProduct.productCategory || selectedProduct.category} • 
-                    Price: ₹{selectedProduct.productPrice || selectedProduct.basePrice}
+                    Price: ₹{(selectedProduct.productPrice || selectedProduct.basePrice).toLocaleString()}
                   </p>
                 </div>
-                <div className="text-right">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>{t('sap.integrationActive') || 'SAP Integration Active'}</span>
+                <div className="text-left lg:text-right">
+                  <div className="flex items-center space-x-4 bg-white/90 rounded-2xl px-6 py-4 border border-green-200 shadow-lg">
+                    <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">{t('sap.integrationActive') || 'SAP Integration Active'}</span>
                   </div>
                 </div>
               </div>
@@ -208,38 +203,38 @@ const SAPAnalyticsPage = () => {
         )}
 
         {/* SAP Integration Info */}
-        <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">
+        <div className="bg-white rounded-2xl shadow-xl p-12 border border-green-100">
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-12 text-center">
             🌟 {t('sap.integrationCapabilities') || 'SAP Integration Capabilities'}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-blue-600 text-xl">🔍</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-white text-3xl">🔍</span>
               </div>
-              <h4 className="font-semibold text-sm">{t('sap.marketIntelligence') || 'Market Intelligence'}</h4>
-              <p className="text-xs text-gray-600">{t('sap.marketAnalysis') || 'Real-time market analysis'}</p>
+              <h4 className="font-bold text-lg sm:text-xl lg:text-2xl mb-4 text-gray-900">{t('sap.marketIntelligence') || 'Market Intelligence'}</h4>
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600">{t('sap.marketAnalysis') || 'Real-time market analysis'}</p>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-green-600 text-xl">💰</span>
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-white text-3xl">💰</span>
               </div>
-              <h4 className="font-semibold text-sm">{t('sap.pricingAnalytics') || 'Pricing Analytics'}</h4>
-              <p className="text-xs text-gray-600">{t('sap.pricingStrategies') || 'Optimal pricing strategies'}</p>
+              <h4 className="font-bold text-lg sm:text-xl lg:text-2xl mb-4 text-gray-900">{t('sap.pricingAnalytics') || 'Pricing Analytics'}</h4>
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600">{t('sap.pricingStrategies') || 'Optimal pricing strategies'}</p>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-purple-600 text-xl">👥</span>
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-white text-3xl">👥</span>
               </div>
-              <h4 className="font-semibold text-sm">{t('sap.customerInsights') || 'Customer Insights'}</h4>
-              <p className="text-xs text-gray-600">{t('sap.behavioralSegmentation') || 'Behavioral segmentation'}</p>
+              <h4 className="font-bold text-lg sm:text-xl lg:text-2xl mb-4 text-gray-900">{t('sap.customerInsights') || 'Customer Insights'}</h4>
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600">{t('sap.behavioralSegmentation') || 'Behavioral segmentation'}</p>
             </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-orange-600 text-xl">🔮</span>
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-600 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-white text-3xl">🔮</span>
               </div>
-              <h4 className="font-semibold text-sm">{t('sap.demandForecasting') || 'Demand Forecasting'}</h4>
-              <p className="text-xs text-gray-600">{t('sap.predictiveAnalytics') || 'Predictive analytics'}</p>
+              <h4 className="font-bold text-lg sm:text-xl lg:text-2xl mb-4 text-gray-900">{t('sap.demandForecasting') || 'Demand Forecasting'}</h4>
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600">{t('sap.predictiveAnalytics') || 'Predictive analytics'}</p>
             </div>
           </div>
         </div>
@@ -248,4 +243,4 @@ const SAPAnalyticsPage = () => {
   );
 };
 
-export default SAPAnalyticsPage;
+

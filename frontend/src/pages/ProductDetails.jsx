@@ -2,9 +2,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard";
 import { useTranslation } from 'react-i18next';
 import { useContentTranslation } from '../hooks/useContentTranslation';
+import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard";
 
 export const ProductDetails = () => {
   const { t } = useTranslation();
@@ -100,62 +100,130 @@ export const ProductDetails = () => {
   // Check if current user is the seller
   const isUserSeller = mongoUserId && sellerId && mongoUserId === sellerId;
 
-  if (!card) return <div className="text-center mt-10">{t('common.loading')}</div>;
+  if (!card) return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center font-mhlk">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-500 mx-auto mb-4"></div>
+        <p className="text-2xl text-green-700 font-semibold">{t('common.loading')}</p>
+      </div>
+    </div>
+  );
 
   return (
     <>
-      <section>
-        <div className="bg-[#eee] font-mhlk py-10 px-20">
-          <div className="w-full h-[10vh]"></div>
-          <div className="flex flex-col items-center mt-10 gap-20 lg:flex-row">
-            <div className="size-[80vw] bg-amber-200 lg:size-[40vw]">
-              <img src={card.productImageUrl} alt={card.productName} className="size-[100%] object-cover rounded-lg" />
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen font-mhlk">
+        <div className="w-full h-20"></div>
+        
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-40">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            
+            {/* Product Image */}
+            <div className="w-full">
+              <div className="relative overflow-hidden rounded-2xl shadow-2xl bg-white p-6">
+                <img 
+                  src={card.productImageUrl} 
+                  alt={card.productName} 
+                  className="w-full h-96 lg:h-[600px] object-cover rounded-xl" 
+                />
+                <div className="absolute top-8 right-8">
+                  <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                    Authentic Craft
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col items-start gap-10">
-              <div>
-                <h1 className="text-[3rem] font-bold mt-4 lg:text-[5rem]">{card.productName}</h1>
-                <p className="text-xl mt-2 lg:text-[3rem] text-wrap">{card.productDescription}</p>
-              </div>
-              <div>
-                <p className="mt-2">{t('product.seller')}: {card.productSellerName}</p>
-                <p className="mt-2">{t('product.sellerId')}: {sellerId || t('common.loading')}</p>
-                <p className="mt-2">{t('product.category')}: 
-                  <span className="ml-2 bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                    {translateCategory(card.productCategory)}
-                  </span>
-                </p>
-                <p className="mt-2">{t('product.state')}: 
-                  <span className="ml-2 bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">
-                    {translateState(card.productState)}
-                  </span>
-                </p>
-                <p className="mt-2">{t('product.material')}: {card.productMaterial}</p>
-                <p className="mt-2">{t('product.weight')}: {card.productWeight}g</p>
-                <p className="mt-2">{t('product.color')}: {card.productColor}</p>
-              </div>
-              <h3 className="mt-2 font-bold text-[2rem]">Rs {card.productPrice}</h3>
-              <p className="mt-2">{card.isCodAvailable ? t('product.codAvailable') : t('product.codNotAvailable')}</p>
-              <div className="flex gap-8">
-                <button 
-                  className={`btn text-2xl p-6 ${isUserSeller ? 'btn-disabled' : 'btn-success'}`}
-                  onClick={handleBuyNow}
-                  disabled={isUserSeller}
-                  title={isUserSeller ? t('product.cannotBuyOwn') : t('product.buyNow')}
-                >
-                  {isUserSeller ? t('dashboard.yourProduct') : t('product.buyNow')}
-                </button>
+            
+            {/* Product Information */}
+            <div className="w-full">
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
+                <div className="space-y-6">
+                  {/* Title and Description */}
+                  <div>
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
+                      {card.productName}
+                    </h1>
+                    <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-600 mt-4 leading-relaxed">
+                      {card.productDescription}
+                    </p>
+                  </div>
+                  
+                  {/* Price */}
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white">
+                    <p className="text-sm font-medium opacity-90">Price</p>
+                    <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+                      ₹{card.productPrice}
+                    </h3>
+                  </div>
+                  
+                  {/* Product Details */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm font-medium text-gray-500 mb-1">{t('product.seller')}</p>
+                      <p className="text-lg font-semibold text-gray-900">{card.productSellerName}</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm font-medium text-gray-500 mb-1">{t('product.material')}</p>
+                      <p className="text-lg font-semibold text-gray-900">{card.productMaterial}</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm font-medium text-gray-500 mb-1">{t('product.weight')}</p>
+                      <p className="text-lg font-semibold text-gray-900">{card.productWeight}g</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-sm font-medium text-gray-500 mb-1">{t('product.color')}</p>
+                      <p className="text-lg font-semibold text-gray-900">{card.productColor}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Category and State Tags */}
+                  <div className="flex flex-wrap gap-3">
+                    <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold">
+                      {translateCategory(card.productCategory)}
+                    </span>
+                    <span className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-semibold">
+                      {translateState(card.productState)}
+                    </span>
+                  </div>
+                  
+                  {/* COD Availability */}
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-3 h-3 rounded-full ${card.isCodAvailable ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <p className="text-lg font-medium text-gray-700">
+                      {card.isCodAvailable ? t('product.codAvailable') : t('product.codNotAvailable')}
+                    </p>
+                  </div>
+                  
+                  {/* Action Button */}
+                  <div className="pt-4">
+                    <button 
+                      className={`w-full py-4 px-8 rounded-xl text-xl font-bold transition-all duration-300 transform hover:scale-105 ${
+                        isUserSeller 
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                          : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl'
+                      }`}
+                      onClick={handleBuyNow}
+                      disabled={isUserSeller}
+                      title={isUserSeller ? t('product.cannotBuyOwn') : t('product.buyNow')}
+                    >
+                      {isUserSeller ? t('dashboard.yourProduct') : t('product.buyNow')}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      
       {/* SAP Analytics Cloud Dashboard */}
-      <section className="bg-gray-50 py-10">
+      <section className="bg-gray-50 py-10 font-mhlk">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Business Intelligence & Analytics</h2>
-            <p className="text-gray-600">Powered by SAP Analytics Cloud - Enterprise-grade insights for this product</p>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-800 mb-4">Business Intelligence & Analytics</h2>
+            <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-600">Powered by SAP Analytics Cloud - Enterprise-grade insights for this product</p>
           </div>
           <SAPAnalyticsDashboard 
             productData={{
