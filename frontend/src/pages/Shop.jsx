@@ -6,7 +6,7 @@ import { useContentTranslation } from '../hooks/useContentTranslation'
 export const Shop = () => {
   const { t } = useTranslation()
   const { translateCategory, translateState } = useContentTranslation()
-  
+
   return(
     <>
       <section className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 font-mhlk">

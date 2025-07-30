@@ -1,18 +1,25 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { FaWallet, FaUser, FaEnvelope, FaRupeeSign } from "react-icons/fa"; // Import icons
 
 export const WalletPage = () => {
   const { id } = useParams();
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // State to handle errors
 
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/wallet/${id}`);
+        const res = await fetch(`http://localhost:5000/api/user/wallet/${id}`);
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Failed to fetch wallet data.');
+        }
         const data = await res.json();
         setWallet(data);
-      } catch {
+      } catch (err) {
+        setError(err.message);
         setWallet(null);
       } finally {
         setLoading(false);
@@ -167,4 +174,4 @@ export const WalletPage = () => {
       </section>
     </>
   );
-}
+};

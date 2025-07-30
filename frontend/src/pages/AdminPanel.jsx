@@ -30,7 +30,7 @@ export const AdminPanel = () => {
     setLoading(true)
     try {
       const [usersRes, shopCardsRes, auctionsRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/users"), // We'll need to create this endpoint
+        axios.get("http://localhost:5000/api/user"), // We'll need to create this endpoint
         axios.get("http://localhost:5000/api/shopcards"),
         axios.get("http://localhost:5000/api/auctions")
       ])

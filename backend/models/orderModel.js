@@ -1,5 +1,6 @@
-import {model, Schema} from 'mongoose'
+import { model, Schema } from 'mongoose';
 
+// Define the order schema
 const orderSchema = new Schema({
   orderId: {
     type: String,
@@ -12,9 +13,8 @@ const orderSchema = new Schema({
     required: true
   },
   sellerId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Heartisans_user',
-    required: false // Make optional for subscription payments
+    type: Schema.Types.Mixed, // Change from ObjectId to Mixed
+    required: false
   },
   productDetails: {
     productId: {
@@ -49,7 +49,6 @@ const orderSchema = new Schema({
     type: Boolean,
     default: false
   },
-
   status: {
     type: String,
     enum: ['pending', 'paid', 'failed', 'cancelled', 'expired'],
@@ -69,6 +68,12 @@ const orderSchema = new Schema({
     type: Date,
     default: Date.now
   }
-})
+});
 
+// Create indexes
+orderSchema.index({ orderId: 1 }, { unique: true });
+orderSchema.index({ status: 1 });
+orderSchema.index({ updatedAt: 1 });
+
+// Export the order model
 export const orderModel = model('Heartisans_order', orderSchema);

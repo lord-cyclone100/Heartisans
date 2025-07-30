@@ -9,6 +9,8 @@ import { Resale } from './pages/Resale'
 import { AppLayout } from './components/layout/AppLayout'
 import { ShopDetails } from './pages/ShopDetails'
 import { UserDashBoard } from './pages/UserDashBoard'
+import SellerDashboard from './pages/Dashboard/SellerDashboard' // Missing import
+import { BuyerDashboard } from './pages/Dashboard/BuyerDashboard' // Missing import
 import { AdminPanel } from './pages/AdminPanel'
 import { ProductDetails } from './pages/ProductDetails'
 import { Modal } from './components/elements/Modal'
@@ -22,12 +24,13 @@ import { SubscriptionSuccess } from './pages/SubscriptionSuccess'
 import { PaymentFailed } from './pages/PaymentFailed'
 import { PaymentPage } from './pages/PaymentPage'
 import { WalletPage } from './pages/WalletPage'
+import OrderDetailsPage from './pages/OrderDetailsPage' // Missing import
+import ProductDetailPage from './pages/ProductDetailPage' // Missing import
 import { SAPAnalyticsPage } from './pages/SAPAnalyticsPage'
 import BackToTop from './components/elements/BackToTop'
 
 
 export const App = () => {
-
   useEffect(() => {
     const lenis = new Lenis({
       duration: 2.5,
@@ -36,7 +39,7 @@ export const App = () => {
       smoothTouch: false,
       wheelMultiplier: 0.7,
     });
-    
+
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -46,81 +49,81 @@ export const App = () => {
 
   const router = createBrowserRouter([
     {
-      path:"/",
-      element:<AppLayout/>,
+      path: "/",
+      element: <AppLayout />,
       // errorElement:<ErrorPage/>,
-      children:[
+      children: [
         {
-          path:"/",
-          element:<Home/>
+          path: "/",
+          element: <Home />,
         },
         {
-          path:"/shop",
-          element:<Shop/>
+          path: "/shop",
+          element: <Shop />,
         },
         {
-          path:"/shop/:name",
-          element:<ShopDetails/>
+          path: "/shop/:name",
+          element: <ShopDetails />,
         },
         {
-          path:"/shop/:name/:id",
-          element:<ProductDetails/>
+          path: "/shop/:name/:id",
+          element: <ProductDetails />,
         },
         {
-          path:"/auction",
-          element:<Auction/>,
+          path: "/auction",
+          element: <Auction />,
         },
         {
-          path:"/auction/:id",
-          element:<AuctionDetails/>,
+          path: "/auction/:id",
+          element: <AuctionDetails />,
         },
         {
-          path:"/resale",
-          element:<Resale/>,
+          path: "/resale",
+          element: <Resale />,
         },
         {
-          path:"/sellform",
-          element:<SellForm/>,
+          path: "/sellform",
+          element: <SellForm />,
         },
         {
-          path:"/cart",
-          element:<CartPage/>,
+          path: "/cart",
+          element: <CartPage />,
         },
         {
-          path:"/auctionform",
-          element:<AuctionForm/>,
+          path: "/auctionform",
+          element: <AuctionForm />,
         },
         {
-          path:"/checkout",
-          element:<CheckoutForm/>,
+          path: "/checkout",
+          element: <CheckoutForm />,
         },
         {
-          path:"/modal",
-          element:<Modal/>,
+          path: "/modal",
+          element: <Modal />,
         },
         {
-          path:"/payment",
-          element:<PaymentPage/>,
+          path: "/payment",
+          element: <PaymentPage />,
         },
         {
-          path:"/payment-success",
-          element:<PaymentSuccess/>,
+          path: "/payment-success",
+          element: <PaymentSuccess />,
         },
         {
-          path:"/subscription-success",
-          element:<SubscriptionSuccess/>,
+          path: "/subscription-success",
+          element: <SubscriptionSuccess />,
         },
         {
-          path:"/payment-failure",
-          element:<PaymentFailed/>,
+          path: "/payment-failure",
+          element: <PaymentFailed />,
         },
         {
-          path:"/wallet/:id",
-          element:<WalletPage/>,
+          path: "/wallet/:id",
+          element: <WalletPage />,
         },
         {
-          path:"/admin",
-          element:<AdminPanel/>,
+          path: "/admin",
+          element: <AdminPanel />,
         },
         {
           path:"/sap-analytics",
@@ -130,13 +133,35 @@ export const App = () => {
           path:"/dashboard/:id",
           element:<UserDashBoard/>,
         },
-      ]
-    },    
+        {
+          path: "/dashboard/seller/:id", // Missing route
+          element: <SellerDashboard />,
+        },
+        {
+          path: "/dashboard/buyer/:id", // Missing route
+          element: <BuyerDashboard />,
+        },
+        {
+          path: "/orders/:id", // Missing route
+          element: <OrderDetailsPage />,
+        },
+        {
+          path: "/products/:id", // Missing route
+          element: <ProductDetailPage />,
+        },
+        // Added new route for the "Buy Now" button's navigation
+        {
+          path: "/product/:id/buy", 
+          element: <ProductDetailPage />, 
+        },
+      ],
+    },
   ]);
+
   return (
     <>
       <RouterProvider router={router}/>
       {/* <BackToTop /> */}
     </>
-  )
-}
+  );
+};

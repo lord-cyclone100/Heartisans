@@ -8,7 +8,7 @@ export const AppLayout = () => {
 	const navigation = useNavigation();
 	// console.log(navigation);
 	// if(navigation.state === 'loading'){
-	// 		return <Loader/>
+	//      return <Loader/>
 	// }
 	return(
 		<>

@@ -1,102 +1,54 @@
-import express from 'express'
-import cors from 'cors'
-import { connectDB } from './database/db.js';
-import { userModel } from './models/userModel.js';
-import { shopCardModel } from './models/shopCardModel.js';
-import { auctionModel } from './models/auctionModel.js';
-import { cartModel } from './models/cartModel.js';
-import { orderModel } from './models/orderModel.js';
-import { v2 as cloudinary } from 'cloudinary';
-import http from 'http';
-import { Server } from 'socket.io';
-import crypto from 'crypto'
-import { v4 as uuidv4 } from 'uuid'
-import axios from 'axios'
-import { Cashfree, CFEnvironment } from 'cashfree-pg';
 import Groq from 'groq-sdk';
-import sapAiPricing from './services/sapAiPricing.js';
-import sapBusinessAI from './services/sapBusinessAI.js';
-import SAPAnalyticsCloudService from './services/sapAnalyticsCloud.js';
+import sapBusinessAI from '../services/sapBusinessAI.js';
+import SAPAnalyticsCloudService from '../services/sapAnalyticsCloud.js';
 
-
-// Initialize Groq
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
 
+const sacService = new SAPAnalyticsCloudService();
 
-app.get('/api/cloudinary-signature', (req, res) => {
-  const timestamp = Math.round((new Date).getTime()/1000);
-  const signature = cloudinary.utils.api_sign_request(
-    { timestamp },
-    process.env.API_SECRET
-  );
-  res.json({
-    timestamp,
-    signature,
-    apiKey: process.env.API_KEY || 'YOUR_API_KEY',
-    cloudName: process.env.CLOUD_NAME || 'YOUR_CLOUD_NAME'
-  });
-});
-
-
-
-
-
-// Quick AI-powered product description generation (Groq)
-app.post('/api/generate-description', async (req, res) => {
+// AI Product Description Generation
+export const generateDescription = async (req, res) => {
   try {
-    const { 
-      productName, 
-      productCategory, 
-      productState, 
-      productMaterial, 
-      productWeight, 
-      productColor, 
-      additionalInfo 
-    } = req.body;
+    const { productName, productCategory, productState, productMaterial, productWeight, productColor, additionalInfo } = req.body;
 
     if (!productName) {
       return res.status(400).json({ error: "Product name is required" });
     }
 
-    // Create a detailed prompt for the AI
     const prompt = `Generate an engaging and detailed product description for a handcrafted artisan product with the following details:
+      Product Name: ${productName}
+      Category: ${productCategory || 'Handcraft'}
+      State/Region: ${productState || 'India'}
+      Material: ${productMaterial || 'Traditional materials'}
+      Weight: ${productWeight || 'Not specified'}
+      Color: ${productColor || 'Natural colors'}
+      Additional Info: ${additionalInfo || 'No additional information'}
 
-Product Name: ${productName}
-Category: ${productCategory || 'Handcraft'}
-State/Region: ${productState || 'India'}
-Material: ${productMaterial || 'Traditional materials'}
-Weight: ${productWeight || 'Not specified'}
-Color: ${productColor || 'Natural colors'}
-Additional Info: ${additionalInfo || 'No additional information'}
+      Requirements:
+      1. Write a compelling description that highlights the craftsmanship and cultural heritage
+      2. Emphasize the handmade nature and uniqueness of the product
+      3. Include information about the artisan tradition from the region
+      4. Mention the materials and their significance
+      5. Keep it between 100-200 words
+      6. Use warm, inviting language that connects with buyers
+      7. Include care instructions if relevant
+      8. Highlight what makes this product special and authentic`;
 
-Requirements:
-1. Write a compelling description that highlights the craftsmanship and cultural heritage
-2. Emphasize the handmade nature and uniqueness of the product
-3. Include information about the artisan tradition from the region
-4. Mention the materials and their significance
-5. Keep it between 100-200 words
-6. Use warm, inviting language that connects with buyers
-7. Include care instructions if relevant
-8. Highlight what makes this product special and authentic
-
-Write in a professional yet warm tone that would appeal to customers looking for authentic, handcrafted products.`;
-
-    // Call Groq API
     const completion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter specializing in artisan and handcrafted products. You create compelling product descriptions that highlight the cultural heritage, craftsmanship, and unique qualities of handmade items."
+          content: "You are an expert copywriter specializing in artisan and handcrafted products."
         },
         {
           role: "user",
           content: prompt
         }
       ],
-      model: "llama-3.1-8b-instant", // Fast and efficient model
-      temperature: 0.7, // Balance between creativity and consistency
+      model: "llama-3.1-8b-instant",
+      temperature: 0.7,
       max_tokens: 300
     });
 
@@ -114,10 +66,7 @@ Write in a professional yet warm tone that would appeal to customers looking for
     });
 
   } catch (error) {
-    console.error('AI Description Generation Error:', error);
-    
-    // Provide fallback description
-    const fallbackDescription = `This beautiful handcrafted ${req.body.productName || 'product'} showcases the rich artisan tradition of ${req.body.productState || 'India'}. Made with care using ${req.body.productMaterial || 'traditional materials'}, each piece is unique and reflects the skilled craftsmanship passed down through generations. Perfect for those who appreciate authentic, handmade artistry.`;
+    const fallbackDescription = `This beautiful handcrafted ${req.body.productName || 'product'} showcases the rich artisan tradition of ${req.body.productState || 'India'}.`;
     
     res.status(500).json({ 
       error: 'Failed to generate AI description', 
@@ -125,14 +74,13 @@ Write in a professional yet warm tone that would appeal to customers looking for
       details: error.message 
     });
   }
-});
+};
 
-// SAP Business AI Price Prediction endpoint (REAL SAP BUSINESS SERVICES)
-app.post('/api/predict-price', async (req, res) => {
+// SAP Business AI Price Prediction
+export const predictPrice = async (req, res) => {
   try {
     const productData = req.body;
     
-    // Validate required fields
     if (!productData.productName && !productData.name) {
       return res.status(400).json({
         error: 'Product name is required for price prediction',
@@ -140,9 +88,6 @@ app.post('/api/predict-price', async (req, res) => {
       });
     }
 
-    console.log('🏢 SAP Business AI: Generating price prediction for:', productData.productName || productData.name);
-
-    // Use SAP Business AI analytics for pricing
     const pricePrediction = await sapBusinessAI.analyzePricingIntelligence({
       name: productData.productName || productData.name,
       category: productData.productCategory || productData.category,
@@ -164,7 +109,6 @@ app.post('/api/predict-price', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAP Business AI price prediction error:', error);
     res.status(500).json({
       error: 'Failed to generate SAP Business AI price prediction',
       message: error.message,
@@ -172,14 +116,13 @@ app.post('/api/predict-price', async (req, res) => {
       sapError: 'BUSINESS_AI_SERVICE_ERROR'
     });
   }
-});
+};
 
-// SAP Business AI Content Generation endpoint (REAL SAP BUSINESS SERVICES)
-app.post('/api/generate-sap-description', async (req, res) => {
+// SAP Business AI Content Generation
+export const generateSapDescription = async (req, res) => {
   try {
     const productData = req.body;
     
-    // Validate required fields
     if (!productData.productName && !productData.name) {
       return res.status(400).json({
         error: 'Product name is required for SAP Business AI content generation',
@@ -187,9 +130,6 @@ app.post('/api/generate-sap-description', async (req, res) => {
       });
     }
 
-    console.log('🎨 SAP Business AI: Generating content for:', productData.productName || productData.name);
-
-    // Get comprehensive content from SAP Business AI
     const contentData = await sapBusinessAI.generateBusinessContent({
       name: productData.productName || productData.name,
       category: productData.productCategory || productData.category,
@@ -212,7 +152,6 @@ app.post('/api/generate-sap-description', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAP Business AI content generation error:', error);
     res.status(500).json({
       error: 'Failed to generate SAP Business AI content',
       message: error.message,
@@ -220,13 +159,11 @@ app.post('/api/generate-sap-description', async (req, res) => {
       sapError: 'BUSINESS_AI_CONTENT_ERROR'
     });
   }
-});
+};
 
-// SAP Business AI Services Test endpoint
-app.get('/api/test-sap-business-ai', async (req, res) => {
+// SAP Business AI Services Test
+export const testSapBusinessAI = async (req, res) => {
   try {
-    console.log('🧪 Testing SAP Business AI Services...');
-    
     const serviceStatus = await sapBusinessAI.testAllServices();
     
     res.json({
@@ -244,21 +181,17 @@ app.get('/api/test-sap-business-ai', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAP Business AI test error:', error);
     res.status(500).json({
       error: 'SAP Business AI test failed',
       message: error.message,
       fallback: 'Business intelligence simulation available'
     });
   }
-});
+};
 
-// SAP Analytics Cloud - Market Intelligence endpoint
-app.post('/api/sac/market-intelligence', async (req, res) => {
+// SAP Analytics Cloud - Market Intelligence
+export const getMarketIntelligence = async (req, res) => {
   try {
-    console.log('📊 SAC Market Intelligence request:', req.body);
-    
-    const sacService = new SAPAnalyticsCloudService();
     const marketIntel = await sacService.getMarketIntelligence(req.body);
     
     res.json({
@@ -269,21 +202,17 @@ app.post('/api/sac/market-intelligence', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAC Market Intelligence error:', error);
     res.status(500).json({
       error: 'Market intelligence analysis failed',
       message: error.message,
       fallback: 'Intelligent market analysis available'
     });
   }
-});
+};
 
-// SAP Analytics Cloud - Pricing Analytics endpoint
-app.post('/api/sac/pricing-analytics', async (req, res) => {
+// SAP Analytics Cloud - Pricing Analytics
+export const analyzePricing = async (req, res) => {
   try {
-    console.log('💰 SAC Pricing Analytics request:', req.body);
-    
-    const sacService = new SAPAnalyticsCloudService();
     const pricingAnalytics = await sacService.analyzePricingTrends(req.body);
     
     res.json({
@@ -294,21 +223,17 @@ app.post('/api/sac/pricing-analytics', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAC Pricing Analytics error:', error);
     res.status(500).json({
       error: 'Pricing analytics failed',
       message: error.message,
       fallback: 'Intelligent pricing analysis available'
     });
   }
-});
+};
 
-// SAP Analytics Cloud - Customer Segmentation endpoint
-app.post('/api/sac/customer-segments', async (req, res) => {
+// SAP Analytics Cloud - Customer Segmentation
+export const analyzeCustomerSegments = async (req, res) => {
   try {
-    console.log('👥 SAC Customer Segmentation request:', req.body);
-    
-    const sacService = new SAPAnalyticsCloudService();
     const customerSegments = await sacService.analyzeCustomerSegments(req.body);
     
     res.json({
@@ -319,21 +244,17 @@ app.post('/api/sac/customer-segments', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAC Customer Segmentation error:', error);
     res.status(500).json({
       error: 'Customer segmentation failed',
       message: error.message,
       fallback: 'Intelligent segmentation analysis available'
     });
   }
-});
+};
 
-// SAP Analytics Cloud - Demand Forecasting endpoint
-app.post('/api/sac/demand-forecast', async (req, res) => {
+// SAP Analytics Cloud - Demand Forecasting
+export const forecastDemand = async (req, res) => {
   try {
-    console.log('🔮 SAC Demand Forecasting request:', req.body);
-    
-    const sacService = new SAPAnalyticsCloudService();
     const demandForecast = await sacService.forecastDemand(req.body);
     
     res.json({
@@ -344,21 +265,17 @@ app.post('/api/sac/demand-forecast', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAC Demand Forecasting error:', error);
     res.status(500).json({
       error: 'Demand forecasting failed',
       message: error.message,
       fallback: 'Intelligent forecasting available'
     });
   }
-});
+};
 
 // SAP Analytics Cloud - Comprehensive Analytics Dashboard
-app.post('/api/sac/analytics-dashboard', async (req, res) => {
+export const getAnalyticsDashboard = async (req, res) => {
   try {
-    console.log('📈 SAC Analytics Dashboard request:', req.body);
-    
-    const sacService = new SAPAnalyticsCloudService();
     const dashboard = await sacService.generateAnalyticsDashboard(req.body);
     
     res.json({
@@ -366,12 +283,10 @@ app.post('/api/sac/analytics-dashboard', async (req, res) => {
       source: 'SAP Analytics Cloud - Complete Suite',
       dashboard: {
         ...dashboard,
-        // Ensure analytics data is properly structured for frontend
         analytics: {
           ...dashboard.analytics,
           market_intelligence: {
             ...dashboard.analytics.market_intelligence,
-            // Ensure arrays and objects are properly formatted
             key_insights: Array.isArray(dashboard.analytics.market_intelligence?.key_insights) 
               ? dashboard.analytics.market_intelligence.key_insights 
               : [],
@@ -394,21 +309,17 @@ app.post('/api/sac/analytics-dashboard', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAC Analytics Dashboard error:', error);
     res.status(500).json({
       error: 'Analytics dashboard generation failed',
       message: error.message,
       fallback: 'Comprehensive business intelligence available'
     });
   }
-});
+};
 
 // SAP Analytics Cloud - Test all services
-app.get('/api/test-sac', async (req, res) => {
+export const testSAC = async (req, res) => {
   try {
-    console.log('🧪 Testing SAP Analytics Cloud Services...');
-    
-    const sacService = new SAPAnalyticsCloudService();
     const testProduct = {
       name: 'Traditional Rajasthani Handicraft',
       category: 'Handicrafts',
@@ -417,7 +328,6 @@ app.get('/api/test-sac', async (req, res) => {
       basePrice: 1500
     };
 
-    // Test all SAC services
     const [marketIntel, pricingAnalytics, customerSegments, demandForecast] = await Promise.all([
       sacService.getMarketIntelligence(testProduct),
       sacService.analyzePricingTrends(testProduct),
@@ -459,59 +369,10 @@ app.get('/api/test-sac', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ SAC test error:', error);
     res.status(500).json({
       error: 'SAP Analytics Cloud test failed',
       message: error.message,
       analytics_available: 'Business intelligence simulation active'
     });
   }
-});
-
-
-
-
-
-
-
-// DELETE shop card by id (admin only)
-app.delete('/api/shopcards/:id', async (req, res) => {
-  try {
-    const card = await shopCardModel.findByIdAndDelete(req.params.id);
-    if (!card) return res.status(404).json({ error: "Product not found" });
-    res.json({ message: "Product deleted successfully" });
-  } catch (err) {
-    console.error('Error deleting product:', err);
-    res.status(500).json({ error: "Failed to delete product" });
-  }
-});
-
-// UPDATE shop card by id (PATCH)
-app.patch('/api/shopcards/:id', async (req, res) => {
-  try {
-    const updateData = req.body;
-    console.log('Updating product with data:', updateData);
-    
-    const card = await shopCardModel.findByIdAndUpdate(
-      req.params.id, 
-      updateData, 
-      { new: true, runValidators: true }
-    );
-    
-    if (!card) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-    
-    console.log('Product updated successfully:', card);
-    res.json(card);
-  } catch (err) {
-    console.error('Error updating product:', err);
-    res.status(500).json({ error: "Failed to update product", details: err.message });
-  }
-});
-
-// connectDB().then(()=>{
-//   server.listen(port,()=>{
-//     console.log(`Server running on port ${port}`);
-//   })
-// })
+};

@@ -31,7 +31,7 @@ const SAPAnalyticsDashboard = ({ productData }) => {
   const generateAnalytics = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/sac/analytics-dashboard', productData);
+      const response = await axios.post('http://localhost:5000/api/analytics/analytics-dashboard', productData);
       console.log('SAC Dashboard Response:', response.data);
       setAnalytics(response.data.dashboard);
     } catch (error) {

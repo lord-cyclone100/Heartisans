@@ -1,0 +1,55 @@
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import {
+  generateDescription,
+  predictPrice,
+  generateSapDescription,
+  testSapBusinessAI,
+  getMarketIntelligence,
+  analyzePricing,
+  analyzeCustomerSegments,
+  forecastDemand,
+  getAnalyticsDashboard,
+  testSAC
+} from '../controllers/sapAnalyticsController.js';
+import { rateLimits } from '../config/index.js';
+
+const router = express.Router();
+
+const sapLimiter = rateLimit({
+  ...rateLimits.sapAnalytics,
+  message: {
+    success: false,
+    error: 'Too many requests to SAP analytics endpoints. Please try again later.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  }
+});
+
+// Regular routes (will be mounted under /api)
+router.post('/predict-price', sapLimiter, predictPrice);
+router.post('/generate-description', sapLimiter, generateDescription);
+router.post('/generate-sap-description', sapLimiter, generateSapDescription);
+router.get('/test-sap-business-ai', sapLimiter, testSapBusinessAI);
+router.post('/market-intelligence', sapLimiter, getMarketIntelligence);
+router.post('/pricing-analytics', sapLimiter, analyzePricing);
+router.post('/customer-segments', sapLimiter, analyzeCustomerSegments);
+router.post('/demand-forecast', sapLimiter, forecastDemand);
+router.post('/analytics-dashboard', sapLimiter, getAnalyticsDashboard);
+router.get('/test-sac', sapLimiter, testSAC);
+
+// Health Check Endpoint
+router.get('/analytics-status', (req, res) => {
+  res.json({
+    success: true,
+    status: 'operational',
+    services: {
+      sapBusinessAI: 'active',
+      sapAnalyticsCloud: 'active',
+      groqAI: 'active'
+    },
+    rateLimit: rateLimits.sapAnalytics,
+    timestamp: new Date().toISOString()
+  });
+});
+
+export default router;

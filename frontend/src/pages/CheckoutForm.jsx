@@ -1,70 +1,105 @@
 import { useUser } from "@clerk/clerk-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from 'axios'
+import axios from 'axios';
 
 export const CheckoutForm = () => {
   const { user } = useUser();
   const [phoneNumber, setPhoneNumber] = useState("");
-  // const [message, setMessage] = useState('')
   const [address, setAddress] = useState("");
-  const navigate = useNavigate()
+  const [paymentInProgress, setPaymentInProgress] = useState(false);
+  const navigate = useNavigate();
   const location = useLocation();
-  const total = location.state?.total || 0;
-  const sellerId = location.state?.sellerId || '';
-  const sellerName = location.state?.sellerName || '';
-  const productDetails = location.state?.productDetails || null;
-  const isSubscription = location.state?.isSubscription || false;
-  const subscriptionPlan = location.state?.subscriptionPlan || 'yearly'; // Default to yearly
 
-  const handlePayment = async(e) => {
+  // Extract data from location.state
+  const {
+    total = 0,
+    sellerId,
+    sellerName,
+    productDetails, // This will be the correctly mapped object from ProductDetailPage
+    isSubscription = false,
+    subscriptionPlan = 'yearly', // Default to yearly
+    directBuy = false // Flag to distinguish direct buy from cart checkout
+  } = location.state || {};
+
+
+  const handlePayment = async (e) => {
     e.preventDefault();
+    setPaymentInProgress(true);
+
     const data = {
-      name:user.fullName,
-      mobile:phoneNumber,
-      amount:total,
+      name: user.fullName,
+      mobile: phoneNumber,
+      amount: total,
       address: address,
       buyerEmail: user?.emailAddresses?.[0]?.emailAddress
-    }
+    };
 
-    // Add additional fields for regular product purchases
-    if (!isSubscription) {
-      data.sellerId = sellerId;
-      data.sellerName = sellerName;
-      data.productDetails = productDetails;
-      data.isSubscription = false;
-    } else {
-      // Add subscription-specific fields
+    // Conditionally add product/subscription details based on the type of purchase
+    if (isSubscription) {
+      data.isSubscription = true;
       data.subscriptionPlan = subscriptionPlan;
+      // No productDetails for subscriptions
+    } else {
+      // This is a regular product purchase (either from cart or direct buy)
+      data.isSubscription = false;
+      if (productDetails) { // productDetails should already be correctly formatted from ProductDetailPage
+        data.productDetails = productDetails;
+      }
+      // Only include sellerId if it's available and not "Not Available"
+      if (sellerId && sellerId !== "Not Available") {
+        data.sellerId = sellerId;
+      }
+      // sellerName is not directly consumed by paymentController's createOrder for orderData,
+      // but it might be useful for logging or other purposes.
+      // It's passed in location.state, so it's available for display in the form.
     }
 
     try {
-      console.log("Processing payment...", { isSubscription });
-      
+      console.log("Processing payment...", { isSubscription, data });
+
       // Use different endpoints for subscription vs regular purchases
-      const endpoint = isSubscription 
-        ? "http://localhost:5000/create-subscription-order"
-        : "http://localhost:5000/create-order";
-      
+      const endpoint = isSubscription
+        ? "http://localhost:5000/api/subscription/create-order"
+        : "http://localhost:5000/api/payment/create-order";
+
       const response = await axios.post(endpoint, data);
       console.log("Payment API response:", response.data);
       const responseData = response.data;
-      
+
       if (responseData.paymentSessionId && responseData.orderId) {
         // Navigate to payment page with order details
-        navigate('/payment', { 
-          state: { 
+        navigate('/payment', {
+          state: {
             orderId: responseData.orderId,
             paymentSessionId: responseData.paymentSessionId,
-            bookingData: data,
+            bookingData: data, // Keep bookingData for context if needed on payment page
             isSubscription: isSubscription
           }
-        })
+        });
       }
     } catch (error) {
-      console.log("Payment error:", error);
+      console.error("Payment error:", error); // Use console.error for errors
+      // You might want to display an error message to the user here
+    } finally {
+      setPaymentInProgress(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (paymentInProgress) {
+        e.preventDefault();
+        e.returnValue = 'Your payment is being processed. Are you sure you want to leave?';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [paymentInProgress]);
 
   return (
     <>
@@ -229,5 +264,5 @@ export const CheckoutForm = () => {
         </div>
       </section>
     </>
-  )
+  );
 }
