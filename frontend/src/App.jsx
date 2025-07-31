@@ -28,6 +28,7 @@ import OrderDetailsPage from './pages/OrderDetailsPage' // Missing import
 import ProductDetailPage from './pages/ProductDetailPage' // Missing import
 import { SAPAnalyticsPage } from './pages/SAPAnalyticsPage'
 import BackToTop from './components/elements/BackToTop'
+import { StoriesPage } from './pages/StoriesPage'
 
 
 export const App = () => {
@@ -124,6 +125,10 @@ export const App = () => {
         {
           path: "/admin",
           element: <AdminPanel />,
+        },
+        {
+          path: "/stories",
+          element: <StoriesPage />,
         },
         {
           path:"/sap-analytics",

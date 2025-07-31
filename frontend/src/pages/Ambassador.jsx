@@ -25,9 +25,9 @@ export const Ambassador = () => {
             />
           </svg>
           <div className="flex flex-col items-center font-mhlk gap-10">
-            <h3 className="text-green-500 text-[3rem] lg:text-[4rem]">Heartisans</h3>
+            <h3 className="text-[3rem] lg:text-[4rem]" style={{ color: '#479626' }}>Heartisans</h3>
             <h1 className="text-center text-[5rem] leading-20 lg:text-[6rem] lg:leading-24">Join our <br />Ambassador <br />Program</h1>
-            <h5 className="text-amber-500 text-[2rem] lg:text-[3rem]">Coming Soon</h5>
+            <h5 className="text-[2rem] lg:text-[3rem]" style={{ color: '#ffaf27' }}>Coming Soon</h5>
           </div>
           
         </div>

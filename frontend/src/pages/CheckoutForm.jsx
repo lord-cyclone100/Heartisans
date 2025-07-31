@@ -104,7 +104,7 @@ export const CheckoutForm = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-20">
+      <section className="min-h-screen py-20" style={{ background: 'linear-gradient(to bottom right, #f0f9ff, #ecfdf5, #f7fee7)' }}>
         <div className="w-full h-20"></div>
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -118,7 +118,7 @@ export const CheckoutForm = () => {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
+          <div className="bg-white rounded-2xl shadow-xl p-8" style={{ border: '1px solid #479626' }}>
             {/* Product Details Section */}
             {productDetails && (
               <div className="mb-8">
@@ -140,7 +140,7 @@ export const CheckoutForm = () => {
                       <p className="text-base sm:text-lg text-gray-600 mb-2">
                         Category: {productDetails.category}
                       </p>
-                      <p className="text-2xl sm:text-3xl font-bold text-green-600">
+                      <p className="text-2xl sm:text-3xl font-bold" style={{ color: '#479626' }}>
                         ₹{productDetails.price.toLocaleString()}
                       </p>
                     </div>
@@ -159,7 +159,7 @@ export const CheckoutForm = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white">
+                  <div className="rounded-xl p-6 text-white" style={{ background: 'linear-gradient(to right, #479626, #3d7a20)' }}>
                     <p className="text-lg font-medium opacity-90 mb-2">Total Amount</p>
                     <p className="text-3xl sm:text-4xl font-bold">₹{total.toLocaleString()}</p>
                   </div>
@@ -235,7 +235,8 @@ export const CheckoutForm = () => {
                 <div className="pt-4">
                   <button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-8 rounded-xl font-bold text-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    className="w-full text-white py-4 px-8 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    style={{ backgroundColor: '#ffaf27' }}
                   >
                     Pay ₹{total.toLocaleString()} Now
                     <svg className="w-5 h-5 ml-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,10 +249,10 @@ export const CheckoutForm = () => {
           </div>
 
           {/* Security Notice */}
-          <div className="mt-12 bg-white rounded-2xl shadow-xl p-6 border border-green-100">
+          <div className="mt-12 bg-white rounded-2xl shadow-xl p-6" style={{ border: '1px solid #479626' }}>
             <div className="flex items-center justify-center space-x-4">
-              <div className="bg-green-100 rounded-full p-3">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="rounded-full p-3" style={{ backgroundColor: '#e8f5e8' }}>
+                <svg className="w-6 h-6" style={{ color: '#479626' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>

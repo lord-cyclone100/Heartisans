@@ -236,7 +236,7 @@ export const SellForm = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-20">
+      <section className="min-h-screen py-20" style={{ background: 'linear-gradient(to bottom right, #f0f9ff, #ecfdf5, #f7fee7)' }}>
         <div className="w-full h-20"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -950,8 +950,9 @@ export const SellForm = () => {
                   className={`w-full py-4 px-8 rounded-xl text-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${
                     loading
                       ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                      : 'text-white'
                   }`}
+                  style={!loading ? { backgroundColor: '#ffaf27' } : {}}
                   disabled={loading}
                 >
                   {loading ? (

@@ -39,8 +39,8 @@ export const SAPAnalyticsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 font-mhlk">
-        <div className="animate-spin rounded-full h-24 w-24 border-4 border-green-200 border-t-green-500"></div>
+      <div className="min-h-screen flex items-center justify-center font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0, #e8f5e8)' }}>
+        <div className="animate-spin rounded-full h-24 w-24 border-4 border-t-transparent" style={{ borderColor: '#479626', borderTopColor: 'transparent' }}></div>
         <div className="ml-6 text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-700">
           {t('common.loading') || 'Loading...'}
         </div>
@@ -49,7 +49,7 @@ export const SAPAnalyticsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 font-mhlk">
+    <div className="min-h-screen font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0, #e8f5e8)' }}>
       <div className="w-full h-20"></div>
       
       {/* Header */}
@@ -62,27 +62,27 @@ export const SAPAnalyticsPage = () => {
             {t('sap.subtitle') || 'Enterprise-Grade Business Intelligence & Analytics for Artisan Marketplaces'}
           </p>
           <div className="flex flex-wrap justify-center gap-6">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 shadow-xl" style={{ border: '1px solid #479626' }}>
               <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
-                <div className="w-4 h-4 bg-green-500 rounded-full mr-4 animate-pulse"></div>
+                <div className="w-4 h-4 rounded-full mr-4 animate-pulse" style={{ backgroundColor: '#479626' }}></div>
                 {t('sap.marketIntelligence') || 'Market Intelligence'}
               </span>
             </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 shadow-xl" style={{ border: '1px solid #479626' }}>
               <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
-                <div className="w-4 h-4 bg-emerald-500 rounded-full mr-4 animate-pulse"></div>
+                <div className="w-4 h-4 rounded-full mr-4 animate-pulse" style={{ backgroundColor: '#479626' }}></div>
                 {t('sap.pricingAnalytics') || 'Pricing Analytics'}
               </span>
             </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 shadow-xl" style={{ border: '1px solid #479626' }}>
               <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
-                <div className="w-4 h-4 bg-green-600 rounded-full mr-4 animate-pulse"></div>
+                <div className="w-4 h-4 rounded-full mr-4 animate-pulse" style={{ backgroundColor: '#479626' }}></div>
                 {t('sap.customerInsights') || 'Customer Insights'}
               </span>
             </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 border border-green-200 shadow-xl">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-8 py-5 shadow-xl" style={{ border: '1px solid #479626' }}>
               <span className="flex items-center text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">
-                <div className="w-4 h-4 bg-emerald-600 rounded-full mr-4 animate-pulse"></div>
+                <div className="w-4 h-4 rounded-full mr-4 animate-pulse" style={{ backgroundColor: '#479626' }}></div>
                 {t('sap.demandForecasting') || 'Demand Forecasting'}
               </span>
             </div>
@@ -90,7 +90,7 @@ export const SAPAnalyticsPage = () => {
         </div>
         {/* Product Selection */}
         {products.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-xl p-12 mb-12 border border-green-100">
+          <div className="bg-white rounded-2xl shadow-xl p-12 mb-12" style={{ border: '1px solid #479626' }}>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-12 text-gray-900">
               📊 {t('sap.selectProduct') || 'Select Product for Analytics'}
             </h2>
@@ -101,9 +101,13 @@ export const SAPAnalyticsPage = () => {
                   onClick={() => setSelectedProduct(product)}
                   className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${
                     selectedProduct?._id === product._id
-                      ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-2xl'
-                      : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
+                      ? 'shadow-2xl'
+                      : 'border-gray-200 hover:bg-gray-50'
                   }`}
+                  style={selectedProduct?._id === product._id 
+                    ? { borderColor: '#479626', background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)' }
+                    : { borderColor: '#d1d5db' }
+                  }
                 >
                   <img
                     src={product.productImageUrl}
@@ -114,7 +118,7 @@ export const SAPAnalyticsPage = () => {
                     {product.productName}
                   </h3>
                   <p className="text-gray-600 text-base sm:text-lg lg:text-xl mb-3">{product.productCategory}</p>
-                  <p className="text-green-600 font-bold text-lg sm:text-xl lg:text-2xl">₹{product.productPrice.toLocaleString()}</p>
+                  <p className="font-bold text-lg sm:text-xl lg:text-2xl" style={{ color: '#479626' }}>₹{product.productPrice.toLocaleString()}</p>
                 </div>
               ))}
             </div>
@@ -128,12 +132,16 @@ export const SAPAnalyticsPage = () => {
                 onClick={() => setSelectedProduct(demoProduct)}
                 className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 inline-block ${
                   selectedProduct === demoProduct
-                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-2xl'
-                    : 'border-gray-300 hover:border-green-400 hover:bg-green-50 hover:shadow-xl'
+                    ? 'shadow-2xl'
+                    : 'border-gray-300 hover:shadow-xl'
                 }`}
+                style={selectedProduct === demoProduct 
+                  ? { borderColor: '#479626', background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)' }
+                  : { borderColor: '#d1d5db' }
+                }
               >
                 <div className="flex items-center space-x-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, #479626, #3d7a20)' }}>
                     <span className="text-white font-bold text-3xl">🎨</span>
                   </div>
                   <div>
@@ -148,7 +156,7 @@ export const SAPAnalyticsPage = () => {
 
         {/* No Products Fallback */}
         {products.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-xl p-16 mb-12 text-center border border-green-100">
+          <div className="bg-white rounded-2xl shadow-xl p-16 mb-12 text-center" style={{ border: '1px solid #479626' }}>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-8 text-gray-900">
               🚀 {t('sap.experienceTitle') || 'Experience SAP Analytics Cloud'}
             </h2>
@@ -157,7 +165,8 @@ export const SAPAnalyticsPage = () => {
             </p>
             <button
               onClick={() => setSelectedProduct(demoProduct)}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-12 py-6 rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+              className="text-white px-12 py-6 rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+              style={{ backgroundColor: '#ffaf27' }}
             >
               {t('sap.launchDemo') || 'Launch Demo Analytics'}
             </button>

@@ -47,8 +47,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     
     if (!marketData) {
       return (
-        <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-12 rounded-2xl border border-green-200">
-          <h3 className="text-2xl sm:text-3xl font-bold text-green-800 mb-8 flex items-center">
+        <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
+          <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
             <span className="text-3xl mr-4">🔍</span>
             Market Intelligence
           </h3>
@@ -58,8 +58,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     }
 
     return (
-      <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-12 rounded-2xl border border-green-200 font-mhlk">
-        <h3 className="text-2xl sm:text-3xl font-bold text-green-800 mb-8 flex items-center">
+      <div className="p-12 rounded-2xl font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
+        <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
           <span className="text-3xl mr-4">🔍</span>
           Market Intelligence
         </h3>
@@ -67,21 +67,21 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <h4 className="font-bold text-xl text-gray-700 mb-4">Market Size</h4>
-              <p className="text-green-600 text-2xl font-bold">{marketData.market_size || 'N/A'}</p>
+              <p className="text-2xl font-bold" style={{ color: '#479626' }}>{marketData.market_size || 'N/A'}</p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <h4 className="font-bold text-xl text-gray-700 mb-4">Growth Rate</h4>
-              <p className="text-green-600 text-2xl font-bold">{marketData.growth_rate || 'N/A'}</p>
+              <p className="text-2xl font-bold" style={{ color: '#479626' }}>{marketData.growth_rate || 'N/A'}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <h4 className="font-bold text-xl text-gray-700 mb-4">Competition Level</h4>
-              <p className="text-green-600 text-2xl font-bold">{marketData.competition_level || 'N/A'}</p>
+              <p className="text-2xl font-bold" style={{ color: '#479626' }}>{marketData.competition_level || 'N/A'}</p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <h4 className="font-bold text-xl text-gray-700 mb-4">Source</h4>
-              <p className="text-green-600 text-lg font-semibold">{marketData.source || 'SAP Analytics Cloud'}</p>
+              <p className="text-lg font-semibold" style={{ color: '#479626' }}>{marketData.source || 'SAP Analytics Cloud'}</p>
             </div>
           </div>
           
@@ -91,7 +91,7 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <ul className="space-y-4">
                 {marketData.key_insights.map((insight, index) => (
                   <li key={index} className="text-lg text-gray-600 flex items-start">
-                    <span className="text-green-500 mr-4 text-xl">•</span>
+                    <span className="mr-4 text-xl" style={{ color: '#479626' }}>•</span>
                     <span>{extractText(insight)}</span>
                   </li>
                 ))}
@@ -105,7 +105,7 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <ul className="space-y-4">
                 {marketData.opportunities.map((opportunity, index) => (
                   <li key={index} className="text-lg text-gray-600 flex items-start">
-                    <span className="text-emerald-500 mr-4 text-xl">•</span>
+                    <span className="mr-4 text-xl" style={{ color: '#479626' }}>•</span>
                     <span>{extractText(opportunity)}</span>
                   </li>
                 ))}
@@ -122,8 +122,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     
     if (!pricingData) {
       return (
-        <div className="bg-gradient-to-br from-emerald-50 to-green-100 p-12 rounded-2xl border border-green-200">
-          <h3 className="text-2xl sm:text-3xl font-bold text-emerald-800 mb-8 flex items-center">
+        <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
+          <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
             <span className="text-3xl mr-4">💰</span>
             Pricing Analytics
           </h3>
@@ -133,8 +133,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     }
 
     return (
-      <div className="bg-gradient-to-br from-emerald-50 to-green-100 p-12 rounded-2xl border border-green-200">
-        <h3 className="text-2xl sm:text-3xl font-bold text-emerald-800 mb-8 flex items-center">
+      <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
+        <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
           <span className="text-3xl mr-4">💰</span>
           Pricing Analytics
         </h3>
@@ -143,13 +143,13 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <h4 className="font-bold text-xl text-gray-700 mb-6">Optimal Price Range</h4>
               <div className="flex flex-wrap items-center gap-6">
-                <span className="bg-green-100 text-green-800 px-6 py-3 rounded-full text-lg font-semibold">
+                <span className="px-6 py-3 rounded-full text-lg font-semibold" style={{ backgroundColor: '#e8f5e8', color: '#479626' }}>
                   Min: ₹{pricingData.optimal_price_range?.min || 'N/A'}
                 </span>
-                <span className="bg-green-200 text-green-800 px-6 py-3 rounded-full text-lg font-bold">
+                <span className="px-6 py-3 rounded-full text-lg font-bold" style={{ backgroundColor: '#479626', color: 'white' }}>
                   Recommended: ₹{pricingData.optimal_price_range?.recommended || pricingData.optimal_price_range?.max || 'N/A'}
                 </span>
-                <span className="bg-green-100 text-green-800 px-6 py-3 rounded-full text-lg font-semibold">
+                <span className="px-6 py-3 rounded-full text-lg font-semibold" style={{ backgroundColor: '#e8f5e8', color: '#479626' }}>
                   Max: ₹{pricingData.optimal_price_range?.max || 'N/A'}
                 </span>
               </div>
@@ -158,11 +158,11 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-4 rounded-lg">
               <h4 className="font-semibold text-gray-700">Pricing Strategy</h4>
-              <p className="text-green-600">{pricingData.pricing_strategy || 'Value-based pricing'}</p>
+              <p style={{ color: '#479626' }}>{pricingData.pricing_strategy || 'Value-based pricing'}</p>
             </div>
             <div className="bg-white p-4 rounded-lg">
               <h4 className="font-semibold text-gray-700">Price Elasticity</h4>
-              <p className="text-green-600">{pricingData.price_elasticity || 'Moderate'}</p>
+              <p style={{ color: '#479626' }}>{pricingData.price_elasticity || 'Moderate'}</p>
             </div>
           </div>
           
@@ -172,7 +172,7 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <ul className="space-y-1">
                 {pricingData.pricing_recommendations.map((rec, index) => (
                   <li key={index} className="text-sm text-gray-600 flex items-start">
-                    <span className="text-green-500 mr-2">•</span>
+                    <span className="mr-2" style={{ color: '#479626' }}>•</span>
                     <span>{extractText(rec)}</span>
                   </li>
                 ))}
@@ -188,8 +188,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     const customerData = analytics?.analytics?.customer_segments;
     
     return (
-      <div className="bg-gradient-to-br from-purple-50 to-violet-100 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center">
+      <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(to bottom right, #fef3e2, #fff5e6)', border: '1px solid #ffaf27' }}>
+        <h3 className="text-xl font-bold mb-4 flex items-center" style={{ color: '#ffaf27' }}>
           👥 Customer Segments
         </h3>
         
@@ -199,9 +199,9 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <h4 className="font-semibold text-gray-700 mb-3">Primary Segments</h4>
               <div className="space-y-2">
                 {customerData.primary_segments?.map((segment, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-purple-50 rounded">
-                    <span className="font-medium text-purple-700">{segment.name}</span>
-                    <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-sm">
+                  <div key={index} className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
+                    <span className="font-medium" style={{ color: '#ffaf27' }}>{segment.name}</span>
+                    <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>
                       {segment.percentage}%
                     </span>
                   </div>
@@ -245,21 +245,21 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             <div className="bg-white p-4 rounded-lg">
               <h4 className="font-semibold text-gray-700 mb-3">Primary Segments</h4>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
-                  <span className="font-medium text-purple-700">Cultural Enthusiasts</span>
-                  <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-sm">35%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-medium" style={{ color: '#ffaf27' }}>Cultural Enthusiasts</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>35%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
-                  <span className="font-medium text-purple-700">Gift Buyers</span>
-                  <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-sm">28%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-medium" style={{ color: '#ffaf27' }}>Gift Buyers</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>28%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
-                  <span className="font-medium text-purple-700">Home Decorators</span>
-                  <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-sm">22%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-medium" style={{ color: '#ffaf27' }}>Home Decorators</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>22%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
-                  <span className="font-medium text-purple-700">Collectors</span>
-                  <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-sm">15%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-medium" style={{ color: '#ffaf27' }}>Collectors</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>15%</span>
                 </div>
               </div>
             </div>
@@ -313,15 +313,15 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Average Order Value</span>
-                  <span className="font-semibold text-purple-700">₹2,450</span>
+                  <span className="font-semibold" style={{ color: '#ffaf27' }}>₹2,450</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Repeat Purchase Rate</span>
-                  <span className="font-semibold text-purple-700">42%</span>
+                  <span className="font-semibold" style={{ color: '#ffaf27' }}>42%</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Peak Shopping Season</span>
-                  <span className="font-semibold text-purple-700">Festival Months</span>
+                  <span className="font-semibold" style={{ color: '#ffaf27' }}>Festival Months</span>
                 </div>
               </div>
             </div>
@@ -334,8 +334,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     const forecastData = analytics?.analytics?.demand_forecast;
     
     return (
-      <div className="bg-gradient-to-br from-orange-50 to-amber-100 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-orange-800 mb-4 flex items-center">
+      <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
+        <h3 className="text-xl font-bold mb-4 flex items-center" style={{ color: '#479626' }}>
           🔮 Demand Forecast
         </h3>
         
@@ -344,21 +344,21 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-700">Forecast Trend</h4>
-                <p className="text-orange-600">{forecastData.forecast_trend}</p>
+                <p style={{ color: '#479626' }}>{forecastData.forecast_trend}</p>
               </div>
               <div className="bg-white p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-700">Predicted Growth</h4>
-                <p className="text-orange-600">{forecastData.predicted_growth}</p>
+                <p style={{ color: '#479626' }}>{forecastData.predicted_growth}</p>
               </div>
             </div>
             <div className="bg-white p-4 rounded-lg">
               <h4 className="font-semibold text-gray-700 mb-2">Seasonal Peaks</h4>
               <div className="space-y-2">
                 {forecastData.seasonal_peaks?.map((peak, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                    <span className="text-orange-700">{typeof peak === 'object' ? peak.period : peak}</span>
+                  <div key={index} className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
+                    <span style={{ color: '#479626' }}>{typeof peak === 'object' ? peak.period : peak}</span>
                     {typeof peak === 'object' && peak.boost && (
-                      <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded text-sm">
+                      <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>
                         +{peak.boost}
                       </span>
                     )}
@@ -373,12 +373,12 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-700">Forecast Trend</h4>
-                <p className="text-orange-600 font-semibold">↗️ Growing Demand</p>
+                <p className="font-semibold" style={{ color: '#479626' }}>↗️ Growing Demand</p>
                 <p className="text-sm text-gray-600 mt-1">Based on market patterns and cultural events</p>
               </div>
               <div className="bg-white p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-700">Predicted Growth</h4>
-                <p className="text-orange-600 font-semibold">+15-25% YoY</p>
+                <p className="font-semibold" style={{ color: '#479626' }}>+15-25% YoY</p>
                 <p className="text-sm text-gray-600 mt-1">Expected annual growth in artisan category</p>
               </div>
             </div>
@@ -386,21 +386,21 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             <div className="bg-white p-4 rounded-lg">
               <h4 className="font-semibold text-gray-700 mb-2">Seasonal Peaks</h4>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                  <span className="text-orange-700">🎨 Festival Season (Oct-Nov)</span>
-                  <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded text-sm">+40%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span style={{ color: '#479626' }}>🎨 Festival Season (Oct-Nov)</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+40%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                  <span className="text-orange-700">🎁 Wedding Season (Dec-Feb)</span>
-                  <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded text-sm">+30%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span style={{ color: '#479626' }}>🎁 Wedding Season (Dec-Feb)</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+30%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                  <span className="text-orange-700">🌸 Spring Collection (Mar-Apr)</span>
-                  <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded text-sm">+20%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span style={{ color: '#479626' }}>🌸 Spring Collection (Mar-Apr)</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+20%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                  <span className="text-orange-700">🏡 Home Decor Trends (Aug-Sep)</span>
-                  <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded text-sm">+25%</span>
+                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span style={{ color: '#479626' }}>🏡 Home Decor Trends (Aug-Sep)</span>
+                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+25%</span>
                 </div>
               </div>
             </div>
@@ -410,15 +410,15 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Market Size Growth</span>
-                  <span className="font-semibold text-orange-700">₹1.5M annually</span>
+                  <span className="font-semibold" style={{ color: '#479626' }}>₹1.5M annually</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Digital Adoption Rate</span>
-                  <span className="font-semibold text-orange-700">65% increase</span>
+                  <span className="font-semibold" style={{ color: '#479626' }}>65% increase</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Regional Demand Leader</span>
-                  <span className="font-semibold text-orange-700">{productData.region || 'Metropolitan'}</span>
+                  <span className="font-semibold" style={{ color: '#479626' }}>{productData.region || 'Metropolitan'}</span>
                 </div>
               </div>
             </div>
@@ -429,8 +429,8 @@ const SAPAnalyticsDashboard = ({ productData }) => {
   };
 
   const renderRecommendations = () => (
-    <div className="bg-gradient-to-br from-rose-50 to-pink-100 p-6 rounded-lg">
-      <h3 className="text-xl font-bold text-rose-800 mb-4 flex items-center">
+    <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(to bottom right, #fef3e2, #fff5e6)', border: '1px solid #ffaf27' }}>
+      <h3 className="text-xl font-bold mb-4 flex items-center" style={{ color: '#ffaf27' }}>
         💡 Strategic Recommendations
       </h3>
       {analytics?.recommendations && (
@@ -462,17 +462,17 @@ const SAPAnalyticsDashboard = ({ productData }) => {
 
   return (
     <div className="max-w-7xl mx-auto p-8">
-      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-green-100">
-        <div className="bg-gradient-to-r from-green-500 via-emerald-600 to-green-600 text-white p-12">
+      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ border: '1px solid #479626' }}>
+        <div className="text-white p-12" style={{ background: 'linear-gradient(to right, #479626, #5ba82a, #479626)' }}>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">SAP Analytics Cloud Dashboard</h2>
-          <p className="text-xl sm:text-2xl text-green-100 leading-relaxed">Enterprise-grade business intelligence and analytics for artisan marketplaces</p>
+          <p className="text-xl sm:text-2xl leading-relaxed" style={{ color: '#e8f5e8' }}>Enterprise-grade business intelligence and analytics for artisan marketplaces</p>
           <div className="flex flex-wrap items-center mt-8 gap-6">
-            <div className="flex items-center space-x-3 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
-              <div className="w-3 h-3 bg-green-300 rounded-full animate-pulse"></div>
+            <div className="flex items-center space-x-3 backdrop-blur-sm rounded-xl px-6 py-3" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
+              <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#e8f5e8' }}></div>
               <span className="text-lg font-medium">SAP Analytics Cloud</span>
             </div>
-            <div className="flex items-center space-x-3 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
-              <div className="w-3 h-3 bg-emerald-300 rounded-full animate-pulse"></div>
+            <div className="flex items-center space-x-3 backdrop-blur-sm rounded-xl px-6 py-3" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
+              <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#e8f5e8' }}></div>
               <span className="text-lg font-medium">Real-time Intelligence</span>
             </div>
           </div>
@@ -492,7 +492,11 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <button
                 onClick={generateAnalytics}
                 disabled={loading}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-12 py-6 rounded-2xl font-bold text-xl sm:text-2xl hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                className="text-white px-12 py-6 rounded-2xl font-bold text-xl sm:text-2xl disabled:opacity-50 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                style={{ 
+                  background: loading ? '#479626' : 'linear-gradient(to right, #479626, #5ba82a)',
+                  ':hover': { background: 'linear-gradient(to right, #3a7d1f, #479626)' }
+                }}
               >
                 {loading ? (
                   <div className="flex items-center space-x-4">
@@ -507,9 +511,9 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           ) : (
             <>
               {/* Debug Section - Shows data structure */}
-              <div className="bg-green-50 border border-green-200 rounded-2xl p-8 mb-12">
-                <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-800 mb-4">Debug: Analytics Data</h4>
-                <div className="text-lg sm:text-xl lg:text-2xl text-green-700 space-y-2">
+              <div className="rounded-2xl p-8 mb-12" style={{ backgroundColor: '#e8f5e8', border: '1px solid #479626' }}>
+                <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4" style={{ color: '#479626' }}>Debug: Analytics Data</h4>
+                <div className="text-lg sm:text-xl lg:text-2xl space-y-2" style={{ color: '#479626' }}>
                   <div className="flex justify-between"><span className="font-medium">Success:</span> <span>{String(analytics.success)}</span></div>
                   <div className="flex justify-between"><span className="font-medium">Source:</span> <span>{analytics.source}</span></div>
                   <div className="flex justify-between"><span className="font-medium">Has Analytics:</span> <span>{String(!!analytics.analytics)}</span></div>
@@ -528,7 +532,7 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               </div>
 
               {/* Tab Navigation */}
-              <div className="border-b-2 border-green-200 mb-12">
+              <div className="border-b-2 mb-12" style={{ borderColor: '#479626' }}>
                 <nav className="flex flex-wrap gap-2">
                   {[
                     { id: 'overview', label: 'Overview', icon: '📊' },
@@ -543,9 +547,26 @@ const SAPAnalyticsDashboard = ({ productData }) => {
                       onClick={() => setActiveTab(tab.id)}
                       className={`py-4 px-6 border-b-4 font-bold text-lg transition-all duration-300 rounded-t-xl ${
                         activeTab === tab.id
-                          ? 'border-green-500 text-green-600 bg-green-50'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-green-300 hover:bg-green-50'
+                          ? 'text-gray-500 hover:text-gray-700'
+                          : 'border-transparent text-gray-500 hover:text-gray-700'
                       }`}
+                      style={{
+                        borderBottomColor: activeTab === tab.id ? '#479626' : 'transparent',
+                        color: activeTab === tab.id ? '#479626' : undefined,
+                        backgroundColor: activeTab === tab.id ? '#e8f5e8' : undefined
+                      }}
+                      onMouseEnter={(e) => {
+                        if (activeTab !== tab.id) {
+                          e.target.style.borderBottomColor = '#a8d5a8';
+                          e.target.style.backgroundColor = '#e8f5e8';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (activeTab !== tab.id) {
+                          e.target.style.borderBottomColor = 'transparent';
+                          e.target.style.backgroundColor = 'transparent';
+                        }
+                      }}
                     >
                       <span className="mr-3 text-xl">{tab.icon}</span>
                       {tab.label}
@@ -558,36 +579,36 @@ const SAPAnalyticsDashboard = ({ productData }) => {
               <div className="space-y-12">
                 {activeTab === 'overview' && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-12 rounded-2xl border border-green-200">
-                      <h3 className="text-2xl sm:text-3xl font-bold text-green-800 mb-8 flex items-center">
+                    <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
+                      <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
                         <span className="text-3xl mr-4">📈</span>
                         Business Overview
                       </h3>
                       <div className="space-y-6">
                         <div className="flex justify-between items-center bg-white p-6 rounded-xl">
                           <span className="font-bold text-lg text-gray-700">Overall Outlook:</span>
-                          <span className="text-green-600 font-semibold text-lg">{analytics.summary?.overall_outlook}</span>
+                          <span className="font-semibold text-lg" style={{ color: '#479626' }}>{analytics.summary?.overall_outlook}</span>
                         </div>
                         <div className="flex justify-between items-center bg-white p-6 rounded-xl">
                           <span className="font-bold text-lg text-gray-700">Market Attractiveness:</span>
-                          <span className="text-green-600 font-semibold text-lg">{analytics.summary?.performance_indicators?.market_attractiveness}</span>
+                          <span className="font-semibold text-lg" style={{ color: '#479626' }}>{analytics.summary?.performance_indicators?.market_attractiveness}</span>
                         </div>
                         <div className="flex justify-between items-center bg-white p-6 rounded-xl">
                           <span className="font-bold text-lg text-gray-700">Growth Potential:</span>
-                          <span className="text-green-600 font-semibold text-lg">{analytics.summary?.performance_indicators?.growth_potential}</span>
+                          <span className="font-semibold text-lg" style={{ color: '#479626' }}>{analytics.summary?.performance_indicators?.growth_potential}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-emerald-50 to-green-100 p-12 rounded-2xl border border-green-200">
-                      <h3 className="text-2xl sm:text-3xl font-bold text-emerald-800 mb-8 flex items-center">
+                    <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #fef3e2, #fff5e6)', border: '1px solid #ffaf27' }}>
+                      <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#ffaf27' }}>
                         <span className="text-3xl mr-4">🎯</span>
                         Key Opportunities
                       </h3>
                       <ul className="space-y-4">
                         {analytics.summary?.key_opportunities?.map((opportunity, index) => (
                           <li key={index} className="flex items-start bg-white p-6 rounded-xl">
-                            <span className="text-emerald-500 mr-4 text-xl">✓</span>
-                            <span className="text-emerald-700 text-lg font-medium">{opportunity}</span>
+                            <span className="mr-4 text-xl" style={{ color: '#ffaf27' }}>✓</span>
+                            <span className="text-lg font-medium" style={{ color: '#ffaf27' }}>{opportunity}</span>
                           </li>
                         ))}
                       </ul>
@@ -601,11 +622,11 @@ const SAPAnalyticsDashboard = ({ productData }) => {
                 {activeTab === 'recommendations' && renderRecommendations()}
               </div>
 
-              <div className="mt-12 p-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
+              <div className="mt-12 p-8 rounded-2xl" style={{ background: 'linear-gradient(to right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div className="flex flex-wrap items-center gap-6">
                     <div className="flex items-center space-x-3">
-                      <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                      <div className="w-4 h-4 rounded-full animate-pulse" style={{ backgroundColor: '#479626' }}></div>
                       <span className="text-lg font-semibold text-gray-700">SAP Analytics Cloud Integration Active</span>
                     </div>
                     <span className="text-base text-gray-600">

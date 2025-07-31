@@ -249,7 +249,7 @@ export const AuctionForm = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-20">
+      <section className="min-h-screen py-20" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0, #e8f5e8)' }}>
         <div className="w-full h-20"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -264,7 +264,7 @@ export const AuctionForm = () => {
           </div>
 
           {/* Form Container */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
+          <div className="bg-white rounded-2xl shadow-xl p-8" style={{ border: '1px solid #479626' }}>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Product Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -279,7 +279,10 @@ export const AuctionForm = () => {
                     value={form.productName}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
+                    className="w-full px-4 py-4 border border-gray-300 rounded-xl transition-all duration-300 text-lg"
+                    style={{ '--focus-ring-color': '#479626' }}
+                    onFocus={(e) => e.target.style.borderColor = '#479626'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                   />
                 </div>
                 
@@ -765,8 +768,9 @@ export const AuctionForm = () => {
                   className={`w-full py-4 px-8 rounded-xl text-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${
                     loading
                       ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                      : 'text-white'
                   }`}
+                  style={!loading ? { backgroundColor: '#ffaf27' } : {}}
                   disabled={loading}
                 >
                   {loading ? (

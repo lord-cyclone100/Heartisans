@@ -127,10 +127,10 @@ useEffect(() => {
 
   if (!auction) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center font-mhlk">
+      <div className="min-h-screen flex items-center justify-center font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-500 mx-auto mb-4"></div>
-          <p className="text-2xl text-green-700 font-semibold">Loading auction details...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-transparent mx-auto mb-4" style={{ borderColor: '#479626', borderTopColor: 'transparent' }}></div>
+          <p className="text-2xl font-semibold" style={{ color: '#479626' }}>Loading auction details...</p>
         </div>
       </div>
     );
@@ -139,7 +139,7 @@ useEffect(() => {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 min-h-screen py-40 font-mhlk">
+      <section className="min-h-screen py-40 font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0, #e8f5e8)' }}>
         <div className="w-full h-20"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -155,7 +155,7 @@ useEffect(() => {
                     className="w-full h-80 lg:h-96 object-cover"
                   />
                   <div className="absolute top-4 right-4 flex gap-2">
-                    <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    <span className="text-white px-3 py-1 rounded-full text-sm font-semibold" style={{ background: 'linear-gradient(to right, #479626, #3d7a20)' }}>
                       Live Auction
                     </span>
                   </div>
@@ -170,7 +170,7 @@ useEffect(() => {
                   </p>
                   
                   {/* Current Bid Display */}
-                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white">
+                  <div className="rounded-xl p-6 text-white" style={{ background: 'linear-gradient(to right, #479626, #3d7a20)' }}>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm opacity-90">Base Price</p>
@@ -208,15 +208,15 @@ useEffect(() => {
             
             {/* Bidding Section */}
             <div className="space-y-6">
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-green-100">
+              <div className="bg-white rounded-2xl shadow-xl p-8" style={{ border: '1px solid #479626' }}>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Place Your Bid</h2>
                 
                 {/* Status Messages */}
                 {isCurrentUserHighestBidder && (
-                  <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                  <div className="rounded-xl p-4 mb-6" style={{ backgroundColor: '#e8f5e8', border: '1px solid #479626' }}>
                     <div className="flex items-center">
-                      <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                      <p className="text-green-800 font-semibold text-lg">
+                      <div className="w-3 h-3 rounded-full mr-3" style={{ backgroundColor: '#479626' }}></div>
+                      <p className="font-semibold text-lg" style={{ color: '#479626' }}>
                         You are currently the highest bidder!
                       </p>
                     </div>
@@ -271,8 +271,9 @@ useEffect(() => {
                     className={`w-full py-4 px-8 rounded-xl text-xl font-bold transition-all duration-300 transform hover:scale-105 ${
                       bidDisabled
                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl'
+                        : 'text-white shadow-lg hover:shadow-xl'
                     }`}
+                    style={!bidDisabled ? { backgroundColor: '#ffaf27' } : {}}
                     disabled={bidDisabled}
                     onClick={handleBid}
                   >

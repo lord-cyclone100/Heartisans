@@ -46,21 +46,22 @@ const OrderDetailsPage = () => {
       <div className="max-w-6xl mx-auto p-8">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center text-indigo-600 mb-8 hover:text-indigo-800 transition-colors text-3xl"
+          className="flex items-center mb-8 hover:text-indigo-800 transition-colors text-3xl"
+          style={{ color: '#479626' }}
         >
           <FiArrowLeft className="mr-4 text-4xl" /> Back to Dashboard
         </button>
 
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Header Section */}
-          <div className="p-8 border-b bg-gradient-to-r from-indigo-50 to-purple-50">
+          <div className="p-8 border-b" style={{ background: 'linear-gradient(to right, #f0f9ff, #ecfdf5)' }}>
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-5xl font-bold text-gray-800">Heartisans*</h1>
                 <h2 className="text-4xl font-semibold mt-4">Order #{order.orderId}</h2>
               </div>
               <div className="flex items-center bg-white px-6 py-3 rounded-lg shadow-sm">
-                <FiCalendar className="mr-4 text-indigo-500 text-3xl" />
+                <FiCalendar className="mr-4 text-3xl" style={{ color: '#479626' }} />
                 <span className="text-gray-700 text-2xl">{new Date(order.createdAt).toLocaleString()}</span>
               </div>
             </div>
@@ -221,7 +222,7 @@ const OrderDetailsPage = () => {
             <button className="px-8 py-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors text-2xl">
               Contact Seller
             </button>
-            <button className="px-8 py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-2xl">
+            <button className="px-8 py-4 text-white rounded-lg transition-colors text-2xl" style={{ backgroundColor: '#ffaf27' }}>
               Track Order
             </button>
           </div>

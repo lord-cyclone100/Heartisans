@@ -48,6 +48,7 @@ export const Navbar = () => {
               <li><NavLink to="/shop">{t('nav.shop')}</NavLink></li>
               <li><NavLink to="/auction">{t('nav.auction')}</NavLink></li>
               <li><NavLink to="/resale">{t('nav.resale')}</NavLink></li>
+              <li><NavLink to="/stories">{t('nav.stories')}</NavLink></li>
               <li><NavLink to="/sap-analytics" className="text-blue-300 hover:text-white-100">SAP Analytics</NavLink></li>
               {dbUser?.isAdmin && (
                 <li><NavLink to="/admin">{t('nav.admin')}</NavLink></li>

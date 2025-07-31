@@ -156,10 +156,10 @@ export const UserDashBoard = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, #f0f9ff, #ecfdf5, #f7fee7)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-24 w-24 border-4 border-green-200 border-t-green-500 mx-auto mb-6"></div>
-          <p className="text-3xl sm:text-4xl lg:text-5xl text-green-700 font-semibold">
+          <div className="animate-spin rounded-full h-24 w-24 border-4 border-t-transparent mx-auto mb-6" style={{ borderColor: '#479626', borderTopColor: 'transparent' }}></div>
+          <p className="text-3xl sm:text-4xl lg:text-5xl font-semibold" style={{ color: '#479626' }}>
             {t("dashboard.unauthorized")}
           </p>
         </div>
@@ -169,18 +169,18 @@ export const UserDashBoard = () => {
 
   return (
     <>
-      <section className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 font-mhlk">
+      <section className="min-h-screen font-mhlk" style={{ background: 'linear-gradient(to bottom right, #f0f9ff, #ecfdf5, #f7fee7)' }}>
         <div className="w-full h-[10vh]"></div>
 
         {/* User Header */}
-        <div className="bg-gradient-to-r from-green-500 via-emerald-600 to-green-600 text-white py-16 relative">
+        <div className="text-white py-16 relative" style={{ background: 'linear-gradient(to right, #479626, #3d7a20)' }}>
           {/* Wallet Button */}
           <div
             className={`absolute top-6 right-6 ${user.isArtisan || user.isAdmin ? "block" : "hidden"
               }`}
           >
             <NavLink to={`/wallet/${user._id}`}>
-              <button className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl border-2 border-white">
+              <button className="w-14 h-14 lg:w-16 lg:h-16 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl border-2 border-white" style={{ backgroundColor: '#ffaf27' }}>
                 <FaWallet size={20} className="text-white lg:w-6 lg:h-6" />
               </button>
             </NavLink>
@@ -199,10 +199,10 @@ export const UserDashBoard = () => {
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 leading-tight">
                   {t("dashboard.welcome")}, {user.userName}!
                 </h1>
-                <p className="text-xl sm:text-2xl lg:text-3xl text-green-100 mb-4">
+                <p className="text-xl sm:text-2xl lg:text-3xl mb-4" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                   {user.email}
                 </p>
-                <p className="text-lg sm:text-xl lg:text-2xl text-green-200">
+                <p className="text-lg sm:text-xl lg:text-2xl" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                   {t("dashboard.dateJoined")}:{" "}
                   {user.joiningDate &&
                     new Date(user.joiningDate).toLocaleDateString("en-GB")}
@@ -210,9 +210,10 @@ export const UserDashBoard = () => {
                 <div className="flex items-center gap-4 mt-6">
                   <span
                     className={`px-6 py-3 rounded-2xl text-lg sm:text-xl font-semibold shadow-lg ${user.isArtisan
-                      ? "bg-green-400 text-green-900"
-                      : "bg-yellow-400 text-yellow-900"
+                      ? "text-white"
+                      : "text-white"
                       }`}
+                    style={{ backgroundColor: user.isArtisan ? '#ffaf27' : '#6b7280' }}
                   >
                     {user.isArtisan ? "✓ Verified Artisan" : "Regular User"}
                   </span>
@@ -262,9 +263,10 @@ export const UserDashBoard = () => {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`py-6 px-4 border-b-4 font-bold text-lg sm:text-xl transition-all duration-300 ${activeTab === tab.id
-                        ? "border-green-500 text-green-600 bg-green-50"
-                        : "border-transparent text-gray-500 hover:text-green-600 hover:border-green-300 hover:bg-green-50"
+                        ? "text-white"
+                        : "border-transparent text-gray-500 hover:bg-gray-50"
                         }`}
+                      style={activeTab === tab.id ? { borderColor: '#479626', backgroundColor: '#479626' } : { borderColor: 'transparent' }}
                     >
                       <span className="mr-3 text-xl">{tab.icon}</span>
                       {tab.label}
@@ -279,7 +281,7 @@ export const UserDashBoard = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Profile Tab */}
           {activeTab === "profile" && (
-            <div className="bg-white rounded-2xl shadow-xl p-12 border border-green-100">
+            <div className="bg-white rounded-2xl shadow-xl p-12" style={{ border: '1px solid #479626' }}>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-12 text-gray-900">
                 {t("dashboard.profileSettings") || "Profile Settings"}
               </h2>
