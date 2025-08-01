@@ -193,22 +193,73 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           👥 Customer Segments
         </h3>
         
+        {/* Debug display - show raw Groq data */}
+        {customerData && (
+          <div className="bg-gray-100 p-4 rounded-lg mb-4">
+            <h4 className="font-semibold text-gray-700 mb-2">Raw Groq Data:</h4>
+            <pre className="text-xs overflow-auto max-h-32 text-gray-600">
+              {JSON.stringify(customerData, null, 2)}
+            </pre>
+          </div>
+        )}
+        
         {customerData ? (
           <div className="space-y-4">
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-3">Primary Segments</h4>
-              <div className="space-y-2">
-                {customerData.primary_segments?.map((segment, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
-                    <span className="font-medium" style={{ color: '#ffaf27' }}>{segment.name}</span>
+            {/* Display Groq's primary_segment (singular) */}
+            {customerData.primary_segment && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3">Primary Segment</h4>
+                <div className="p-3 rounded" style={{ backgroundColor: '#fff5e6' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-lg" style={{ color: '#ffaf27' }}>{customerData.primary_segment.name}</span>
                     <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>
-                      {segment.percentage}%
+                      {customerData.primary_segment.size}
                     </span>
                   </div>
-                ))}
+                  <p className="text-sm text-gray-600">{customerData.primary_segment.characteristics}</p>
+                </div>
               </div>
-            </div>
+            )}
             
+            {/* Display Groq's secondary_segments */}
+            {customerData.secondary_segments && Array.isArray(customerData.secondary_segments) && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3">Secondary Segments</h4>
+                <div className="space-y-2">
+                  {customerData.secondary_segments.map((segment, index) => (
+                    <div key={index} className="flex items-center p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
+                      <span className="mr-2" style={{ color: '#ffaf27' }}>•</span>
+                      <span className="font-medium" style={{ color: '#ffaf27' }}>{segment}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Display buying_behavior if available */}
+            {customerData.buying_behavior && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3">Buying Behavior</h4>
+                <p style={{ color: '#ffaf27' }}>{customerData.buying_behavior}</p>
+              </div>
+            )}
+            
+            {/* Display segment_insights if available */}
+            {customerData.segment_insights && Array.isArray(customerData.segment_insights) && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3">Segment Insights</h4>
+                <div className="space-y-2">
+                  {customerData.segment_insights.map((insight, index) => (
+                    <div key={index} className="flex items-start p-2">
+                      <span className="mr-2 mt-1" style={{ color: '#ffaf27' }}>•</span>
+                      <span className="text-gray-600">{insight}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Original demographics structure (if available) */}
             {customerData.demographics && (
               <div className="bg-white p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-700 mb-2">Demographics</h4>
@@ -339,33 +390,114 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           🔮 Demand Forecast
         </h3>
         
+        {/* Debug display - show raw Groq data */}
+        {forecastData && (
+          <div className="bg-gray-100 p-4 rounded-lg mb-4">
+            <h4 className="font-semibold text-gray-700 mb-2">Raw Groq Data:</h4>
+            <pre className="text-xs overflow-auto max-h-32 text-gray-600">
+              {JSON.stringify(forecastData, null, 2)}
+            </pre>
+          </div>
+        )}
+        
         {forecastData ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            {/* Display Groq's monthly_forecast */}
+            {forecastData.monthly_forecast && Array.isArray(forecastData.monthly_forecast) && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-3">Monthly Forecast</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {forecastData.monthly_forecast.map((monthString, index) => {
+                    console.log('Monthly String:', monthString); // Debug log
+                    // Split string like "Jan: 150 units" into month and value
+                    const [month, valueWithUnits] = monthString.split(': ');
+                    const numericValue = valueWithUnits ? valueWithUnits.split(' ')[0] : '0';
+                    console.log('Month:', month, 'Value:', numericValue); // Debug log
+                    return (
+                      <div key={index} className="p-3 rounded text-center" style={{ backgroundColor: '#e8f5e8' }}>
+                        <div className="font-semibold text-sm" style={{ color: '#479626' }}>{month}</div>
+                        <div className="text-lg font-bold mt-1" style={{ color: '#479626' }}>{numericValue}</div>
+                        <div className="text-xs text-gray-500">units</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {/* Display seasonal_trends if available */}
+            {forecastData.seasonal_trends && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700">Seasonal Trends</h4>
+                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.seasonal_trends}</p>
+              </div>
+            )}
+            
+            {/* Display forecast_confidence if available */}
+            {forecastData.forecast_confidence && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700">Forecast Confidence</h4>
+                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.forecast_confidence}</p>
+              </div>
+            )}
+            
+            {/* Display business_impact if available */}
+            {forecastData.business_impact && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700">Business Impact</h4>
+                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.business_impact}</p>
+              </div>
+            )}
+            
+            {/* Display forecast_trend if available (fallback) */}
+            {forecastData.forecast_trend && (
               <div className="bg-white p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-700">Forecast Trend</h4>
-                <p style={{ color: '#479626' }}>{forecastData.forecast_trend}</p>
+                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.forecast_trend}</p>
               </div>
+            )}
+            
+            {/* Display predicted_growth if available (fallback) */}
+            {forecastData.predicted_growth && (
               <div className="bg-white p-4 rounded-lg">
                 <h4 className="font-semibold text-gray-700">Predicted Growth</h4>
-                <p style={{ color: '#479626' }}>{forecastData.predicted_growth}</p>
+                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.predicted_growth}</p>
               </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Seasonal Peaks</h4>
-              <div className="space-y-2">
-                {forecastData.seasonal_peaks?.map((peak, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
-                    <span style={{ color: '#479626' }}>{typeof peak === 'object' ? peak.period : peak}</span>
-                    {typeof peak === 'object' && peak.boost && (
-                      <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>
-                        +{peak.boost}
-                      </span>
-                    )}
-                  </div>
-                ))}
+            )}
+            
+            {/* Display seasonal_peaks if available (fallback) */}
+            {forecastData.seasonal_peaks && Array.isArray(forecastData.seasonal_peaks) && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-2">Seasonal Peaks</h4>
+                <div className="space-y-2">
+                  {forecastData.seasonal_peaks.map((peak, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
+                      <span style={{ color: '#479626' }}>{typeof peak === 'object' ? peak.period : peak}</span>
+                      {typeof peak === 'object' && peak.boost && (
+                        <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>
+                          +{peak.boost}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+            
+            {/* Display demand_drivers if available */}
+            {forecastData.demand_drivers && Array.isArray(forecastData.demand_drivers) && (
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-700 mb-2">Demand Drivers</h4>
+                <div className="space-y-2">
+                  {forecastData.demand_drivers.map((driver, index) => (
+                    <div key={index} className="flex items-start p-2">
+                      <span className="mr-2 mt-1" style={{ color: '#479626' }}>•</span>
+                      <span className="text-gray-600">{driver}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
