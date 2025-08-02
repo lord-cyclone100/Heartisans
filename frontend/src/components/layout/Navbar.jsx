@@ -1,5 +1,5 @@
 import { SignUpButton } from '../elements/SignUpButton';
-import { LanguageSelector } from '../elements/LanguageSelector';
+import LanguageSelector from '../elements/LanguageSelector';
 import { NavLink } from "react-router-dom"
 import { useUser } from '@clerk/clerk-react';
 import { useEffect, useState } from 'react';
