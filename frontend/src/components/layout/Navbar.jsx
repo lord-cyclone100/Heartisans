@@ -34,6 +34,12 @@ export const Navbar = () => {
     }
   }, [user]);
 
+  const getNavLinkColor = ({isActive}) => {
+    return{
+      color:isActive ? "#80d65c" : "white",
+    };
+  }
+
   return (
     <>
       <nav className='h-[10vh] w-full bg-black/70 backdrop-blur-lg border-b border-white/40 px-4 sm:px-8 md:px-16 lg:px-40 flex items-center justify-between fixed z-10 font-mhlk text-white'>
@@ -45,13 +51,13 @@ export const Navbar = () => {
         <div className='flex  gap-[4vw] items-center'>
           <div className='hidden lg:block'>
             <ul className={`menu menu-horizontal px-1 text-2xl gap-[2vw] ${user ? "flex" : "hidden"}`}>
-              <li><NavLink to="/shop">{t('nav.shop')}</NavLink></li>
-              <li><NavLink to="/auction">{t('nav.auction')}</NavLink></li>
-              <li><NavLink to="/resale">{t('nav.resale')}</NavLink></li>
-              <li><NavLink to="/stories">{t('nav.stories')}</NavLink></li>
-              <li><NavLink to="/sap-analytics" className="text-blue-300 hover:text-white-100">SAP Analytics</NavLink></li>
+              <li><NavLink to="/shop" style={getNavLinkColor}>{t('nav.shop')}</NavLink></li>
+              <li><NavLink to="/auction" style={getNavLinkColor}>{t('nav.auction')}</NavLink></li>
+              <li><NavLink to="/resale" style={getNavLinkColor}>{t('nav.resale')}</NavLink></li>
+              <li><NavLink to="/stories" style={getNavLinkColor}>{t('nav.stories')}</NavLink></li>
+              <li><NavLink to="/sap-analytics" style={getNavLinkColor}>SAP Analytics</NavLink></li>
               {dbUser?.isAdmin && (
-                <li><NavLink to="/admin">{t('nav.admin')}</NavLink></li>
+                <li><NavLink to="/admin" style={getNavLinkColor}>{t('nav.admin')}</NavLink></li>
               )}
             </ul>
           </div>

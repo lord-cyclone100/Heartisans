@@ -13,10 +13,10 @@ export const Shop = () => {
         {/* Hero Section */}
         <div className="w-full h-[10vh]"></div>
         <div className="text-center py-8 md:py-12 px-4">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 font-mhlk" style={{ color: '#479626' }}>
+          <h1 className="text-4xl md:text-6xl lg:text-6xl xl:text-[5rem] font-bold mb-4 font-mhlk">
             Discover Handcrafted Treasures
           </h1>
-          <p className="text-lg md:text-2xl lg:text-3xl max-w-2xl mx-auto leading-relaxed" style={{ color: '#6b7280' }}>
+          <p className="text-lg md:text-2xl lg:text-3xl max-w-3xl mx-auto leading-relaxed" style={{ color: '#6b7280' }}>
             Explore authentic artisan creations from across India, organized by category and region
           </p>
         </div>
@@ -30,7 +30,7 @@ export const Shop = () => {
             <div className="w-16 md:w-24 h-1 mx-auto rounded-full" style={{ background: 'linear-gradient(to right, #479626, #ffaf27)' }}></div>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 lg:gap-10">
             {shopCategories.map((item, idx) => (
               <NavLink 
                 to={`/shop/${item.name}`} 
