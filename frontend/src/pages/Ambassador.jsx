@@ -12,7 +12,8 @@ export const Ambassador = () => {
               </clipPath>
             </defs>
             <image
-              href="https://www.adazing.com/wp-content/uploads/2021/01/A-Detailed-Look-At-The-Writing-Tablet-1.jpg"
+              /*href="https://www.adazing.com/wp-content/uploads/2021/01/A-Detailed-Look-At-The-Writing-Tablet-1.jpg"*/
+              href="https://res.cloudinary.com/dmljao4pk/image/upload/v1754136617/ambassador_ehtyhr.png"
               width="100%"
               height="100%"
               clipPath="url(#blobClip)"

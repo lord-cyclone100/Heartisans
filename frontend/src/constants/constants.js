@@ -1,8 +1,8 @@
 export const homeCarousel = [
-  './photos/wallpaper1.jpg',
-  './photos/wallpaper2.jpg',
-  './photos/wallpaper3.jpg',
-  './photos/wallpaper4.jpg'
+  './photos/wallpaper1.png',
+  './photos/wallpaper2.png',
+  './photos/wallpaper3.png',
+  './photos/wallpaper4.png'
 ]
 
 export const shopCategories = [

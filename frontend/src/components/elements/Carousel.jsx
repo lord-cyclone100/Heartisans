@@ -90,7 +90,7 @@ export const Carousel = () => {
         <div className="text-center mt-12">
           <button
             onClick={handleExploreMore}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-8 rounded-xl font-bold text-lg sm:text-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            className="bg-gradient-to-r from-[#479626] to-[#4da329] text-white py-4 px-8 rounded-xl font-bold text-lg sm:text-xl hover:from-[#60cb34] hover:to-[#80d65c] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
             Explore More Products
             <svg className="w-5 h-5 ml-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">

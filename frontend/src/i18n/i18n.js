@@ -161,7 +161,7 @@ const resources = {
       
       // Home Page
       "home.heroTitle": "A marketplace of Handmade crafts",
-      "home.heroSubtitle": "Where Heart meets Art",
+      "home.heroSubtitle": "Where heart meets art",
       "home.aboutTitle": "About Heartisans",
       "home.aboutDescription": "is a secure, AI-powered marketplace where artisans can sell handmade products directly to the world. We empower creators by enabling resale and live auctions for sustainable reuse.",
       "home.shopByCategory": "Shop by category",
@@ -195,7 +195,7 @@ const resources = {
       "subscription.plan": "Plan: {{plan}}",
       "subscription.amount": "Amount: Rs {{amount}}",
       "subscription.status": "Status: {{status}}",
-      "subscription.benefitsUnlocked": "🎉 Artisan Benefits Unlocked:",
+      "subscription.benefitsUnlocked": " Artisan Benefits Unlocked:",
       "subscription.enhancedSelling": "• Enhanced selling features",
       "subscription.prioritySupport": "• Priority customer support",
       "subscription.advancedAnalytics": "• Advanced analytics",
@@ -610,7 +610,7 @@ const resources = {
       "subscription.plan": "योजना: {{plan}}",
       "subscription.amount": "राशि: ₹{{amount}}",
       "subscription.status": "स्थिति: {{status}}",
-      "subscription.benefitsUnlocked": "🎉 कारीगर लाभ अनलॉक:",
+      "subscription.benefitsUnlocked": " कारीगर लाभ अनलॉक:",
       "subscription.enhancedSelling": "• उन्नत बिक्री सुविधाएं",
       "subscription.prioritySupport": "• प्राथमिकता ग्राहक सहायता",
       "subscription.advancedAnalytics": "• उन्नत विश्लेषण",
