@@ -1,11 +1,656 @@
-import { AuctionLeaderBoard } from "../components/elements/AuctionLeaderBoard"
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export const Resale = () => {
-  return(
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [pricePrediction, setPricePrediction] = useState(null);
+  const [isPredictingPrice, setIsPredictingPrice] = useState(false);
+  const [showPricingInsights, setShowPricingInsights] = useState(false);
+  const [sapAiSuggestion, setSapAiSuggestion] = useState(null);
+  const [sapAiLoading, setSapAiLoading] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreview, setImagePreview] = useState([]);
+  const [resaleForm, setResaleForm] = useState({
+    productName: '',
+    category: '',
+    condition: '',
+    originalPrice: '',
+    description: '',
+    images: []
+  });
+
+  const qualityCategories = [
+    {
+      id: 'with-tag',
+      title: 'With Tag - Just Like New',
+      description: 'Original tags intact, pristine condition, no wear signs',
+      priceMultiplier: 0.85, // 10-15% less than original
+      icon: '🏷️',
+      color: 'bg-green-500',
+      bgGradient: 'from-green-50 to-green-100',
+      borderColor: 'border-green-200',
+      textColor: 'text-green-800'
+    },
+    {
+      id: 'without-tag',
+      title: 'Without Tag - Good to Fair',
+      description: 'Excellent condition, minimal wear, well maintained',
+      priceMultiplier: 0.65, // 30-35% less than original
+      icon: '✨',
+      color: 'bg-orange-500',
+      bgGradient: 'from-orange-50 to-orange-100',
+      borderColor: 'border-orange-200',
+      textColor: 'text-orange-800'
+    },
+    {
+      id: 'lesser-quality',
+      title: 'Lesser Quality',
+      description: 'Visible wear, some flaws, but still functional and beautiful',
+      priceMultiplier: 0.45, // 50-55% less than original
+      icon: '🔄',
+      color: 'bg-blue-500',
+      bgGradient: 'from-blue-50 to-blue-100',
+      borderColor: 'border-blue-200',
+      textColor: 'text-blue-800'
+    }
+  ];
+
+  const categories = [
+    'Art', 'Pottery', 'Fashion', 'Crafts', 'Crochet', 'Accessories',
+    'Jewelry', 'Textiles', 'Woodwork', 'Metalwork', 'Paintings', 'Sculptures'
+  ];
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category.id);
+    setResaleForm({ ...resaleForm, condition: category.id });
+  };
+
+  const calculateEstimatedPrice = (originalPrice, condition) => {
+    if (!originalPrice || !condition) return 0;
+    const category = qualityCategories.find(cat => cat.id === condition);
+    return Math.round(originalPrice * category.priceMultiplier);
+  };
+
+  const generateSAPPricePrediction = async () => {
+    if (!resaleForm.productName || !resaleForm.category) {
+      alert("Please fill in product name and category first");
+      return;
+    }
+
+    setIsPredictingPrice(true);
+    
+    try {
+      const response = await axios.post("http://localhost:5000/api/predict-price", {
+        productName: resaleForm.productName,
+        productCategory: resaleForm.category,
+        productMaterial: "Handcrafted materials",
+        isHandmade: true,
+        region: "India",
+        listingType: "resale"
+      });
+
+      if (response.data.success) {
+        setPricePrediction(response.data.data);
+        setShowPricingInsights(true);
+      } else {
+        throw new Error(response.data.error || 'Failed to generate price prediction');
+      }
+    } catch (error) {
+      console.error('SAP AI Price prediction error:', error);
+      alert("Failed to generate price prediction. Please try again.");
+    } finally {
+      setIsPredictingPrice(false);
+    }
+  };
+
+  // Generate SAP AI product description
+  const generateSAPAIDescription = async () => {
+    if (!resaleForm.productName || !resaleForm.category) {
+      alert("Please fill in product name and category first");
+      return;
+    }
+
+    setSapAiLoading(true);
+    
+    try {
+      const response = await axios.post("http://localhost:5000/api/generate-description", {
+        productName: resaleForm.productName,
+        productCategory: resaleForm.category,
+        productState: "India",
+        listingType: "resale"
+      });
+
+      if (response.data.success) {
+        setSapAiSuggestion({ description: response.data.description });
+        alert("SAP AI description generated! Review and apply if suitable.");
+      } else {
+        throw new Error('Failed to generate SAP AI description');
+      }
+    } catch (error) {
+      console.error('SAP AI Description Error:', error);
+      alert("Failed to generate SAP AI description. Please try again.");
+    } finally {
+      setSapAiLoading(false);
+    }
+  };
+
+  const useSAPAISuggestion = () => {
+    if (sapAiSuggestion?.description) {
+      setResaleForm({ ...resaleForm, description: sapAiSuggestion.description });
+      setSapAiSuggestion(null);
+      alert("SAP AI description applied! Enterprise-grade content is now active.");
+    }
+  };
+
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length + selectedImages.length > 5) {
+      alert("Maximum 5 images allowed");
+      return;
+    }
+
+    setSelectedImages(prev => [...prev, ...files]);
+    
+    // Create preview URLs
+    const newPreviews = files.map(file => ({
+      file,
+      url: URL.createObjectURL(file),
+      id: Date.now() + Math.random()
+    }));
+    
+    setImagePreview(prev => [...prev, ...newPreviews]);
+    setResaleForm({ ...resaleForm, images: [...resaleForm.images, ...files] });
+  };
+
+  const removeImage = (indexToRemove) => {
+    const updatedImages = selectedImages.filter((_, index) => index !== indexToRemove);
+    const updatedPreviews = imagePreview.filter((_, index) => index !== indexToRemove);
+    
+    // Revoke URL to prevent memory leaks
+    if (imagePreview[indexToRemove]) {
+      URL.revokeObjectURL(imagePreview[indexToRemove].url);
+    }
+    
+    setSelectedImages(updatedImages);
+    setImagePreview(updatedPreviews);
+    setResaleForm({ ...resaleForm, images: updatedImages });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!selectedCategory || !resaleForm.productName || !resaleForm.category || !resaleForm.originalPrice || selectedImages.length === 0) {
+      alert('Please fill in all required fields and upload at least one image');
+      return;
+    }
+
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Add form fields
+      formData.append('productName', resaleForm.productName);
+      formData.append('category', resaleForm.category);
+      formData.append('description', resaleForm.description || '');
+      formData.append('originalPrice', resaleForm.originalPrice);
+      formData.append('condition', selectedCategory);
+      
+      // Add SAP analytics data if available
+      if (pricePrediction) {
+        formData.append('sapAnalytics', JSON.stringify({
+          pricePrediction: pricePrediction,
+          aiVersion: 'SAP Business AI v3.0',
+          timestamp: new Date().toISOString()
+        }));
+      }
+      
+      // Add images
+      selectedImages.forEach((image, index) => {
+        formData.append('images', image);
+      });
+
+      // Get auth token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in to create a resale listing');
+        return;
+      }
+
+      const response = await axios.post('http://localhost:5000/api/resale', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.data.success) {
+        alert('Resale listing created successfully!');
+        
+        // Reset form
+        setResaleForm({
+          productName: '',
+          category: '',
+          condition: '',
+          originalPrice: '',
+          description: '',
+          images: []
+        });
+        setSelectedCategory('');
+        setSelectedImages([]);
+        setImagePreview([]);
+        setPricePrediction(null);
+        setShowPricingInsights(false);
+        setSapAiSuggestion(null);
+        
+        console.log('Resale listing created:', response.data.data);
+      } else {
+        throw new Error(response.data.error || 'Failed to create listing');
+      }
+    } catch (error) {
+      console.error('Create listing error:', error);
+      alert(`Failed to create resale listing: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
+  return (
     <>
       <div className="w-full h-[10vh]"></div>
-      {/* <AuctionLeaderBoard/> */}
-      <h1>Resale</h1>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50">
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white py-12">
+          <div className="container mx-auto px-6 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Resale Marketplace
+            </h1>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+              Give your handcrafted treasures a new life. Sell with confidence using our AI-powered pricing intelligence.
+            </p>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-6 py-12">
+          {/* Quality Categories Section */}
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+              Choose Your Product Condition
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {qualityCategories.map((category) => (
+                <div
+                  key={category.id}
+                  className={`relative cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+                    selectedCategory === category.id 
+                      ? 'ring-4 ring-green-400 shadow-2xl scale-105' 
+                      : 'hover:shadow-lg'
+                  }`}
+                  onClick={() => handleCategorySelect(category)}
+                >
+                  <div className={`bg-gradient-to-br ${category.bgGradient} border-2 ${category.borderColor} rounded-2xl p-6 h-full`}>
+                    <div className="text-center mb-4">
+                      <div className="text-4xl mb-3">{category.icon}</div>
+                      <h3 className={`text-xl font-bold ${category.textColor} mb-2`}>
+                        {category.title}
+                      </h3>
+                    </div>
+                    
+                    <p className="text-gray-700 text-sm mb-4 leading-relaxed">
+                      {category.description}
+                    </p>
+                    
+                    <div className="bg-white bg-opacity-70 rounded-lg p-3 text-center">
+                      <span className={`text-sm font-semibold ${category.textColor}`}>
+                        Expected Price: {Math.round(category.priceMultiplier * 100)}% of original
+                      </span>
+                    </div>
+
+                    {resaleForm.originalPrice && selectedCategory === category.id && (
+                      <div className="mt-3 bg-white rounded-lg p-3 text-center border-2 border-green-300">
+                        <span className="text-lg font-bold text-green-700">
+                          Estimated: ₹{calculateEstimatedPrice(resaleForm.originalPrice, category.id).toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Resale Form */}
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span className="mr-3">📝</span>
+                List Your Item for Resale
+              </h2>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Product Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={resaleForm.productName}
+                      onChange={(e) => setResaleForm({ ...resaleForm, productName: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      placeholder="Enter your product name"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Category *
+                    </label>
+                    <select
+                      value={resaleForm.category}
+                      onChange={(e) => setResaleForm({ ...resaleForm, category: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      required
+                    >
+                      <option value="">Select Category</option>
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Original Purchase Price (₹) *
+                    </label>
+                    <input
+                      type="number"
+                      value={resaleForm.originalPrice}
+                      onChange={(e) => setResaleForm({ ...resaleForm, originalPrice: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      placeholder="Enter original price"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Condition Selected
+                    </label>
+                    <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+                      {selectedCategory ? (
+                        <span className="text-gray-700">
+                          {qualityCategories.find(cat => cat.id === selectedCategory)?.title || 'None selected'}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">Please select a condition above</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Product Description
+                  </label>
+                  <div className="space-y-3">
+                    <textarea
+                      value={resaleForm.description}
+                      onChange={(e) => setResaleForm({ ...resaleForm, description: e.target.value })}
+                      rows="4"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      placeholder="Describe your item's current condition, any flaws, history, etc."
+                    />
+                    
+                    {/* SAP AI Description Generator */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-bold text-blue-800 flex items-center">
+                          <span className="mr-2">🤖</span>
+                          SAP AI Description Generator
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={generateSAPAIDescription}
+                          disabled={sapAiLoading || !resaleForm.productName || !resaleForm.category}
+                          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {sapAiLoading ? (
+                            <span className="flex items-center">
+                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Generating...
+                            </span>
+                          ) : (
+                            'Generate Description'
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-blue-700 text-xs">
+                        Let SAP AI create a professional description for your resale item
+                      </p>
+                    </div>
+
+                    {/* SAP AI Suggestion Display */}
+                    {sapAiSuggestion && (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-semibold text-green-800 text-sm">SAP AI Generated Description</h4>
+                          <button
+                            type="button"
+                            onClick={useSAPAISuggestion}
+                            className="bg-green-600 text-white px-3 py-1 rounded text-xs font-semibold hover:bg-green-700 transition-colors"
+                          >
+                            Use This Description
+                          </button>
+                        </div>
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          {sapAiSuggestion.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Image Upload Section */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Product Images (Max 5 images) *
+                  </label>
+                  
+                  <div className="space-y-4">
+                    {/* Upload Area */}
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="image-upload"
+                        disabled={selectedImages.length >= 5}
+                      />
+                      <label 
+                        htmlFor="image-upload" 
+                        className={`cursor-pointer flex flex-col items-center ${
+                          selectedImages.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <div className="text-4xl mb-2">📸</div>
+                        <p className="text-gray-600 font-medium">
+                          {selectedImages.length >= 5 
+                            ? 'Maximum 5 images reached' 
+                            : 'Click to upload images or drag and drop'
+                          }
+                        </p>
+                        <p className="text-gray-400 text-sm mt-1">
+                          PNG, JPG, JPEG up to 10MB each
+                        </p>
+                      </label>
+                    </div>
+
+                    {/* Image Preview Grid */}
+                    {imagePreview.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        {imagePreview.map((preview, index) => (
+                          <div key={preview.id} className="relative group">
+                            <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
+                              <img
+                                src={preview.url}
+                                alt={`Preview ${index + 1}`}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors shadow-lg"
+                            >
+                              ×
+                            </button>
+                            <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                              {index + 1}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedImages.length > 0 && (
+                      <p className="text-sm text-green-600 flex items-center">
+                        <span className="mr-2">✅</span>
+                        {selectedImages.length} image{selectedImages.length > 1 ? 's' : ''} selected
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* SAP AI Price Prediction */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                  <h3 className="text-lg font-bold text-blue-800 mb-3 flex items-center">
+                    <span className="mr-2">🤖</span>
+                    SAP AI Price Prediction
+                  </h3>
+                  <p className="text-blue-700 text-sm mb-4">
+                    Get enterprise-grade pricing intelligence powered by SAP Business AI
+                  </p>
+                  
+                  <button
+                    type="button"
+                    onClick={generateSAPPricePrediction}
+                    disabled={isPredictingPrice || !resaleForm.productName || !resaleForm.category}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+                  >
+                    {isPredictingPrice ? (
+                      <span className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Analyzing with SAP AI...
+                      </span>
+                    ) : (
+                      'Generate AI Price Prediction'
+                    )}
+                  </button>
+                </div>
+
+                {/* Price Prediction Results */}
+                {showPricingInsights && pricePrediction && (
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                    <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center">
+                      <span className="mr-2">📊</span>
+                      SAP AI Pricing Intelligence
+                    </h3>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="bg-white rounded-lg p-4 border border-green-200">
+                        <h4 className="font-semibold text-green-700 mb-2">Market Price Range</h4>
+                        <p className="text-2xl font-bold text-green-800">
+                          ₹{pricePrediction.priceRange?.min?.toLocaleString()} - ₹{pricePrediction.priceRange?.max?.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-green-600 mt-1">
+                          Confidence: {pricePrediction.confidence}%
+                        </p>
+                      </div>
+                      
+                      <div className="bg-white rounded-lg p-4 border border-green-200">
+                        <h4 className="font-semibold text-green-700 mb-2">Suggested Price</h4>
+                        <p className="text-2xl font-bold text-green-800">
+                          ₹{pricePrediction.suggestedPrice?.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-green-600 mt-1">
+                          Market Position: {pricePrediction.marketPosition}
+                        </p>
+                      </div>
+                    </div>
+
+                    {pricePrediction.recommendations && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-green-700 mb-2">SAP AI Recommendations</h4>
+                        <ul className="space-y-1">
+                          {pricePrediction.recommendations.slice(0, 3).map((rec, index) => (
+                            <li key={index} className="text-sm text-green-600 flex items-start">
+                              <span className="mr-2">•</span>
+                              {rec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <div className="flex justify-center pt-6">
+                  <button
+                    type="submit"
+                    disabled={!selectedCategory || !resaleForm.productName || !resaleForm.category || !resaleForm.originalPrice || selectedImages.length === 0}
+                    className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-green-700 hover:to-orange-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg"
+                  >
+                    Create Resale Listing
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+              Why Choose Our Resale Marketplace?
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center group">
+                <div className="bg-gradient-to-br from-green-100 to-green-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">🤖</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">AI-Powered Pricing</h3>
+                <p className="text-gray-600">Enterprise-grade SAP AI analyzes market trends to suggest optimal pricing for your items.</p>
+              </div>
+              
+              <div className="text-center group">
+                <div className="bg-gradient-to-br from-orange-100 to-orange-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">🏷️</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Quality-Based Categories</h3>
+                <p className="text-gray-600">Transparent condition assessment ensures fair pricing and buyer confidence.</p>
+              </div>
+              
+              <div className="text-center group">
+                <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">🌟</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Trusted Marketplace</h3>
+                <p className="text-gray-600">Safe, secure platform connecting artisan product lovers with authenticated sellers.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
-  )
-}
+  );
+};
