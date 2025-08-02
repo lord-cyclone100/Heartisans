@@ -14,6 +14,7 @@ export const UserDashBoard = () => {
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [userProducts, setUserProducts] = useState([]);
+  const [userResaleListings, setUserResaleListings] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showArtisanPlanModal, setShowArtisanPlanModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -45,6 +46,14 @@ export const UserDashBoard = () => {
             })
             .catch(() => setUserProducts([]));
         }
+        
+        // Fetch user's resale listings
+        axios
+          .get(`http://localhost:5000/api/resale/user/${res.data._id}`)
+          .then((resaleRes) => {
+            setUserResaleListings(resaleRes.data);
+          })
+          .catch(() => setUserResaleListings([]));
       })
       .catch(() => setUser(null));
   }, [id]);
@@ -238,6 +247,11 @@ export const UserDashBoard = () => {
                   label: t("dashboard.myProducts") || "My Products",
                   icon: "🛍️",
                   artisanOnly: true,
+                },
+                {
+                  id: "resale-listings",
+                  label: "My Resale Listings",
+                  icon: "♻️",
                 },
                 {
                   id: "manage-products",
@@ -457,6 +471,121 @@ export const UserDashBoard = () => {
             </div>
           )}
 
+          {/* Resale Listings Tab */}
+          {activeTab === "resale-listings" && (
+            <div className="bg-white rounded-2xl shadow-xl p-12 border border-green-100">
+              <div className="mb-12">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 text-gray-900">
+                  My Resale Listings
+                </h2>
+                <p className="text-gray-600 text-xl sm:text-2xl lg:text-3xl">
+                  View and manage your pre-owned items listed for resale
+                </p>
+              </div>
+
+              <div className="flex gap-6 mb-8">
+                <button
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                  onClick={() => navigate("/resale")}
+                >
+                  + Create New Listing
+                </button>
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                  onClick={() => navigate("/resale-listings")}
+                >
+                  Browse All Listings
+                </button>
+              </div>
+
+              {userResaleListings.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {userResaleListings.map((listing) => (
+                    <div
+                      key={listing._id}
+                      className="border-2 border-green-100 rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-br from-green-50 to-emerald-50"
+                    >
+                      {listing.images && listing.images.length > 0 && (
+                        <img
+                          src={listing.images[0].url}
+                          alt={listing.productName}
+                          className="w-full h-48 object-cover rounded-xl mb-4 shadow-lg"
+                        />
+                      )}
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                          listing.condition === 'Like New' ? 'bg-green-100 text-green-800' :
+                          listing.condition === 'Good' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-orange-100 text-orange-800'
+                        }`}>
+                          {listing.condition}
+                        </span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                          listing.status === 'available' ? 'bg-blue-100 text-blue-800' :
+                          listing.status === 'sold' ? 'bg-gray-100 text-gray-800' :
+                          'bg-purple-100 text-purple-800'
+                        }`}>
+                          {listing.status}
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-xl mb-2 text-gray-900 leading-tight">
+                        {listing.productName}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-2">
+                        {listing.category}
+                      </p>
+                      <div className="flex justify-between items-center mb-4">
+                        <div>
+                          <p className="text-green-600 font-bold text-2xl">
+                            ₹{listing.currentPrice?.toLocaleString()}
+                          </p>
+                          {listing.originalPrice && (
+                            <p className="text-gray-500 text-sm line-through">
+                              ₹{listing.originalPrice.toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-blue-600 font-semibold text-sm">
+                            {listing.interestedUsers?.length || 0} interested
+                          </p>
+                          <p className="text-gray-500 text-xs">
+                            {new Date(listing.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <button className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                          Edit
+                        </button>
+                        <button className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl border border-green-200">
+                  <div className="text-6xl mb-8">♻️</div>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-600 mb-6">
+                    No Resale Listings Yet
+                  </h3>
+                  <p className="text-gray-500 text-xl sm:text-2xl lg:text-3xl mb-12 max-w-2xl mx-auto leading-relaxed">
+                    Start listing your pre-owned handcrafted items to give them a new life
+                  </p>
+                  <button
+                    onClick={() => navigate("/resale")}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-12 py-6 rounded-2xl font-bold text-xl sm:text-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                  >
+                    Create Your First Listing
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* SAP Analytics Tab */}
           {activeTab === "analytics" && user.isArtisan && (
             <div className="space-y-12">
@@ -571,6 +700,22 @@ export const UserDashBoard = () => {
                     onClick={() => handleProtectedRedirect("/auctionform")}
                   >
                     {t("dashboard.createAuction") || "Create Auction"}
+                  </button>
+                </div>
+
+                <div className="p-8 border-2 border-green-100 rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-br from-green-50 to-emerald-50">
+                  <div className="text-5xl mb-6">♻️</div>
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-gray-900">
+                    Resale Marketplace
+                  </h3>
+                  <p className="text-gray-600 text-lg sm:text-xl lg:text-2xl mb-8 leading-relaxed">
+                    Sell your pre-owned handcrafted items and give them a new life
+                  </p>
+                  <button
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-4 rounded-2xl font-bold text-lg sm:text-xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                    onClick={() => navigate("/resale")}
+                  >
+                    List Resale Item
                   </button>
                 </div>
 
