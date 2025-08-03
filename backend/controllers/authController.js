@@ -566,3 +566,36 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
+
+// Get current user with fresh data from database
+export const getCurrentUser = async (req, res) => {
+  try {
+    // req.user is set by the protect middleware with current DB data
+    const user = req.user;
+    
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: {
+          _id: user._id,
+          userName: user.userName,
+          email: user.email,
+          fullName: user.fullName,
+          imageUrl: user.imageUrl,
+          isAdmin: user.isAdmin,
+          isArtisan: user.isArtisan,
+          isVerified: user.isVerified,
+          balance: user.balance,
+          joiningDate: user.joiningDate,
+          authProvider: user.authProvider
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get current user error:', error);
+    res.status(500).json({
+      status: 'fail',
+      message: 'Failed to get current user data'
+    });
+  }
+};
