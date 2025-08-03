@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 export const ResetPassword = () => {
   const { token } = useParams();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -73,34 +76,60 @@ export const ResetPassword = () => {
             <label htmlFor="password" className="block text-xl font-medium text-gray-700 mb-4">
               New Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              className="w-full px-6 py-6 text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-              placeholder="Enter your new password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className="w-full px-6 py-6 pr-16 text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+                placeholder="Enter your new password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-6 flex items-center"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <AiOutlineEyeInvisible className="h-6 w-6 text-gray-400 hover:text-gray-600" />
+                ) : (
+                  <AiOutlineEye className="h-6 w-6 text-gray-400 hover:text-gray-600" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div>
             <label htmlFor="confirmPassword" className="block text-xl font-medium text-gray-700 mb-4">
               Confirm Password
             </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              required
-              className="w-full px-6 py-6 text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-              placeholder="Confirm your new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className="w-full px-6 py-6 pr-16 text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+                placeholder="Confirm your new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-6 flex items-center"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? (
+                  <AiOutlineEyeInvisible className="h-6 w-6 text-gray-400 hover:text-gray-600" />
+                ) : (
+                  <AiOutlineEye className="h-6 w-6 text-gray-400 hover:text-gray-600" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button

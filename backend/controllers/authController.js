@@ -261,6 +261,11 @@ export const googleAuth = async (req, res) => {
           authProvider: user.authProvider // 'local' or other provider
         }
       });
+    } else {
+      // Update user's profile picture if they signed in with Google again
+      user.imageUrl = picture;
+      user.fullName = name;
+      await user.save();
     }
 
     // Generate tokens and respond
