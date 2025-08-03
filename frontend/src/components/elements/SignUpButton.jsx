@@ -30,7 +30,14 @@ export const SignUpButton = () => {
               className="rounded-full size-12 overflow-hidden hover:cursor-pointer transition-transform hover:scale-110" 
               onClick={() => navigate(`/dashboard/${dbUserId}`)}
             >
-              <img src={user.imageUrl || '/photos/default_icon.png'} alt="Profile" />
+              <img 
+                src={user.imageUrl || '/photos/default_icon.png'} 
+                alt="Profile" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = '/photos/default_icon.png';
+                }}
+              />
             </button>
           )
         )}
