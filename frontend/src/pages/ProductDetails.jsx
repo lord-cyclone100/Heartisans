@@ -146,7 +146,7 @@ export const ProductDetails = () => {
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
                       {card.productName}
                     </h1>
-                    <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-600 mt-4 leading-relaxed">
+                    <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-600 mt-4 leading-relaxed whitespace-pre-wrap">
                       {card.productDescription}
                     </p>
                   </div>

@@ -693,7 +693,7 @@ export const SellForm = () => {
                         </button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                       {aiSuggestion}
                     </p>
                   </div>
@@ -732,7 +732,7 @@ export const SellForm = () => {
 
                     {/* Generated Description */}
                     <div className="bg-white rounded-lg p-4 border-l-4 border-indigo-400">
-                      <p className="text-sm text-gray-800 leading-relaxed">
+                      <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
                         {sapAiSuggestion.description}
                       </p>
                     </div>

@@ -136,10 +136,18 @@ export const UserDashBoard = () => {
       console.error("Error response:", error.response?.data);
       console.error("Error status:", error.response?.status);
 
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to update product. Please try again.";
+      let errorMessage = "Failed to update product. Please try again.";
+      
+      if (error.response?.status === 404) {
+        errorMessage = "Product not found. It may have been deleted.";
+      } else if (error.response?.status === 400) {
+        errorMessage = error.response?.data?.error || "Invalid product data provided.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
+      
       setUpdateMessage(`Failed to update: ${errorMessage}`);
     }
     setUpdateLoading(false);

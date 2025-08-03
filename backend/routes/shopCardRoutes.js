@@ -4,7 +4,8 @@ import {
   getAllShopCards,
   getShopCardsByCategory,
   getShopCardsByState,
-  getShopCardById,        // ← This is equivalent to getProductById
+  getShopCardById,
+  updateShopCard,
   deleteShopCard
 } from '../controllers/shopCardController.js';
 
@@ -14,7 +15,8 @@ router.post('/', createShopCard);
 router.get('/', getAllShopCards);
 router.get('/category/:category', getShopCardsByCategory);
 router.get('/state/:state', getShopCardsByState);
-router.get('/:id', getShopCardById);        // ← This line already exists!
+router.get('/:id', getShopCardById);
+router.patch('/:id', updateShopCard);
 router.delete('/:id', deleteShopCard);
 
 export default router;
