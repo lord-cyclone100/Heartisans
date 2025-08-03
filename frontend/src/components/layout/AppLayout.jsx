@@ -6,19 +6,16 @@ import BackToTop from "../elements/BackToTop";
 
 export const AppLayout = () => {
 	const navigation = useNavigation();
-	// console.log(navigation);
-	// if(navigation.state === 'loading'){
-	//      return <Loader/>
-	// }
-	return(
-		<>
-			<div className="font-mhlk">
-				<Navbar/>
-				<Outlet/>
-				<BackToTop/>
-				<BotpressChatbot/>
-				<Footer/>
-			</div>
-		</>
-	)
-}
+	
+	return (
+		<div className="flex flex-col min-h-screen font-mhlk">
+			<Navbar />
+			<main className="flex-grow">
+				<Outlet />
+			</main>
+			<BackToTop />
+			<BotpressChatbot />
+			<Footer />
+		</div>
+	);
+};

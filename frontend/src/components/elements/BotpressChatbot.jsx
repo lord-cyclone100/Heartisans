@@ -4,12 +4,12 @@ import { useLocation } from 'react-router-dom';
 export const BotpressChatbot = () => {
   const location = useLocation();
 
-  // Don't render chatbot on home page
-  if (location.pathname === '/') {
-    return null;
-  }
-
   useEffect(() => {
+    // Don't load chatbot on home page
+    if (location.pathname === '/') {
+      return;
+    }
+
     // Only load once globally
     if (window.botpressWebChatLoaded) {
       return;
@@ -85,7 +85,8 @@ export const BotpressChatbot = () => {
     return () => {
       clearTimeout(timer);
     };
-  }, []); // Only run once on mount
+  }, [location.pathname]); // Include pathname in dependencies
 
+  // Don't render anything, chatbot is loaded via scripts
   return null;
 };

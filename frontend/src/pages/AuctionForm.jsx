@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "../contexts/AuthContext";
 import { useEffect } from "react";
 import { useScrollToTop } from "../hooks/useScrollToTop";
 
@@ -31,10 +31,10 @@ export const AuctionForm = () => {
   useScrollToTop();
 
   useEffect(() => {
-    if (user?.emailAddresses?.[0]?.emailAddress) {
-      axios.get(`http://localhost:5000/api/user/email/${user.emailAddresses[0].emailAddress}`)
-        .then(res => setMongoUserId(res.data._id))
-        .catch(() => setMongoUserId(""));
+    if (user?._id) {
+      setMongoUserId(user._id);
+    } else {
+      setMongoUserId("");
     }
   }, [user]);
 

@@ -2,11 +2,21 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "../contexts/AuthContext";
 import { AuctionLeaderBoard } from "../components/elements/AuctionLeaderBoard";
 import { useScrollToTop } from "../hooks/useScrollToTop";
 
-const socket = io("http://localhost:5000");
+// Initialize socket with error handling
+let socket;
+try {
+  socket = io("http://localhost:5000", {
+    autoConnect: false, // Don't auto-connect immediately
+    timeout: 5000,
+    transports: ['websocket', 'polling']
+  });
+} catch (error) {
+  console.warn('Socket.IO connection failed:', error);
+}
 
 export const AuctionDetails = () => {
   const { id } = useParams();
@@ -17,18 +27,16 @@ export const AuctionDetails = () => {
   const [msg, setMsg] = useState("");
   const [leaderboard, setLeaderboard] = useState([]);
   const [mongoUserId, setMongoUserId] = useState("");
+  const [socketConnected, setSocketConnected] = useState(false);
 
   useScrollToTop();
 
-  // Fetch MongoDB user ID using Clerk email
+  // Set MongoDB user ID from custom auth
   useEffect(() => {
-    if (user?.emailAddresses?.[0]?.emailAddress) {
-      axios
-        .get(
-          `http://localhost:5000/api/user/email/${user.emailAddresses[0].emailAddress}`
-        )
-        .then((res) => setMongoUserId(res.data._id))
-        .catch(() => setMongoUserId(""));
+    if (user?._id) {
+      setMongoUserId(user._id);
+    } else {
+      setMongoUserId("");
     }
   }, [user]);
 
@@ -42,8 +50,30 @@ export const AuctionDetails = () => {
 
   // Socket.io: join auction room and listen for updates
   useEffect(() => {
-    if (!auction) return;
-    socket.emit("joinAuction", id);
+    if (!auction || !socket) return;
+
+    // Try to connect socket if not connected
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    // Socket connection handlers
+    socket.on('connect', () => {
+      console.log('Socket connected');
+      setSocketConnected(true);
+      socket.emit("joinAuction", id);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+      setSocketConnected(false);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.warn('Socket connection error:', error.message);
+      setSocketConnected(false);
+      setMsg('Real-time updates unavailable. Please refresh the page.');
+    });
 
     socket.on("auctionUpdate", (updatedAuction) => {
       setAuction(updatedAuction);
@@ -54,7 +84,16 @@ export const AuctionDetails = () => {
       setMsg(err.error);
     });
 
+    // If already connected, join auction immediately
+    if (socket.connected) {
+      socket.emit("joinAuction", id);
+      setSocketConnected(true);
+    }
+
     return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("connect_error");
       socket.off("auctionUpdate");
       socket.off("bidError");
     };
@@ -117,6 +156,12 @@ useEffect(() => {
   // Place bid handler
   const handleBid = () => {
     if (!mongoUserId || !auction) return;
+    
+    if (!socket || !socketConnected) {
+      setMsg("Unable to place bid. Real-time connection is unavailable.");
+      return;
+    }
+    
     setBidDisabled(true);
     setMsg("");
     socket.emit("placeBid", {
@@ -245,6 +290,16 @@ useEffect(() => {
                     </div>
                   </div>
                 )}
+
+                {/* Connection Status */}
+                <div className={`border rounded-xl p-3 mb-6 ${socketConnected ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+                  <div className="flex items-center">
+                    <div className={`w-2 h-2 rounded-full mr-2 ${socketConnected ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                    <p className={`text-sm font-medium ${socketConnected ? 'text-green-800' : 'text-yellow-800'}`}>
+                      {socketConnected ? 'Real-time updates active' : 'Real-time updates disabled (server offline)'}
+                    </p>
+                  </div>
+                </div>
                 
                 {/* Bid Input */}
                 <div className="space-y-4">

@@ -1,5 +1,5 @@
 import { orderModel } from '../models/orderModel.js';
-import { userModel } from '../models/userModel.js';
+import { User } from '../models/userModel.js';
 
 export const processSubscriptionPayment = async (order, paymentDetails) => {
   try {
@@ -22,7 +22,7 @@ export const processSubscriptionPayment = async (order, paymentDetails) => {
       return null;
     }
 
-    const buyerUser = await userModel.findById(order.buyerId);
+    const buyerUser = await User.findById(order.buyerId);
     if (buyerUser && !buyerUser.hasArtisanSubscription) {
       const subscriptionType = order.subscriptionType;
       const isYearlyPlan = subscriptionType === 'yearly';
@@ -34,7 +34,7 @@ export const processSubscriptionPayment = async (order, paymentDetails) => {
         subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
       }
       
-      await userModel.findByIdAndUpdate(order.buyerId, {
+      await User.findByIdAndUpdate(order.buyerId, {
         hasArtisanSubscription: true,
         subscriptionDate: new Date(),
         subscriptionType: subscriptionType,
@@ -42,7 +42,7 @@ export const processSubscriptionPayment = async (order, paymentDetails) => {
       });
       
       const adminBonus = isYearlyPlan ? 2000 : 200;
-      await userModel.updateMany(
+      await User.updateMany(
         { isAdmin: true },
         { $inc: { balance: adminBonus } }
       );
@@ -65,7 +65,7 @@ export const createSubscriptionOrder = async (subscriptionData) => {
       throw new Error(`Invalid amount for ${subscriptionPlan} plan`);
     }
 
-    const buyer = await userModel.findOne({ email });
+    const buyer = await User.findOne({ email });
     if (!buyer) {
       throw new Error('Buyer not found');
     }

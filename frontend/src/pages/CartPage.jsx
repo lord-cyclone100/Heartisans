@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { CartSummary } from "../components/elements/CartSummary";
 import { useTranslation } from 'react-i18next';
@@ -13,12 +13,9 @@ export const CartPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) return;
-    axios.get(`http://localhost:5000/api/user/email/${user.emailAddresses[0].emailAddress}`)
-      .then(res => {
-        setMongoUserId(res.data._id);
-        return axios.get(`http://localhost:5000/api/cart/${res.data._id}`);
-      })
+    if (!user?._id) return;
+    setMongoUserId(user._id);
+    axios.get(`http://localhost:5000/api/cart/${user._id}`)
       .then(res => setCart(res.data))
       .catch(() => setCart({ items: [] }));
   }, [user]);

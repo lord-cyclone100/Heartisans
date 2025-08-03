@@ -10,3 +10,15 @@ html, body {
 #item{
   border-radius: 30% 70% 67% 33% / 33% 35% 65% 67% ;
 }
+
+/* Route Transition Animation */
+.route-transition {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.route-transition.active {
+  opacity: 1;
+  transform: translateY(0);
+}

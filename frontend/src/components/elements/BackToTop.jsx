@@ -30,10 +30,12 @@ const BackToTop = () => {
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-24 right-8 z-40 p-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 hover:shadow-3xl focus:outline-none focus:ring-4 focus:ring-opacity-50 animate-bounce-gentle"
+          className="fixed bottom-24 right-8 z-40 p-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-opacity-50"
           style={{
             backgroundColor: '#479626',
-            color: 'white'
+            color: 'white',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            animation: 'bounce-gentle 2s infinite'
           }}
           onMouseEnter={(e) => {
             e.target.style.backgroundColor = '#3a7a1f';
@@ -61,27 +63,21 @@ const BackToTop = () => {
         </button>
       )}
       
-      <style jsx>{`
-        @keyframes bounce-gentle {
-          0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
+      <style>
+        {`
+          @keyframes bounce-gentle {
+            0%, 20%, 50%, 80%, 100% {
+              transform: translateY(0);
+            }
+            40% {
+              transform: translateY(-3px);
+            }
+            60% {
+              transform: translateY(-2px);
+            }
           }
-          40% {
-            transform: translateY(-3px);
-          }
-          60% {
-            transform: translateY(-2px);
-          }
-        }
-        
-        .animate-bounce-gentle {
-          animation: bounce-gentle 2s infinite;
-        }
-        
-        .shadow-3xl {
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-      `}</style>
+        `}
+      </style>
     </>
   );
 };

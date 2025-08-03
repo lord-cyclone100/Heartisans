@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
@@ -34,7 +34,7 @@ export const CheckoutForm = () => {
       mobile: phoneNumber,
       amount: total,
       address: address,
-      buyerEmail: user?.emailAddresses?.[0]?.emailAddress
+      buyerEmail: user?.email
     };
 
     // Conditionally add product/subscription details based on the type of purchase
@@ -197,7 +197,7 @@ export const CheckoutForm = () => {
                   </label>
                   <input
                     type="email"
-                    value={user?.emailAddresses?.[0]?.emailAddress || ""}
+                    value={user?.email || ""}
                     disabled
                     className="w-full px-4 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-600 text-lg"
                   />

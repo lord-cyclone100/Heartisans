@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "../contexts/AuthContext";
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
 import { useContentTranslation } from '../hooks/useContentTranslation';
@@ -27,10 +27,8 @@ export const ProductDetails = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!user) return;
-    axios.get(`http://localhost:5000/api/user/email/${user.emailAddresses[0].emailAddress}`)
-      .then(res => setMongoUserId(res.data._id))
-      .catch(() => setMongoUserId(""));
+    if (!user?._id) return;
+    setMongoUserId(user._id);
   }, [user]);
 
   useEffect(() => {

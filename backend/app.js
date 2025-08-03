@@ -8,6 +8,7 @@ import {
 } from './config/index.js';
 
 // Route imports
+import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import shopCardRoutes from './routes/shopCardRoutes.js';
 import auctionRoutes from './routes/auctionRoutes.js';
@@ -21,31 +22,15 @@ import sapLegacyRoutes from './routes/sapLegacyRoutes.js';  // Add this import
 import cloudinaryRoutes from './routes/cloudinaryRoutes.js';
 import resaleRoutes from './routes/resaleRoutes.js';
 import storyRoutes from './routes/storyRoutes.js';
-import { userModel } from './models/userModel.js';
+import { User } from './models/userModel.js';
 
 const app = express();
 
 // Enhanced CORS configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URLS?.split(',') || [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'X-SAP-Analytics-Token',
-    'X-RateLimit-*'
-  ],
-  exposedHeaders: [
-    'X-RateLimit-Limit',
-    'X-RateLimit-Remaining',
-    'X-RateLimit-Reset'
-  ],
-  maxAge: 86400
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'] // Added 'PATCH'
 };
 
 app.use(cors(corsOptions));
@@ -70,6 +55,7 @@ app.get('/', (req, res) => {
 });
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/shopcards', shopCardRoutes);
 app.use('/api/auctions', auctionRoutes);

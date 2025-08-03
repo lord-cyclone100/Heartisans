@@ -1,38 +1,48 @@
 import { SignUpButton } from '../elements/SignUpButton';
 import { LanguageSelector } from '../elements/LanguageSelector';
 import { NavLink } from "react-router-dom"
-import { useUser } from '@clerk/clerk-react';
-import { useEffect, useState } from 'react';
+import { useUser } from '../../contexts/AuthContext';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { HamBurgerMenu } from '../elements/HamBurgerMenu';
 import { FaCartShopping } from "react-icons/fa6";
 
 export const Navbar = () => {
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
   const { t } = useTranslation();
   const [dbUser, setDbUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
+  const lastUserIdRef = useRef(null);
 
   useEffect(() => {
-    if (user && user.primaryEmailAddress) {
-      axios.get(`http://localhost:5000/api/user/email/${user.primaryEmailAddress.emailAddress}`)
-        .then(res => {
-          setDbUser(res.data);
-          // Fetch cart count for this user
-          axios.get(`http://localhost:5000/api/cart/${res.data._id}`)
-            .then(cartRes => setCartCount(cartRes.data?.items?.length || 0))
-            .catch(() => setCartCount(0));
+    // Don't make API calls until auth is loaded
+    if (!isLoaded) return;
+    
+    if (user && isSignedIn && user._id) {
+      // Prevent repeated calls for the same user
+      if (lastUserIdRef.current === user._id) return;
+      lastUserIdRef.current = user._id;
+      
+      setDbUser(user);
+      // Fetch cart count for this user - only if we have a valid user ID
+      const userId = user._id;
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      
+      axios.get(`${API_BASE_URL}/cart/${userId}`)
+        .then(cartRes => {
+          setCartCount(cartRes.data?.items?.length || 0);
         })
-        .catch(() => {
-          setDbUser(null);
+        .catch(error => {
+          console.log('Cart fetch error (normal if user has no cart):', error.message);
           setCartCount(0);
         });
     } else {
+      lastUserIdRef.current = null;
       setDbUser(null);
       setCartCount(0);
     }
-  }, [user]);
+  }, [user?._id, isSignedIn, isLoaded]); // Only depend on user ID, signed in status, and loaded state
 
   const getNavLinkColor = ({isActive}) => {
     return{

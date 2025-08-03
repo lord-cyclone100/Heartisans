@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "../contexts/AuthContext";
 import { shopCategories, shopStates } from "../constants/constants";
 import { useScrollToTop } from "../hooks/useScrollToTop";
 

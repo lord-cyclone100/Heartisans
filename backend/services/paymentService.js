@@ -1,5 +1,5 @@
 import { orderModel } from '../models/orderModel.js';
-import { userModel } from '../models/userModel.js';
+import { User } from '../models/userModel.js';
 import cashfree from '../config/cashfree.js';
 
 export const processSuccessfulPayment = async (order, paymentDetails) => {
@@ -14,19 +14,19 @@ export const processSuccessfulPayment = async (order, paymentDetails) => {
     order.updatedAt = new Date();
     
     if (order.isSubscription) {
-      const buyerUser = await userModel.findById(order.buyerId);
+      const buyerUser = await User.findById(order.buyerId);
       if (buyerUser) {
-        await userModel.findByIdAndUpdate(order.buyerId, {
+        await User.findByIdAndUpdate(order.buyerId, {
           hasArtisanSubscription: true,
           subscriptionDate: new Date()
         });
       }
-      await userModel.updateMany(
+      await User.updateMany(
         { isAdmin: true },
         { $inc: { balance: 1000 } }
       );
     } else if (order.sellerId) {
-      const seller = await userModel.findById(order.sellerId);
+      const seller = await User.findById(order.sellerId);
       if (seller) {
         seller.balance = (seller.balance || 0) + order.amount;
         await seller.save();

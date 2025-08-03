@@ -1,5 +1,5 @@
 import { orderModel } from '../models/orderModel.js'; // Keep this one, ensure it's only once
-import { userModel } from '../models/userModel.js';
+import { User } from '../models/userModel.js';
 import cashfree from '../config/cashfree.js';
 import { processSuccessfulPayment, verifyPaymentWithCashfree } from '../services/paymentService.js';
 import { generateOrderId, formatOrderPayload } from '../utils/helpers.js';
@@ -11,7 +11,7 @@ export const createOrder = async (req, res) => {
 
         let buyerId = null;
         if (req.body.buyerEmail) {
-            const buyer = await userModel.findOne({ email: req.body.buyerEmail });
+            const buyer = await User.findOne({ email: req.body.buyerEmail });
             buyerId = buyer?._id;
         }
 

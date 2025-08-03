@@ -1,11 +1,11 @@
-import { userModel } from '../models/userModel.js';
+import { User } from '../models/userModel.js';
 
 export const createUser = async (req, res) => {
   try {
     const { userName, email, imageUrl, fullName } = req.body;
-    let user = await userModel.findOne({ email });
+    let user = await User.findOne({ email });
     if (!user) {
-      user = await userModel.create({ userName, email, imageUrl, fullName });
+      user = await User.create({ userName, email, imageUrl, fullName });
     }
     res.status(201).json({ message: "User saved", user });
   } catch (err) {
@@ -15,7 +15,7 @@ export const createUser = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const user = await userModel.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
   } catch (err) {
@@ -26,7 +26,7 @@ export const getUserById = async (req, res) => {
 export const updateArtisanStatus = async (req, res) => {
   try {
     const { isArtisan } = req.body;
-    const user = await userModel.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
       req.params.id,
       { isArtisan },
       { new: true }
@@ -40,7 +40,7 @@ export const updateArtisanStatus = async (req, res) => {
 
 export const getUserByEmail = async (req, res) => {
   try {
-    const user = await userModel.findOne({ email: req.params.email });
+    const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
   } catch (err) {
@@ -50,7 +50,7 @@ export const getUserByEmail = async (req, res) => {
 
 export const getUserByUsername = async (req, res) => {
   try {
-    const user = await userModel.findOne({ userName: req.params.username });
+    const user = await User.findOne({ userName: req.params.username });
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
   } catch (err) {
@@ -60,7 +60,7 @@ export const getUserByUsername = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await userModel.find({}).sort({ joiningDate: -1 });
+    const users = await User.find({}).sort({ joiningDate: -1 });
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch users" });
@@ -69,7 +69,7 @@ export const getAllUsers = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-    const user = await userModel.findByIdAndDelete(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json({ message: "User deleted successfully" });
   } catch (err) {
@@ -80,7 +80,7 @@ export const deleteUser = async (req, res) => {
 export const updateSubscription = async (req, res) => {
   try {
     const { hasArtisanSubscription, subscriptionType, subscriptionDate } = req.body;
-    const user = await userModel.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
       req.params.id,
       { hasArtisanSubscription, subscriptionType, subscriptionDate },
       { new: true }
@@ -94,7 +94,7 @@ export const updateSubscription = async (req, res) => {
 
 export const getWallet = async (req, res) => {
   try {
-    const user = await userModel.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json({ balance: user.balance || 0, userName: user.userName, email: user.email });
   } catch (err) {
