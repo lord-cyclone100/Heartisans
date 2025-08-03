@@ -381,7 +381,7 @@ export const UserDashBoard = () => {
                     </button>
                     {user.isArtisan && (
                       <button
-                        className="px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                        className="px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl cursor-pointer"
                         onClick={() => handleArtisanStatus(false)}
                       >
                         {t("dashboard.revoke")}
@@ -422,7 +422,7 @@ export const UserDashBoard = () => {
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : user.hasArtisanSubscription
                           ? "bg-green-500 text-white cursor-not-allowed"
-                          : "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+                          : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white cursor-pointer"
                         }`}
                       disabled={!user.isArtisan || user.hasArtisanSubscription}
                       onClick={() =>
@@ -440,7 +440,7 @@ export const UserDashBoard = () => {
                     >
                       {user.hasArtisanSubscription
                         ? t("dashboard.subscribed")
-                        : t("dashboard.artisanPlan")}
+                        : "Artisanship Plan"}
                     </button>
                   </div>
                 </div>
