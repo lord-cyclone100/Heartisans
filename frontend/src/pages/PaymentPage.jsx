@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { load } from "@cashfreepayments/cashfree-js";
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 export const PaymentPage = () => {
   const location = useLocation();
@@ -8,6 +9,7 @@ export const PaymentPage = () => {
   const [error, setError] = useState('');
 
   const { orderId, paymentSessionId } = location.state || {};
+  useScrollToTop();
 
   useEffect(() => {
     if (!orderId || !paymentSessionId) {

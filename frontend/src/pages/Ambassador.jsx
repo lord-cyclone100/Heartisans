@@ -4,7 +4,7 @@ export const Ambassador = () => {
   return(
     <>
       <section>
-        <div className="w-full bg-[#eee] flex flex-col items-center justify-between py-20 md:flex-row md:justify-evenly ">
+        <div className="w-full flex flex-col items-center justify-between py-20 md:flex-row md:justify-evenly ">
           <svg className="size-[30rem] md:size-[34vw]" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <clipPath id="blobClip">
@@ -28,7 +28,15 @@ export const Ambassador = () => {
           <div className="flex flex-col items-center font-mhlk gap-10">
             <h3 className="text-[3rem] lg:text-[4rem]" style={{ color: '#479626' }}>Heartisans</h3>
             <h1 className="text-center text-[5rem] leading-20 lg:text-[6rem] lg:leading-24">Join our <br />Ambassador <br />Program</h1>
-            <h5 className="text-[2rem] lg:text-[3rem]" style={{ color: '#ffaf27' }}>Coming Soon</h5>
+            <a 
+              href="https://google.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white px-12 py-6 rounded-2xl font-bold text-2xl lg:text-3xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+              style={{ backgroundColor: '#ffaf27' }}
+            >
+              Join
+            </a>
           </div>
           
         </div>

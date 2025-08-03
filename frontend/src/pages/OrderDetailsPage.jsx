@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiArrowLeft, FiPackage, FiTruck, FiCreditCard, FiUser, FiCalendar, FiMail, FiMapPin, FiLink } from 'react-icons/fi';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  useScrollToTop();
 
   useEffect(() => {
     const fetchOrder = async () => {

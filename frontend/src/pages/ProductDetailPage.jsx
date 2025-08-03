@@ -8,6 +8,7 @@ import {
   FiStar,
   FiImage
 } from 'react-icons/fi';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -16,6 +17,8 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
+
+  useScrollToTop();
 
   useEffect(() => {
     const fetchProduct = async () => {

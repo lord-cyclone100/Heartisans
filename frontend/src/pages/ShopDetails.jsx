@@ -2,10 +2,13 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import { ShopCard } from "../components/elements/ShopCard";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const ShopDetails = () => {
   const params = useParams();
   const [cards, setCards] = useState([])
+
+  useScrollToTop();
   
   useEffect(()=>{
     axios.get(`http://localhost:5000/api/shopcards/category/${params.name}`)

@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SAPAnalyticsDashboard from '../components/elements/SAPAnalyticsDashboard';
 import { useTranslation } from 'react-i18next';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 export const SAPAnalyticsPage = () => {
   const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useScrollToTop();
 
   useEffect(() => {
     // Fetch all products

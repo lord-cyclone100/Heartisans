@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const AuctionForm = () => {
   const { user } = useUser();
@@ -26,6 +27,8 @@ export const AuctionForm = () => {
   const [pricePrediction, setPricePrediction] = useState(null);
   const [isPredictingPrice, setIsPredictingPrice] = useState(false);
   const [showPricingInsights, setShowPricingInsights] = useState(false);
+
+  useScrollToTop();
 
   useEffect(() => {
     if (user?.emailAddresses?.[0]?.emailAddress) {

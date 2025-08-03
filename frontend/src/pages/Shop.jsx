@@ -2,10 +2,13 @@ import { NavLink } from "react-router-dom"
 import { shopCategories, shopStates } from "../constants/constants"
 import { useTranslation } from 'react-i18next'
 import { useContentTranslation } from '../hooks/useContentTranslation'
+import { useScrollToTop } from "../hooks/useScrollToTop"
 
 export const Shop = () => {
   const { t } = useTranslation()
   const { translateCategory, translateState } = useContentTranslation()
+
+  useScrollToTop();
 
   return(
     <>

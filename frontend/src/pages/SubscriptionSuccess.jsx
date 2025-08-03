@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 export const SubscriptionSuccess = () => {
   const { t } = useTranslation();
@@ -11,6 +12,8 @@ export const SubscriptionSuccess = () => {
   const hasVerified = useRef(false); // Flag to prevent double execution
 
   const orderId = searchParams.get('order_id');
+
+  useScrollToTop();
 
   useEffect(() => {
     if (orderId && !hasVerified.current) {

@@ -1,67 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StoryCard } from '../components/elements/StoryCard';
 import { useTranslation } from 'react-i18next';
+import { ShareExperienceForm } from '../components/elements/ShareExperienceForm';
+import { useScrollToTop } from '../hooks/useScrollToTop';
+import axios from 'axios';
 
 export const StoriesPage = () => {
   const { t } = useTranslation();
-  const stories = [
-    {
-      id: 1,
-      name: t('stories.sarah.name'),
-      role: t('stories.sarah.role'),
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face",
-      story: t('stories.sarah.story'),
-      rating: 5
-    },
-    {
-      id: 2,
-      name: t('stories.michael.name'),
-      role: t('stories.michael.role'),
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      story: t('stories.michael.story'),
-      rating: 5
-    },
-    {
-      id: 3,
-      name: t('stories.emma.name'),
-      role: t('stories.emma.role'),
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      story: t('stories.emma.story'),
-      rating: 4
-    },
-    {
-      id: 4,
-      name: t('stories.david.name'),
-      role: t('stories.david.role'),
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-      story: t('stories.david.story'),
-      rating: 5
-    },
-    {
-      id: 5,
-      name: t('stories.lisa.name'),
-      role: t('stories.lisa.role'),
-      image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face",
-      story: t('stories.lisa.story'),
-      rating: 5
-    },
-    {
-      id: 6,
-      name: t('stories.james.name'),
-      role: t('stories.james.role'),
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-      story: t('stories.james.story'),
-      rating: 4
-    },
-    {
-      id: 7,
-      name: t('stories.maria.name'),
-      role: t('stories.maria.role'),
-      image: "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=150&h=150&fit=crop&crop=face",
-      story: t('stories.maria.story'),
-      rating: 5
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Scroll to top when component mounts
+  useScrollToTop();
+
+  useEffect(() => {
+    fetchStories();
+  }, []);
+
+  const fetchStories = async () => {
+    try {
+      setError(null);
+      const response = await axios.get('http://localhost:5000/api/stories');
+      if (response.data.success) {
+        setStories(response.data.data || []);
+      } else {
+        setError('Failed to load stories');
+        setStories([]);
+      }
+    } catch (error) {
+      console.error('Error fetching stories:', error);
+      setError('Unable to connect to the server. Please try again later.');
+      setStories([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const openShareForm = () => {
+    setIsFormOpen(true);
+  };
+
+  const closeShareForm = () => {
+    setIsFormOpen(false);
+    // Refresh stories when form is closed (in case a new story was added)
+    fetchStories();
+  };
 
   return (
     <>
@@ -113,18 +98,58 @@ export const StoriesPage = () => {
 
           {/* Stories Grid */}
           <div className="container mx-auto px-4 py-12 lg:py-16">
-            <div className="flex flex-col gap-6 lg:gap-8 max-w-5xl mx-auto">
-              {stories.map((story, index) => (
-                <div key={story.id} className={`transform transition-all duration-300 hover:scale-[1.02] ${index % 2 === 0 ? 'lg:pr-8' : 'lg:pl-8'}`}>
-                  <StoryCard
-                    name={story.name}
-                    role={story.role}
-                    image={story.image}
-                    story={story.story}
-                  />
+            {loading ? (
+              <div className="text-center py-16">
+                <div className="text-5xl md:text-6xl mb-4">⏳</div>
+                <div className="text-xl md:text-2xl font-semibold" style={{ color: '#479626' }}>
+                  Loading stories...
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : error ? (
+              <div className="text-center py-16">
+                <div className="text-5xl md:text-6xl mb-4">⚠️</div>
+                <div className="text-xl md:text-2xl font-semibold text-red-600 mb-4">
+                  {error}
+                </div>
+                <button
+                  onClick={fetchStories}
+                  className="px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 text-white"
+                  style={{ backgroundColor: '#ffaf27' }}
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : stories.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="text-5xl md:text-6xl mb-4">📝</div>
+                <div className="text-xl md:text-2xl font-semibold mb-4" style={{ color: '#479626' }}>
+                  No stories yet!
+                </div>
+                <p className="text-lg text-gray-600 mb-6">
+                  Be the first to share your experience with our artisan products.
+                </p>
+                <button
+                  onClick={openShareForm}
+                  className="px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 text-white"
+                  style={{ backgroundColor: '#ffaf27' }}
+                >
+                  Share Your Story
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-6 lg:gap-8 max-w-5xl mx-auto">
+                {stories.map((story, index) => (
+                  <div key={story.id || story._id} className={`transform transition-all duration-300 hover:scale-[1.02] ${index % 2 === 0 ? 'lg:pr-8' : 'lg:pl-8'}`}>
+                    <StoryCard
+                      name={story.name}
+                      role={story.role}
+                      image={story.image || "https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face"}
+                      story={story.story}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Community Stats Section */}
@@ -170,7 +195,11 @@ export const StoriesPage = () => {
                   {t('stories.cta.subtitle')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center items-center">
-                  <button className="font-bold text-lg md:text-xl lg:text-2xl px-8 lg:px-12 py-4 lg:py-5 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-white" style={{ backgroundColor: '#ffaf27' }}>
+                  <button 
+                    onClick={openShareForm}
+                    className="font-bold text-lg md:text-xl lg:text-2xl px-8 lg:px-12 py-4 lg:py-5 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-white" 
+                    style={{ backgroundColor: '#ffaf27' }}
+                  >
                     {t('stories.cta.shareExperience')}
                   </button>
                   <button className="font-bold text-lg md:text-xl lg:text-2xl px-8 lg:px-12 py-4 lg:py-5 rounded-2xl transition-all duration-300 hover:scale-105 text-white" style={{ backgroundColor: '#ffaf27' }}>
@@ -182,6 +211,12 @@ export const StoriesPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Share Experience Form Modal */}
+      <ShareExperienceForm 
+        isOpen={isFormOpen} 
+        onClose={closeShareForm} 
+      />
     </>
   );
 };

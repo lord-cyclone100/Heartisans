@@ -6,6 +6,7 @@ import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard"
 import { FaWallet } from "react-icons/fa";
 import { ArtisanPlanModal } from "../components/elements/ArtisanPlanModal";
 import { useTranslation } from "react-i18next";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const UserDashBoard = () => {
   const { t } = useTranslation();
@@ -22,6 +23,8 @@ export const UserDashBoard = () => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState("");
   const navigate = useNavigate();
+
+  useScrollToTop();
 
   useEffect(() => {
     axios

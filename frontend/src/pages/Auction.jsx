@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { AuctionCard } from "../components/elements/AuctionCard";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const Auction = () => {
   const [auctions, setAuctions] = useState([]);
   const [tab, setTab] = useState("Live");
+  useScrollToTop();
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/auctions")

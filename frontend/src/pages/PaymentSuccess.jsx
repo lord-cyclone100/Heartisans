@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'; // Add useCallback
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios'; // You were using fetch, but axios is also imported. Stick to one for consistency or use whichever you prefer. I'll use fetch as per your original code.
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 export const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
@@ -11,6 +12,8 @@ export const PaymentSuccess = () => {
     const hasVerifiedRef = useRef(false); // Changed to useRef for consistent access without re-renders
 
     const orderId = searchParams.get('order_id');
+
+    useScrollToTop();
 
     // useCallback to memoize the verification function
     const verifyPayment = useCallback(async () => {

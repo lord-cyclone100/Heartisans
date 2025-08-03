@@ -54,3 +54,34 @@ export const shopStates = [
   {name:'Daman & Diu',url:"https://res.cloudinary.com/dmljao4pk/image/upload/v1754175161/Daman_ane1ug.svg"},
   {name:'Ladakh',url:"https://res.cloudinary.com/dmljao4pk/image/upload/v1754172102/Ladakh_nivay0.svg"}
 ]
+
+export const teamMembers = [
+  {
+    id: 1,
+    image: "./photos/sm.svg",
+    title: "Sudipta Mandal",
+    githubUrl: "https://github.com/imsudiptaa",
+    linkedinUrl: "https://www.linkedin.com/in/imsudiptaa/"
+  },
+  {
+    id: 2,
+    image: "./photos/kkg.svg",
+    title: "Khushi Kumari Gupta",
+    githubUrl: "https://github.com",
+    linkedinUrl: "https://www.linkedin.com/in/khushi-gupta-7699b42b9/"
+  },
+  {
+    id: 3,
+    image: "./photos/mhh.svg",
+    title: "Md Haaris Hussain",
+    githubUrl: "https://github.com/mdhaarishussain",
+    linkedinUrl: "https://www.linkedin.com/in/md-haaris-hussain-a69742253/"
+  },
+  {
+    id: 4,
+    image: "./photos/skf.svg",
+    title: "Sk Faizanuddin",
+    githubUrl: "https://github.com/SKfaizan-786",
+    linkedinUrl: "https://www.linkedin.com/in/faizanshekh/"
+  }
+];

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { useTranslation } from 'react-i18next'
-import { FaUsers, FaShoppingBag, FaGavel, FaChartBar, FaEye, FaEdit, FaTrash, FaCrown, FaUserShield, FaTimes } from 'react-icons/fa'
-
+import { FaUsers, FaShoppingBag, FaGavel, FaChartBar, FaEye, FaEdit, FaTrash, FaCrown, FaUserShield, FaTimes, FaComments } from 'react-icons/fa'
+import { StoryAdminPanel } from '../components/elements/StoryAdminPanel'
+import { useScrollToTop } from "../hooks/useScrollToTop"
 export const AdminPanel = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('users')
@@ -20,6 +21,8 @@ export const AdminPanel = () => {
     totalArtisans: 0,
     totalSubscriptions: 0
   })
+
+  useScrollToTop();
 
   // Fetch all data on component mount
   useEffect(() => {
@@ -74,7 +77,8 @@ export const AdminPanel = () => {
     { id: 'overview', name: t('admin.overview'), icon: FaChartBar },
     { id: 'users', name: t('admin.users'), icon: FaUsers },
     { id: 'products', name: t('admin.products'), icon: FaShoppingBag },
-    { id: 'auctions', name: t('admin.auctions'), icon: FaGavel }
+    { id: 'auctions', name: t('admin.auctions'), icon: FaGavel },
+    { id: 'stories', name: 'Stories', icon: FaComments }
   ]
 
   // Admin action functions
@@ -489,6 +493,15 @@ export const AdminPanel = () => {
     )
   }
 
+  // Stories Tab Component
+  const StoriesTab = () => {
+    return (
+      <div className="bg-white rounded-lg shadow">
+        <StoryAdminPanel />
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -547,6 +560,7 @@ export const AdminPanel = () => {
         {activeTab === 'users' && <UsersTab />}
         {activeTab === 'products' && <ProductsTab />}
         {activeTab === 'auctions' && <AuctionsTab />}
+        {activeTab === 'stories' && <StoriesTab />}
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import axios from "axios";
 import { useTranslation } from 'react-i18next';
 import { useContentTranslation } from '../hooks/useContentTranslation';
 import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const ProductDetails = () => {
   const { t } = useTranslation();
@@ -16,6 +17,8 @@ export const ProductDetails = () => {
   const [mongoUserId, setMongoUserId] = useState("");
   const [inCart, setInCart] = useState(false);
   const [sellerId, setSellerId] = useState("");
+
+  useScrollToTop();
 
   useEffect(() => {
     axios.get(`http://localhost:5000/api/shopcards/${id}`)

@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import { shopCategories, shopStates } from "../constants/constants";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const SellForm = () => {
   const { user } = useUser();
@@ -27,6 +28,8 @@ export const SellForm = () => {
   const [pricePrediction, setPricePrediction] = useState(null);
   const [isPredictingPrice, setIsPredictingPrice] = useState(false);
   const [showPricingInsights, setShowPricingInsights] = useState(false);
+
+  useScrollToTop();
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;

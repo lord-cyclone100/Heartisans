@@ -4,6 +4,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { useUser } from "@clerk/clerk-react";
 import { AuctionLeaderBoard } from "../components/elements/AuctionLeaderBoard";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 const socket = io("http://localhost:5000");
 
@@ -16,6 +17,8 @@ export const AuctionDetails = () => {
   const [msg, setMsg] = useState("");
   const [leaderboard, setLeaderboard] = useState([]);
   const [mongoUserId, setMongoUserId] = useState("");
+
+  useScrollToTop();
 
   // Fetch MongoDB user ID using Clerk email
   useEffect(() => {

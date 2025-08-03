@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 const ResaleListings = () => {
   const [listings, setListings] = useState([]);
@@ -19,6 +20,8 @@ const ResaleListings = () => {
     totalItems: 0,
     itemsPerPage: 12
   });
+
+  useScrollToTop();
 
   const categories = [
     'Art', 'Pottery', 'Fashion', 'Crafts', 'Crochet', 'Accessories',

@@ -1,12 +1,15 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaWallet, FaUser, FaEnvelope, FaRupeeSign } from "react-icons/fa"; // Import icons
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const WalletPage = () => {
   const { id } = useParams();
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // State to handle errors
+
+  useScrollToTop();
 
   useEffect(() => {
     const fetchWallet = async () => {

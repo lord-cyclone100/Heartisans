@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 
 export const Resale = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -18,6 +19,8 @@ export const Resale = () => {
     description: '',
     images: []
   });
+
+  useScrollToTop();
 
   const qualityCategories = [
     {

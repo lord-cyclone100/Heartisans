@@ -34,8 +34,8 @@ export const Carousel = () => {
     navigate("/shop");
   };
 
-  const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+  const handleProductClick = (product) => {
+    navigate(`/shop/${product.productCategory}/${product._id}`);
   };
 
   if (loading) {
@@ -43,7 +43,7 @@ export const Carousel = () => {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto" style={{ borderColor: '#479626', borderTopColor: 'transparent' }}></div>
             <p className="mt-4 text-lg text-gray-600">Loading featured products...</p>
           </div>
         </div>
@@ -53,7 +53,7 @@ export const Carousel = () => {
 
   return (
     <>
-      <section className="py-16 bg-gradient-to-br from-green-50 via-emerald-50 to-green-100">
+      <section className="py-16" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)' }}>
         {/* Carousel */}
         {products.length > 0 ? (
           <div className="relative">
@@ -61,14 +61,31 @@ export const Carousel = () => {
               {products.map((product, index) => (
                 <div
                   key={product._id || index}
-                  className="carousel-item px-2 sm:px-3 lg:px-5 cursor-pointer"
-                  onClick={() => handleProductClick(product._id)}
+                  className="carousel-item px-2 sm:px-3 lg:px-5 cursor-pointer group"
+                  onClick={() => handleProductClick(product)}
                 >
-                  <img
-                    src={product.productImageUrl || "https://via.placeholder.com/400x300?text=No+Image"}
-                    alt={product.productName || "Artisan Product"}
-                    className="w-full h-full object-cover rounded-xl hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-xl"
-                  />
+                  <div className="relative w-full h-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                    <img
+                      src={product.productImageUrl || "https://via.placeholder.com/400x300?text=No+Image"}
+                      alt={product.productName || "Artisan Product"}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    {/* Black Overlay with Product Details - Only appears on hover */}
+                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-70 transition-all duration-300 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto">
+                      <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 p-4">
+                        <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-2 line-clamp-2">
+                          {product.productName || "Artisan Product"}
+                        </h3>
+                        <p className="text-2xl md:text-3xl lg:text-4xl font-bold" style={{ color: '#ffaf27' }}>
+                          ₹{product.productPrice || "N/A"}
+                        </p>
+                        <p className="text-sm md:text-base mt-2 opacity-90">
+                          by {product.productSellerName || "Unknown Artisan"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

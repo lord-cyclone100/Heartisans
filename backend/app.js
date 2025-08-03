@@ -20,6 +20,7 @@ import sapAnalyticsRoutes from './routes/sapAnalyticsRoutes.js';
 import sapLegacyRoutes from './routes/sapLegacyRoutes.js';  // Add this import
 import cloudinaryRoutes from './routes/cloudinaryRoutes.js';
 import resaleRoutes from './routes/resaleRoutes.js';
+import storyRoutes from './routes/storyRoutes.js';
 import { userModel } from './models/userModel.js';
 
 const app = express();
@@ -81,6 +82,7 @@ app.use('/api', sapAnalyticsRoutes);
 app.use('/api/analytics', sapLegacyRoutes);   
 app.use('/api/cloudinary', cloudinaryRoutes);
 app.use('/api/resale', resaleRoutes);
+app.use('/api/stories', storyRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

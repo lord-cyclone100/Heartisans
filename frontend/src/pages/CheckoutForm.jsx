@@ -2,6 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const CheckoutForm = () => {
   const { user } = useUser();
@@ -10,6 +11,7 @@ export const CheckoutForm = () => {
   const [paymentInProgress, setPaymentInProgress] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  useScrollToTop();
 
   // Extract data from location.state
   const {
