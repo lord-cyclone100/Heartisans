@@ -24,7 +24,7 @@ export const ArtisanPlanModal = ({ isOpen, onClose, user }) => {
 
   const handleSubscription = () => {
     const plan = planDetails[selectedPlan];
-    const planName = selectedPlan === 'yearly' ? 'Artisan Plan - Yearly' : 'Artisan Plan - Monthly';
+    const planName = selectedPlan === 'yearly' ? 'Artisanship Plan - Yearly' : 'Artisanship Plan - Monthly';
     
     // Navigate to checkout for subscription payment
     navigate('/checkout', {
@@ -38,7 +38,7 @@ export const ArtisanPlanModal = ({ isOpen, onClose, user }) => {
           id: `artisan-subscription-${selectedPlan}`,
           name: planName,
           price: plan.price,
-          image: null,
+          image: 'https://res.cloudinary.com/dmljao4pk/image/upload/v1754263328/Artisanship_plan_logo_awk7xn.png',
           category: 'Subscription'
         }
       }
@@ -59,7 +59,7 @@ export const ArtisanPlanModal = ({ isOpen, onClose, user }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <h2 className="text-3xl font-bold mb-2">Artisan Plan</h2>
+          <h2 className="text-3xl font-bold mb-2">Artisanship Plan</h2>
           <p className="text-green-100 text-lg">Boost your sales with premium features</p>
         </div>
         
@@ -113,7 +113,7 @@ export const ArtisanPlanModal = ({ isOpen, onClose, user }) => {
                   <span className="text-xl font-bold text-green-700">You are subscribed!</span>
                 </div>
                 <p className="text-green-600 mb-2">
-                  Enjoy all premium features of the Artisan Plan.
+                  Enjoy all premium features of the Artisanship Plan.
                 </p>
                 {user.subscriptionDate && (
                   <p className="text-green-500 font-medium text-sm">

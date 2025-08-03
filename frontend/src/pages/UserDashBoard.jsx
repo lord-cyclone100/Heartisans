@@ -1,19 +1,16 @@
 import { useParams, useNavigate, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useUser } from "../contexts/AuthContext";
 import SAPAnalyticsDashboard from "../components/elements/SAPAnalyticsDashboard";
 import { FaWallet } from "react-icons/fa";
 import { ArtisanPlanModal } from "../components/elements/ArtisanPlanModal";
 import { useTranslation } from "react-i18next";
 import { useScrollToTop } from "../hooks/useScrollToTop";
-import { useAuth } from "../contexts/AuthContext";
 
 export const UserDashBoard = () => {
   const { t } = useTranslation();
-  const { user: authUser, isSignedIn, isLoaded, signOut } = useAuth();
-  const [user, setUser] = useState(null);
-  const [loadingUser, setLoadingUser] = useState(true);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const { user, logout, refreshUser } = useUser();
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
@@ -23,99 +20,52 @@ export const UserDashBoard = () => {
   const [showArtisanPlanModal, setShowArtisanPlanModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editForm, setEditForm] = useState({});
-  const navigate = useNavigate();
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState("");
-
-  // Simplified useEffect for redirection
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      navigate('/login');
-    }
-  }, [isLoaded, isSignedIn, navigate]);
+  const navigate = useNavigate();
 
   useScrollToTop();
 
   useEffect(() => {
-    if (isSignedIn && isInitialLoad) {
-      setIsInitialLoad(false);
-      // You could add any initial data fetching here
-    }
-  }, [isSignedIn, isInitialLoad]);
-
-  // Enhanced user data fetching
-  useEffect(() => {
-    if (!isSignedIn || !id) return;
-
-    const fetchUserData = async () => {
-      try {
-        setLoadingUser(true);
-        const userRes = await axios.get(`http://localhost:5000/api/user/${id}`);
-        
-        // Verify the fetched user matches the authenticated user
-        if (userRes.data._id !== authUser?._id) {
-          signOut();
-          return;
-        }
-
-        setUser(userRes.data);
-
-        // Fetch user's resale listings
-        try {
-          const resaleRes = await axios.get(`http://localhost:5000/api/resale/user/${userRes.data._id}`);
-          setUserResaleListings(resaleRes.data);
-        } catch {
-          setUserResaleListings([]);
-        }
-
-        if (userRes.data.isArtisan) {
-          try {
-            const productsRes = await axios.get("http://localhost:5000/api/shopcards");
+    if (user) {
+      // If user is an artisan, fetch their products
+      if (user.isArtisan) {
+        axios
+          .get("http://localhost:5000/api/shopcards")
+          .then((productsRes) => {
+            // Filter products by this user (you might want to add a seller ID field)
             const userProducts = productsRes.data.filter(
-              product => product.productSellerName === userRes.data.userName || 
-                         product.sellerId === userRes.data._id
+              (product) =>
+                product.productSellerName === user.userName ||
+                product.productSellerName === user.fullName ||
+                product.sellerId === user._id
             );
             setUserProducts(userProducts);
             if (userProducts.length > 0) {
               setSelectedProduct(userProducts[0]);
             }
-          } catch {
-            setUserProducts([]);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch user:', error);
-        if (error.response?.status === 401 || error.response?.status === 404) {
-          signOut();
-        }
-      } finally {
-        setLoadingUser(false);
+          })
+          .catch(() => setUserProducts([]));
       }
-    };
-
-    fetchUserData();
-  }, [id, isSignedIn, authUser, signOut]);
-
-  if (isInitialLoad) {
-    return null; // Shows nothing during initial load
-  }
-
-  // If you still need to show something while loading user data
-  if (loadingUser) {
-    return null; // Or a very minimal loader if absolutely necessary
-  }
-
-  const handleLogout = () => {
-    signOut();
-    // Navigation is now handled by signOut function
-  };
+      
+      // Fetch user's resale listings
+      axios
+        .get(`http://localhost:5000/api/resale/user/${user._id}`)
+        .then((resaleRes) => {
+          setUserResaleListings(resaleRes.data);
+        })
+        .catch(() => setUserResaleListings([]));
+    }
+  }, [user]);
 
   const handleArtisanStatus = (status) => {
     axios
-      .patch(`http://localhost:5000/api/user/${id}/artisan`, {
+      .patch(`http://localhost:5000/api/user/${user._id}/artisan`, {
         isArtisan: status,
       })
-      .then((res) => setUser(res.data))
+      .then(() => {
+        refreshUser(); // Refresh user data from context
+      })
       .catch(() => alert("Failed to update status"));
   };
 
@@ -158,11 +108,17 @@ export const UserDashBoard = () => {
     setUpdateMessage("");
 
     try {
+      console.log("Updating product with data:", editForm);
+      console.log("Product ID:", editingProduct._id);
+
       const response = await axios.patch(
         `http://localhost:5000/api/shopcards/${editingProduct._id}`,
         editForm
       );
 
+      console.log("Update response:", response.data);
+
+      // Update the userProducts state with the updated product
       setUserProducts((prev) =>
         prev.map((product) =>
           product._id === editingProduct._id ? response.data : product
@@ -179,29 +135,25 @@ export const UserDashBoard = () => {
       console.error("Error response:", error.response?.data);
       console.error("Error status:", error.response?.status);
 
-      let errorMessage = "Failed to update product. Please try again.";
-      
-      if (error.response?.status === 404) {
-        errorMessage = "Product not found. It may have been deleted.";
-      } else if (error.response?.status === 400) {
-        errorMessage = error.response?.data?.error || "Invalid product data provided.";
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update product. Please try again.";
       setUpdateMessage(`Failed to update: ${errorMessage}`);
     }
     setUpdateLoading(false);
   };
 
   const handleDeleteProduct = async (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this product? This action cannot be undone."
+      )
+    ) {
       try {
         await axios.delete(`http://localhost:5000/api/shopcards/${productId}`);
+
+        // Remove the product from userProducts state
         setUserProducts((prev) =>
           prev.filter((product) => product._id !== productId)
         );
@@ -212,6 +164,19 @@ export const UserDashBoard = () => {
       }
     }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, #f0f9ff, #ecfdf5, #f7fee7)' }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-24 w-24 border-4 border-t-transparent mx-auto mb-6" style={{ borderColor: '#479626', borderTopColor: 'transparent' }}></div>
+          <p className="text-3xl sm:text-4xl lg:text-5xl font-semibold" style={{ color: '#479626' }}>
+            {t("dashboard.unauthorized")}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -440,7 +405,7 @@ export const UserDashBoard = () => {
                     >
                       {user.hasArtisanSubscription
                         ? t("dashboard.subscribed")
-                        : "Artisanship Plan"}
+                        : t("dashboard.artisanPlan")}
                     </button>
                   </div>
                 </div>
@@ -823,7 +788,7 @@ export const UserDashBoard = () => {
                       "Securely log out of your account"}
                   </p>
                   <button 
-                    onClick={handleLogout}
+                    onClick={logout}
                     className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-4 rounded-2xl font-bold text-lg sm:text-xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
                   >
                     {t("auth.logout") || "Log Out"}
