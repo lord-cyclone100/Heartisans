@@ -8,6 +8,8 @@ import {
   rejectStory
 } from '../controllers/storyController.js';
 
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
 
 // Public routes
@@ -15,9 +17,9 @@ router.get('/', getStories);
 router.get('/:id', getStoryById);
 router.post('/', createStory);
 
-// Admin routes (you may want to add authentication middleware)
-router.get('/admin/pending', getPendingStories);
-router.put('/admin/:id/approve', approveStory);
-router.delete('/admin/:id/reject', rejectStory);
+// Admin routes - protected with authentication and admin check
+router.get('/admin/pending', protect, adminOnly, getPendingStories);
+router.put('/admin/:id/approve', protect, adminOnly, approveStory);
+router.delete('/admin/:id/reject', protect, adminOnly, rejectStory);
 
 export default router;
