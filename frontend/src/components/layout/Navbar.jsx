@@ -54,7 +54,7 @@ export const Navbar = () => {
             <ul className={`menu menu-horizontal px-1 text-2xl gap-[2vw] ${user ? "flex" : "hidden"}`}>
               <li><NavLink to="/shop" style={getNavLinkColor}>{t('nav.shop')}</NavLink></li>
               <li><NavLink to="/auction" style={getNavLinkColor}>{t('nav.auction')}</NavLink></li>
-              <li><NavLink to="/resale" style={getNavLinkColor}>{t('nav.resale')}</NavLink></li>
+              <li><NavLink to="/resale-listings" style={getNavLinkColor}>{t('nav.resale')}</NavLink></li>
               <li><NavLink to="/stories" style={getNavLinkColor}>{t('nav.stories')}</NavLink></li>
               <li><NavLink to="/sap-analytics" style={getNavLinkColor}>SAP Analytics</NavLink></li>
               {/* This condition now relies solely on the up-to-date user object from the AuthContext */}

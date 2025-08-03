@@ -15,8 +15,8 @@ const createResaleListing = async (req, res) => {
       location
     } = req.body;
 
-    // Get user information
-    const user = await User.findById(req.user.id);
+    // Get user information - req.user is already the full user object from middleware
+    const user = req.user;
     if (!user) {
       return res.status(404).json({
         success: false,

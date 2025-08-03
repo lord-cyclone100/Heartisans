@@ -28,18 +28,6 @@ export const SAPAnalyticsPage = () => {
       });
   }, []);
 
-  // Demo product for testing
-  const demoProduct = {
-    name: t('sap.demoProductName') || 'Traditional Rajasthani Handicraft',
-    category: t('sap.demoProductCategory') || 'Handicrafts',
-    material: 'Wood and Metal',
-    region: 'Rajasthan',
-    basePrice: 1500,
-    seller: t('sap.demoArtisan') || 'Demo Artisan',
-    weight: '2kg',
-    color: 'Multi-color'
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0, #e8f5e8)' }}>
@@ -56,7 +44,7 @@ export const SAPAnalyticsPage = () => {
       <div className="w-full h-20"></div>
       
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12  font-mhlk">
+      <div className="w-full px-4 md:px-6 lg:px-8 py-12 font-mhlk">
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-6">
             {t('sap.title') || 'SAP Analytics Cloud'}
@@ -93,7 +81,7 @@ export const SAPAnalyticsPage = () => {
         </div>
         {/* Product Selection */}
         {products.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-xl p-12 mb-12" style={{ border: '1px solid #479626' }}>
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-12 max-w-6xl mx-auto" style={{ border: '1px solid #479626' }}>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-12 text-gray-900">
               📊 {t('sap.selectProduct') || 'Select Product for Analytics'}
             </h2>
@@ -125,41 +113,12 @@ export const SAPAnalyticsPage = () => {
                 </div>
               ))}
             </div>
-            
-            {/* Demo Product Option */}
-            <div className="border-t border-gray-200 pt-8">
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 text-gray-900">
-                🚀 {t('sap.tryDemo') || 'Or Try Demo Analytics'}
-              </h3>
-              <div
-                onClick={() => setSelectedProduct(demoProduct)}
-                className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 inline-block ${
-                  selectedProduct === demoProduct
-                    ? 'shadow-2xl'
-                    : 'border-gray-300 hover:shadow-xl'
-                }`}
-                style={selectedProduct === demoProduct 
-                  ? { borderColor: '#479626', background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)' }
-                  : { borderColor: '#d1d5db' }
-                }
-              >
-                <div className="flex items-center space-x-6">
-                  <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, #479626, #3d7a20)' }}>
-                    <span className="text-white font-bold text-3xl">🎨</span>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-xl sm:text-2xl lg:text-3xl text-gray-900">{demoProduct.name}</h4>
-                    <p className="text-gray-600 text-lg sm:text-xl lg:text-2xl">{demoProduct.category} • ₹{demoProduct.basePrice.toLocaleString()}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
         {/* No Products Fallback */}
         {products.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-xl p-16 mb-12 text-center" style={{ border: '1px solid #479626' }}>
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-16 mb-12 text-center max-w-6xl mx-auto" style={{ border: '1px solid #479626' }}>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-8 text-gray-900">
               🚀 {t('sap.experienceTitle') || 'Experience SAP Analytics Cloud'}
             </h2>
@@ -178,24 +137,24 @@ export const SAPAnalyticsPage = () => {
 
         {/* SAP Analytics Dashboard */}
         {selectedProduct && (
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-green-100 mb-12">
-            <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-100 p-12 border-b border-green-200">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-green-100 mb-12 max-w-full mx-auto">
+            <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-100 p-8 md:p-12 border-b border-green-200">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-4">
+                  <h3 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4">
                     {t('sap.analyticsDashboard') || 'Analytics Dashboard'}: {selectedProduct.productName || selectedProduct.name}
                   </h3>
-                  <p className="text-lg sm:text-xl lg:text-2xl text-gray-700">
+                  <p className="text-xl sm:text-2xl lg:text-3xl text-gray-700">
                     Category: {selectedProduct.productCategory || selectedProduct.category} • 
                     Price: ₹{(selectedProduct.productPrice || selectedProduct.basePrice).toLocaleString()}
                   </p>
                 </div>
-                <div className="text-left lg:text-right">
-                  <div className="flex items-center space-x-4 bg-white/90 rounded-2xl px-6 py-4 border border-green-200 shadow-lg">
-                    <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700">{t('sap.integrationActive') || 'SAP Integration Active'}</span>
+                  <div className="text-left lg:text-right">
+                    <div className="flex items-center space-x-4 bg-white/90 rounded-2xl px-6 py-4 border border-green-200 shadow-lg">
+                      <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-700">{t('sap.integrationActive') || 'SAP Integration Active'}</span>
+                    </div>
                   </div>
-                </div>
               </div>
             </div>
             
@@ -215,7 +174,7 @@ export const SAPAnalyticsPage = () => {
         )}
 
         {/* SAP Integration Info */}
-        <div className="bg-white rounded-2xl shadow-xl p-12 border border-green-100">
+        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-green-100 max-w-6xl mx-auto">
           <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-12 text-center">
             🌟 {t('sap.integrationCapabilities') || 'SAP Integration Capabilities'}
           </h3>

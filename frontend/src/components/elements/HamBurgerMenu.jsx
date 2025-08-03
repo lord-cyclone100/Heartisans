@@ -17,7 +17,7 @@ export const HamBurgerMenu = () => {
                 <ul tabIndex={0} className="dropdown-content menu bg-black rounded-box z-1 w-52 p-2 shadow-sm">
                     <li><NavLink to="/shop">Shop</NavLink></li>
                     <li><NavLink to="/auction">Auction</NavLink></li>
-                    <li><NavLink to="/resale">Resale</NavLink></li>
+                    <li><NavLink to="/resale-listings">Resale</NavLink></li>
                     <li><NavLink to="/stories">Stories</NavLink></li>
                     <li><NavLink to="/sap-analytics" className="text-blue-300 hover:text-white-100">SAP Analytics</NavLink></li>
                     {user?.isAdmin && (
