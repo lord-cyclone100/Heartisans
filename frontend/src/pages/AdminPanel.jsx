@@ -4,10 +4,16 @@ import { useTranslation } from 'react-i18next'
 import { FaUsers, FaShoppingBag, FaGavel, FaChartBar, FaEye, FaEdit, FaTrash, FaCrown, FaUserShield, FaTimes, FaComments } from 'react-icons/fa'
 import { StoryAdminPanel } from '../components/elements/StoryAdminPanel'
 import { useScrollToTop } from "../hooks/useScrollToTop"
+import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
+
 export const AdminPanel = () => {
   const { t } = useTranslation();
+  const { user, isSignedIn, isLoaded } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('users')
   const [loading, setLoading] = useState(true)
+  const [authLoading, setAuthLoading] = useState(true)
   
   // Data states
   const [users, setUsers] = useState([])
@@ -24,10 +30,54 @@ export const AdminPanel = () => {
 
   useScrollToTop();
 
+  // Check authentication and admin status
+  useEffect(() => {
+    if (isLoaded) {
+      if (!isSignedIn || !user) {
+        navigate('/login');
+        return;
+      }
+      
+      if (!user.isAdmin) {
+        navigate('/'); // Redirect to home if not admin
+        return;
+      }
+      
+      setAuthLoading(false);
+    }
+  }, [isLoaded, isSignedIn, user, navigate]);
+
   // Fetch all data on component mount
   useEffect(() => {
-    fetchAllData()
-  }, [])
+    if (!authLoading && user?.isAdmin) {
+      fetchAllData();
+    }
+  }, [authLoading, user]);
+
+  // Show loading while checking authentication
+  if (authLoading || !isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500 mx-auto"></div>
+          <p className="mt-4 text-xl text-gray-600">Verifying admin access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!user?.isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <FaUserShield className="mx-auto h-24 w-24 text-red-500 mb-4" />
+          <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
+          <p className="text-gray-600">You don't have permission to access this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   const fetchAllData = async () => {
     setLoading(true)
