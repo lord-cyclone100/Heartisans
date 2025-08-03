@@ -5,6 +5,36 @@
     <link rel="icon" type="image/svg+xml" href="./photos/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heartisans</title>
+    
+    <!-- Google Translate Widget -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        console.log('Google Translate initializing...');
+        if (window.google && window.google.translate) {
+          new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'ar,hi,ur,bn,te,ta,ml,kn,gu,pa,mr,od,as,fr,es,de,it,pt,ru,ja,ko,zh,th,vi,id,ms,tr,he,fa',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+          }, 'google_translate_element');
+          console.log('Google Translate initialized');
+        }
+      }
+      
+      // Load script dynamically to avoid ad blockers
+      window.addEventListener('load', function() {
+        if (!document.querySelector('script[src*="translate.google.com"]')) {
+          const script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+          script.onerror = function() {
+            console.log('Google Translate blocked by ad blocker or network');
+            document.getElementById('google_translate_element').innerHTML = '<span style="color: #999; font-size: 12px;">Translate (blocked)</span>';
+          };
+          document.head.appendChild(script);
+        }
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

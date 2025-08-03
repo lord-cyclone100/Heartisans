@@ -64,6 +64,9 @@ export const Navbar = () => {
             </ul>
           </div>
           <LanguageSelector />
+          <div id="google_translate_element" className="inline-block text-white text-sm">
+            Translate
+          </div>
           {/* <div className='flex items-start relative'>
             <NavLink to='/cart'><FaCartShopping size={20} /></NavLink>
             <div className='size-6 rounded-full bg-red-500 flex items-center justify-center absolute left-5 bottom-5'>
