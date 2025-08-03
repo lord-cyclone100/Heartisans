@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useUser } from "../contexts/AuthContext";
 import { shopCategories, shopStates } from "../constants/constants";
@@ -6,12 +6,16 @@ import { useScrollToTop } from "../hooks/useScrollToTop";
 
 export const SellForm = () => {
   const { user } = useUser();
+  
+  // Update seller name when user data becomes available
+  useScrollToTop();
+  
   const [form, setForm] = useState({
     productName: "",
     productPrice: "",
     productState: "",
     productCategory: "",
-    productSellerName: user?.fullName || "",
+    productSellerName: user?.fullName || user?.userName || "",
     productImage: null,
     productDescription: "",
     productMaterial: "",
@@ -24,6 +28,16 @@ export const SellForm = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState("");
   const [sapAiLoading, setSapAiLoading] = useState(false);
+
+  // Update seller name when user data becomes available
+  useEffect(() => {
+    if (user && (user.fullName || user.userName)) {
+      setForm(prevForm => ({
+        ...prevForm,
+        productSellerName: user?.fullName || user?.userName || ""
+      }));
+    }
+  }, [user]);
   const [sapAiSuggestion, setSapAiSuggestion] = useState(null);
   const [pricePrediction, setPricePrediction] = useState(null);
   const [isPredictingPrice, setIsPredictingPrice] = useState(false);
@@ -212,7 +226,7 @@ export const SellForm = () => {
     const payload = {
       ...form,
       productImageUrl: imageUrl,
-      productSellerName: user?.fullName || "",
+      productSellerName: user?.fullName || user?.userName || "",
     };
     delete payload.productImage;
     await axios.post("http://localhost:5000/api/shopcards", payload);
@@ -222,7 +236,7 @@ export const SellForm = () => {
       productPrice: "",
       productState: "",
       productCategory: "",
-      productSellerName: user?.fullName || "",
+      productSellerName: user?.fullName || user?.userName || "",
       productImage: null,
       productDescription: "",
       productMaterial: "",
