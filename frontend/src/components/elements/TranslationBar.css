@@ -1,0 +1,203 @@
+/* Google Translate Widget Styling */
+
+/* Make sure the Google Translate gadget is visible */
+.goog-te-gadget {
+  font-family: inherit !important;
+  font-size: 14px !important;
+  display: block !important;
+}
+
+/* Style the Google Translate dropdown */
+.goog-te-combo {
+  background-color: white !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  font-size: 14px !important;
+  color: #374151 !important;
+  min-width: 160px !important;
+  display: inline-block !important;
+}
+
+/* Hide the "Powered by" text in the dropdown itself */
+.goog-te-gadget .goog-te-combo {
+  margin: 0 !important;
+}
+
+/* Hide Google's default banner frame */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+/* Fix body margin when Google Translate is active */
+body {
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Style for when page is translated */
+.translated-ltr, .translated-rtl {
+  margin-top: 0 !important;
+}
+
+/* Hide any Google branding in the widget */
+.goog-logo-link {
+  display: none !important;
+}
+
+/* Style the translation bar container */
+.translation-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-bottom: 1px solid #93c5fd;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .translation-bar .flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .goog-te-combo {
+    min-width: 120px !important;
+    font-size: 13px !important;
+  }
+}
+
+.translation-bar-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.translation-bar-exit-active {
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Language Dropdown Animations */
+.language-dropdown-enter {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+.language-dropdown-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 0.2s ease-out;
+}
+
+.language-dropdown-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.language-dropdown-exit-active {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.2s ease-in;
+}
+
+/* RTL Support */
+[dir="rtl"] .translation-bar {
+  direction: rtl;
+}
+
+[dir="rtl"] .language-dropdown {
+  left: auto;
+  right: 0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .translation-bar .language-name {
+    display: none;
+  }
+  
+  .translation-bar .language-flag {
+    font-size: 1.2rem;
+  }
+  
+  .translation-bar .action-buttons {
+    gap: 0.5rem;
+  }
+  
+  .translation-bar .action-buttons button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Accessibility */
+.translation-bar button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.translation-bar button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Loading States */
+.translation-loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.translation-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Google Translate iframe fixes */
+.skiptranslate iframe {
+  visibility: hidden !important;
+}
+
+/* Override Google Translate inline styles */
+body > .skiptranslate {
+  display: none !important;
+}
+
+/* Fix for Google Translate changing body styles */
+body[style*="margin-top"] {
+  margin-top: 0 !important;
+}
+
+body[style*="top"] {
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Ensure translation bar stays on top */
+.translation-bar {
+  z-index: 9999 !important;
+  position: sticky !important;
+  top: 0 !important;
+}
+
+/* Fix for Google Translate widget container */
+#google_translate_element {
+  position: absolute !important;
+  left: -9999px !important;
+  visibility: hidden !important;
+}
