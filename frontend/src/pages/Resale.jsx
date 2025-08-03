@@ -259,58 +259,71 @@ export const Resale = () => {
 
   return (
     <>
-      <div className="w-full h-[10vh]"></div>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white py-12">
-          <div className="container mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Resale Marketplace
-            </h1>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              Give your handcrafted treasures a new life. Sell with confidence using our AI-powered pricing intelligence.
-            </p>
-          </div>
+      <section className="min-h-screen font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)' }}>
+        <div className="w-full h-[10vh]"></div>
+        
+        {/* Hero Section */}
+        <div className="text-center py-8 md:py-12 px-4">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 font-mhlk" style={{ color: '#479626' }}>
+            Resale Marketplace
+          </h1>
+          <p className="text-lg md:text-2xl lg:text-3xl max-w-3xl mx-auto leading-relaxed" style={{ color: '#479626' }}>
+            Give your handcrafted treasures a new life with AI-powered pricing intelligence
+          </p>
         </div>
 
-        <div className="container mx-auto px-6 py-12">
+        {/* Content Container */}
+        <div className="w-full px-4 md:px-6 lg:px-8 py-8">
           {/* Quality Categories Section */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
-              Choose Your Product Condition
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                Choose Your Product Condition
+              </h2>
+              <p className="text-lg md:text-xl" style={{ color: '#479626' }}>
+                Select the condition that best describes your item
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {qualityCategories.map((category) => (
                 <div
                   key={category.id}
                   className={`relative cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
                     selectedCategory === category.id 
-                      ? 'ring-4 ring-green-400 shadow-2xl scale-105' 
+                      ? 'ring-4 shadow-2xl scale-105' 
                       : 'hover:shadow-lg'
                   }`}
+                  style={{
+                    ringColor: selectedCategory === category.id ? '#479626' : 'transparent'
+                  }}
                   onClick={() => handleCategorySelect(category)}
                 >
-                  <div className={`bg-gradient-to-br ${category.bgGradient} border-2 ${category.borderColor} rounded-2xl p-6 h-full`}>
+                  <div className={`bg-white border-2 rounded-2xl p-6 h-full shadow-lg ${
+                    selectedCategory === category.id ? 'border-2' : 'border-gray-200'
+                  }`}
+                  style={{
+                    borderColor: selectedCategory === category.id ? '#479626' : undefined
+                  }}>
                     <div className="text-center mb-4">
                       <div className="text-4xl mb-3">{category.icon}</div>
-                      <h3 className={`text-xl font-bold ${category.textColor} mb-2`}>
+                      <h3 className="text-xl font-bold mb-2 font-mhlk" style={{ color: '#479626' }}>
                         {category.title}
                       </h3>
                     </div>
                     
-                    <p className="text-gray-700 text-sm mb-4 leading-relaxed">
+                    <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                       {category.description}
                     </p>
                     
-                    <div className="bg-white bg-opacity-70 rounded-lg p-3 text-center">
-                      <span className={`text-sm font-semibold ${category.textColor}`}>
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
+                      <span className="text-sm font-semibold" style={{ color: '#479626' }}>
                         Expected Price: {Math.round(category.priceMultiplier * 100)}% of original
                       </span>
                     </div>
 
                     {resaleForm.originalPrice && selectedCategory === category.id && (
-                      <div className="mt-3 bg-white rounded-lg p-3 text-center border-2 border-green-300">
-                        <span className="text-lg font-bold text-green-700">
+                      <div className="mt-3 bg-white rounded-lg p-3 text-center border-2" style={{ borderColor: '#479626', backgroundColor: '#f0f9f0' }}>
+                        <span className="text-lg font-bold" style={{ color: '#479626' }}>
                           Estimated: ₹{calculateEstimatedPrice(resaleForm.originalPrice, category.id).toLocaleString()}
                         </span>
                       </div>
@@ -322,37 +335,49 @@ export const Resale = () => {
           </div>
 
           {/* Resale Form */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                <span className="mr-3">📝</span>
-                List Your Item for Resale
-              </h2>
+          <div className="w-full">
+            <div className="bg-white rounded-3xl shadow-lg p-8 md:p-12 mx-auto max-w-4xl">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl md:text-4xl font-bold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                  List Your Item for Resale
+                </h2>
+                <p className="text-lg" style={{ color: '#479626' }}>
+                  Fill in the details below to list your handcrafted item
+                </p>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Product Name *
                     </label>
                     <input
                       type="text"
                       value={resaleForm.productName}
                       onChange={(e) => setResaleForm({ ...resaleForm, productName: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      style={{
+                        focusRingColor: '#479626',
+                        focusBorderColor: '#479626'
+                      }}
                       placeholder="Enter your product name"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Category *
                     </label>
                     <select
                       value={resaleForm.category}
                       onChange={(e) => setResaleForm({ ...resaleForm, category: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      style={{
+                        focusRingColor: '#479626',
+                        focusBorderColor: '#479626'
+                      }}
                       required
                     >
                       <option value="">Select Category</option>
@@ -363,26 +388,30 @@ export const Resale = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Original Purchase Price (₹) *
                     </label>
                     <input
                       type="number"
                       value={resaleForm.originalPrice}
                       onChange={(e) => setResaleForm({ ...resaleForm, originalPrice: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      style={{
+                        focusRingColor: '#479626',
+                        focusBorderColor: '#479626'
+                      }}
                       placeholder="Enter original price"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Condition Selected
                     </label>
                     <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
                       {selectedCategory ? (
-                        <span className="text-gray-700">
+                        <span style={{ color: '#479626' }}>
                           {qualityCategories.find(cat => cat.id === selectedCategory)?.title || 'None selected'}
                         </span>
                       ) : (
@@ -393,7 +422,7 @@ export const Resale = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                     Product Description
                   </label>
                   <div className="space-y-3">
@@ -401,14 +430,18 @@ export const Resale = () => {
                       value={resaleForm.description}
                       onChange={(e) => setResaleForm({ ...resaleForm, description: e.target.value })}
                       rows="4"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      style={{
+                        focusRingColor: '#479626',
+                        focusBorderColor: '#479626'
+                      }}
                       placeholder="Describe your item's current condition, any flaws, history, etc."
                     />
                     
                     {/* SAP AI Description Generator */}
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                    <div className="rounded-lg p-4 border-2" style={{ backgroundColor: '#f0f9f0', borderColor: '#479626' }}>
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-sm font-bold text-blue-800 flex items-center">
+                        <h4 className="text-sm font-bold flex items-center font-mhlk" style={{ color: '#479626' }}>
                           <span className="mr-2">🤖</span>
                           SAP AI Description Generator
                         </h4>
@@ -416,7 +449,8 @@ export const Resale = () => {
                           type="button"
                           onClick={generateSAPAIDescription}
                           disabled={sapAiLoading || !resaleForm.productName || !resaleForm.category}
-                          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="text-white px-4 py-2 rounded-md text-sm font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-mhlk"
+                          style={{ backgroundColor: '#479626' }}
                         >
                           {sapAiLoading ? (
                             <span className="flex items-center">
@@ -531,12 +565,12 @@ export const Resale = () => {
                 </div>
 
                 {/* SAP AI Price Prediction */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-                  <h3 className="text-lg font-bold text-blue-800 mb-3 flex items-center">
+                <div className="rounded-xl p-6 border-2" style={{ backgroundColor: '#f0f9f0', borderColor: '#479626' }}>
+                  <h3 className="text-lg font-bold mb-3 flex items-center font-mhlk" style={{ color: '#479626' }}>
                     <span className="mr-2">🤖</span>
                     SAP AI Price Prediction
                   </h3>
-                  <p className="text-blue-700 text-sm mb-4">
+                  <p className="text-sm mb-4" style={{ color: '#479626' }}>
                     Get enterprise-grade pricing intelligence powered by SAP Business AI
                   </p>
                   
@@ -544,7 +578,8 @@ export const Resale = () => {
                     type="button"
                     onClick={generateSAPPricePrediction}
                     disabled={isPredictingPrice || !resaleForm.productName || !resaleForm.category}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+                    className="text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 font-mhlk"
+                    style={{ backgroundColor: '#479626' }}
                   >
                     {isPredictingPrice ? (
                       <span className="flex items-center">
@@ -611,7 +646,8 @@ export const Resale = () => {
                   <button
                     type="submit"
                     disabled={!selectedCategory || !resaleForm.productName || !resaleForm.category || !resaleForm.originalPrice || selectedImages.length === 0}
-                    className="bg-gradient-to-r from-green-600 to-orange-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-green-700 hover:to-orange-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg"
+                    className="text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg font-mhlk"
+                    style={{ backgroundColor: '#479626' }}
                   >
                     Create Resale Listing
                   </button>
@@ -622,38 +658,43 @@ export const Resale = () => {
 
           {/* Features Section */}
           <div className="mt-16">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-              Why Choose Our Resale Marketplace?
-            </h2>
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                Why Choose Our Platform
+              </h2>
+              <p className="text-lg md:text-xl" style={{ color: '#479626' }}>
+                Trusted marketplace for handcrafted treasures
+              </p>
+            </div>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               <div className="text-center group">
-                <div className="bg-gradient-to-br from-green-100 to-green-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: '#f0f9f0' }}>
                   <span className="text-3xl">🤖</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">AI-Powered Pricing</h3>
+                <h3 className="text-xl font-bold mb-2 font-mhlk" style={{ color: '#479626' }}>AI-Powered Pricing</h3>
                 <p className="text-gray-600">Enterprise-grade SAP AI analyzes market trends to suggest optimal pricing for your items.</p>
               </div>
               
               <div className="text-center group">
-                <div className="bg-gradient-to-br from-orange-100 to-orange-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: '#f0f9f0' }}>
                   <span className="text-3xl">🏷️</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Quality-Based Categories</h3>
+                <h3 className="text-xl font-bold mb-2 font-mhlk" style={{ color: '#479626' }}>Quality-Based Categories</h3>
                 <p className="text-gray-600">Transparent condition assessment ensures fair pricing and buyer confidence.</p>
               </div>
               
               <div className="text-center group">
-                <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: '#f0f9f0' }}>
                   <span className="text-3xl">🌟</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Trusted Marketplace</h3>
+                <h3 className="text-xl font-bold mb-2 font-mhlk" style={{ color: '#479626' }}>Trusted Marketplace</h3>
                 <p className="text-gray-600">Safe, secure platform connecting artisan product lovers with authenticated sellers.</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </>
   );
 };

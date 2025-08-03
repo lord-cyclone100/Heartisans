@@ -32,7 +32,6 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:5000/api/analytics/analytics-dashboard', productData);
-      console.log('SAC Dashboard Response:', response.data);
       setAnalytics(response.data.dashboard);
     } catch (error) {
       console.error('Analytics generation failed:', error);
@@ -59,28 +58,28 @@ const SAPAnalyticsDashboard = ({ productData }) => {
 
     return (
       <div className="p-12 rounded-2xl font-mhlk" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
-        <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
-          <span className="text-3xl mr-4">🔍</span>
+        <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
+          <span className="text-4xl mr-4">🔍</span>
           Market Intelligence
         </h3>
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h4 className="font-bold text-xl text-gray-700 mb-4">Market Size</h4>
-              <p className="text-2xl font-bold" style={{ color: '#479626' }}>{marketData.market_size || 'N/A'}</p>
+              <h4 className="font-bold text-2xl text-gray-700 mb-4">Market Size</h4>
+              <p className="text-3xl font-bold" style={{ color: '#479626' }}>{marketData.market_size || 'N/A'}</p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h4 className="font-bold text-xl text-gray-700 mb-4">Growth Rate</h4>
-              <p className="text-2xl font-bold" style={{ color: '#479626' }}>{marketData.growth_rate || 'N/A'}</p>
+              <h4 className="font-bold text-2xl text-gray-700 mb-4">Growth Rate</h4>
+              <p className="text-3xl font-bold" style={{ color: '#479626' }}>{marketData.growth_rate || 'N/A'}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h4 className="font-bold text-xl text-gray-700 mb-4">Competition Level</h4>
-              <p className="text-2xl font-bold" style={{ color: '#479626' }}>{marketData.competition_level || 'N/A'}</p>
+              <h4 className="font-bold text-2xl text-gray-700 mb-4">Competition Level</h4>
+              <p className="text-3xl font-bold" style={{ color: '#479626' }}>{marketData.competition_level || 'N/A'}</p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h4 className="font-bold text-xl text-gray-700 mb-4">Source</h4>
+              <h4 className="font-bold text-2xl text-gray-700 mb-4">Source</h4>
               <p className="text-lg font-semibold" style={{ color: '#479626' }}>{marketData.source || 'SAP Analytics Cloud'}</p>
             </div>
           </div>
@@ -127,29 +126,29 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             <span className="text-3xl mr-4">💰</span>
             Pricing Analytics
           </h3>
-          <p className="text-xl text-gray-500">No pricing analytics data available</p>
+          <p className="text-2xl text-gray-500">No pricing analytics data available</p>
         </div>
       );
     }
 
     return (
       <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
-        <h3 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
-          <span className="text-3xl mr-4">💰</span>
+        <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
+          <span className="text-4xl mr-4">💰</span>
           Pricing Analytics
         </h3>
         <div className="space-y-8">
           {pricingData.optimal_price_range && (
             <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h4 className="font-bold text-xl text-gray-700 mb-6">Optimal Price Range</h4>
+              <h4 className="font-bold text-2xl text-gray-700 mb-6">Optimal Price Range</h4>
               <div className="flex flex-wrap items-center gap-6">
-                <span className="px-6 py-3 rounded-full text-lg font-semibold" style={{ backgroundColor: '#e8f5e8', color: '#479626' }}>
+                <span className="px-6 py-3 rounded-full text-xl font-semibold" style={{ backgroundColor: '#e8f5e8', color: '#479626' }}>
                   Min: ₹{pricingData.optimal_price_range?.min || 'N/A'}
                 </span>
-                <span className="px-6 py-3 rounded-full text-lg font-bold" style={{ backgroundColor: '#479626', color: 'white' }}>
+                <span className="px-6 py-3 rounded-full text-xl font-bold" style={{ backgroundColor: '#479626', color: 'white' }}>
                   Recommended: ₹{pricingData.optimal_price_range?.recommended || pricingData.optimal_price_range?.max || 'N/A'}
                 </span>
-                <span className="px-6 py-3 rounded-full text-lg font-semibold" style={{ backgroundColor: '#e8f5e8', color: '#479626' }}>
+                <span className="px-6 py-3 rounded-full text-xl font-semibold" style={{ backgroundColor: '#e8f5e8', color: '#479626' }}>
                   Max: ₹{pricingData.optimal_price_range?.max || 'N/A'}
                 </span>
               </div>
@@ -157,21 +156,21 @@ const SAPAnalyticsDashboard = ({ productData }) => {
           )}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700">Pricing Strategy</h4>
-              <p style={{ color: '#479626' }}>{pricingData.pricing_strategy || 'Value-based pricing'}</p>
+              <h4 className="font-semibold text-xl text-gray-700">Pricing Strategy</h4>
+              <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{pricingData.pricing_strategy || 'Value-based pricing'}</p>
             </div>
             <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700">Price Elasticity</h4>
-              <p style={{ color: '#479626' }}>{pricingData.price_elasticity || 'Moderate'}</p>
+              <h4 className="font-semibold text-xl text-gray-700">Price Elasticity</h4>
+              <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{pricingData.price_elasticity || 'Moderate'}</p>
             </div>
           </div>
           
           {pricingData.pricing_recommendations && Array.isArray(pricingData.pricing_recommendations) && (
             <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Pricing Recommendations</h4>
+              <h4 className="font-semibold text-xl text-gray-700 mb-2">Pricing Recommendations</h4>
               <ul className="space-y-1">
                 {pricingData.pricing_recommendations.map((rec, index) => (
-                  <li key={index} className="text-sm text-gray-600 flex items-start">
+                  <li key={index} className="text-base text-gray-600 flex items-start">
                     <span className="mr-2" style={{ color: '#479626' }}>•</span>
                     <span>{extractText(rec)}</span>
                   </li>
@@ -188,48 +187,39 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     const customerData = analytics?.analytics?.customer_segments;
     
     return (
-      <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(to bottom right, #fef3e2, #fff5e6)', border: '1px solid #ffaf27' }}>
-        <h3 className="text-xl font-bold mb-4 flex items-center" style={{ color: '#ffaf27' }}>
-          👥 Customer Segments
+      <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #fef3e2, #fff5e6)', border: '1px solid #ffaf27' }}>
+        <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 flex items-center" style={{ color: '#ffaf27' }}>
+          <span className="text-4xl mr-4">👥</span>
+          Customer Segments
         </h3>
         
-        {/* Debug display - show raw Groq data */}
-        {customerData && (
-          <div className="bg-gray-100 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold text-gray-700 mb-2">Raw Groq Data:</h4>
-            <pre className="text-xs overflow-auto max-h-32 text-gray-600">
-              {JSON.stringify(customerData, null, 2)}
-            </pre>
-          </div>
-        )}
-        
         {customerData ? (
-          <div className="space-y-4">
+          <div className="space-y-8">
             {/* Display Groq's primary_segment (singular) */}
             {customerData.primary_segment && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-3">Primary Segment</h4>
-                <div className="p-3 rounded" style={{ backgroundColor: '#fff5e6' }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-lg" style={{ color: '#ffaf27' }}>{customerData.primary_segment.name}</span>
-                    <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Primary Segment</h4>
+                <div className="p-6 rounded-xl" style={{ backgroundColor: '#fff5e6' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-bold text-2xl" style={{ color: '#ffaf27' }}>{customerData.primary_segment.name}</span>
+                    <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#ffaf27', color: 'white' }}>
                       {customerData.primary_segment.size}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600">{customerData.primary_segment.characteristics}</p>
+                  <p className="text-lg text-gray-600">{customerData.primary_segment.characteristics}</p>
                 </div>
               </div>
             )}
             
             {/* Display Groq's secondary_segments */}
             {customerData.secondary_segments && Array.isArray(customerData.secondary_segments) && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-3">Secondary Segments</h4>
-                <div className="space-y-2">
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Secondary Segments</h4>
+                <div className="space-y-4">
                   {customerData.secondary_segments.map((segment, index) => (
-                    <div key={index} className="flex items-center p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
-                      <span className="mr-2" style={{ color: '#ffaf27' }}>•</span>
-                      <span className="font-medium" style={{ color: '#ffaf27' }}>{segment}</span>
+                    <div key={index} className="flex items-center p-4 rounded-xl" style={{ backgroundColor: '#fff5e6' }}>
+                      <span className="mr-4 text-xl" style={{ color: '#ffaf27' }}>•</span>
+                      <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>{segment}</span>
                     </div>
                   ))}
                 </div>
@@ -238,21 +228,21 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             
             {/* Display buying_behavior if available */}
             {customerData.buying_behavior && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-3">Buying Behavior</h4>
-                <p style={{ color: '#ffaf27' }}>{customerData.buying_behavior}</p>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Buying Behavior</h4>
+                <p className="text-xl font-semibold" style={{ color: '#ffaf27' }}>{customerData.buying_behavior}</p>
               </div>
             )}
             
             {/* Display segment_insights if available */}
             {customerData.segment_insights && Array.isArray(customerData.segment_insights) && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-3">Segment Insights</h4>
-                <div className="space-y-2">
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Segment Insights</h4>
+                <div className="space-y-4">
                   {customerData.segment_insights.map((insight, index) => (
-                    <div key={index} className="flex items-start p-2">
-                      <span className="mr-2 mt-1" style={{ color: '#ffaf27' }}>•</span>
-                      <span className="text-gray-600">{insight}</span>
+                    <div key={index} className="flex items-start p-4">
+                      <span className="mr-4 mt-1 text-xl" style={{ color: '#ffaf27' }}>•</span>
+                      <span className="text-lg text-gray-600">{insight}</span>
                     </div>
                   ))}
                 </div>
@@ -261,27 +251,27 @@ const SAPAnalyticsDashboard = ({ productData }) => {
 
             {/* Original demographics structure (if available) */}
             {customerData.demographics && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-2">Demographics</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Demographics</h4>
+                <div className="grid grid-cols-2 gap-8 text-lg">
                   <div>
-                    <span className="font-medium">Age Distribution:</span>
-                    <div className="space-y-1 mt-1">
+                    <span className="font-bold text-xl">Age Distribution:</span>
+                    <div className="space-y-3 mt-4">
                       {Object.entries(customerData.demographics.age_groups || {}).map(([age, percent]) => (
                         <div key={age} className="flex justify-between">
-                          <span>{age}</span>
-                          <span>{percent}%</span>
+                          <span className="text-lg">{age}</span>
+                          <span className="text-lg font-semibold">{percent}%</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <span className="font-medium">Income Levels:</span>
-                    <div className="space-y-1 mt-1">
+                    <span className="font-bold text-xl">Income Levels:</span>
+                    <div className="space-y-3 mt-4">
                       {Object.entries(customerData.demographics.income_levels || {}).map(([income, percent]) => (
                         <div key={income} className="flex justify-between">
-                          <span>{income}</span>
-                          <span>{percent}%</span>
+                          <span className="text-lg">{income}</span>
+                          <span className="text-lg font-semibold">{percent}%</span>
                         </div>
                       ))}
                     </div>
@@ -291,88 +281,88 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-8">
             {/* Default customer segments when no data available */}
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-3">Primary Segments</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
-                  <span className="font-medium" style={{ color: '#ffaf27' }}>Cultural Enthusiasts</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>35%</span>
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-2xl text-gray-700 mb-6">Primary Segments</h4>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>Cultural Enthusiasts</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#ffaf27', color: 'white' }}>35%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
-                  <span className="font-medium" style={{ color: '#ffaf27' }}>Gift Buyers</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>28%</span>
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>Gift Buyers</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#ffaf27', color: 'white' }}>28%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
-                  <span className="font-medium" style={{ color: '#ffaf27' }}>Home Decorators</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>22%</span>
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>Home Decorators</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#ffaf27', color: 'white' }}>22%</span>
                 </div>
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#fff5e6' }}>
-                  <span className="font-medium" style={{ color: '#ffaf27' }}>Collectors</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#ffaf27', color: 'white' }}>15%</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Demographics</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">Age Distribution:</span>
-                  <div className="space-y-1 mt-1">
-                    <div className="flex justify-between">
-                      <span>25-34</span>
-                      <span>32%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>35-44</span>
-                      <span>28%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>45-54</span>
-                      <span>24%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>55+</span>
-                      <span>16%</span>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-medium">Income Levels:</span>
-                  <div className="space-y-1 mt-1">
-                    <div className="flex justify-between">
-                      <span>Middle Class</span>
-                      <span>45%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Upper Middle</span>
-                      <span>35%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Premium</span>
-                      <span>20%</span>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#fff5e6' }}>
+                  <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>Collectors</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#ffaf27', color: 'white' }}>15%</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Purchase Behavior</h4>
-              <div className="space-y-2">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-2xl text-gray-700 mb-6">Demographics</h4>
+              <div className="grid grid-cols-2 gap-8 text-lg">
+                <div>
+                  <span className="font-bold text-xl">Age Distribution:</span>
+                  <div className="space-y-3 mt-4">
+                    <div className="flex justify-between">
+                      <span className="text-lg">25-34</span>
+                      <span className="text-lg font-semibold">32%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-lg">35-44</span>
+                      <span className="text-lg font-semibold">28%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-lg">45-54</span>
+                      <span className="text-lg font-semibold">24%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-lg">55+</span>
+                      <span className="text-lg font-semibold">16%</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <span className="font-bold text-xl">Income Levels:</span>
+                  <div className="space-y-3 mt-4">
+                    <div className="flex justify-between">
+                      <span className="text-lg">Middle Class</span>
+                      <span className="text-lg font-semibold">45%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-lg">Upper Middle</span>
+                      <span className="text-lg font-semibold">35%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-lg">Premium</span>
+                      <span className="text-lg font-semibold">20%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-2xl text-gray-700 mb-6">Purchase Behavior</h4>
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Average Order Value</span>
-                  <span className="font-semibold" style={{ color: '#ffaf27' }}>₹2,450</span>
+                  <span className="text-xl text-gray-600">Average Order Value</span>
+                  <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>₹2,450</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Repeat Purchase Rate</span>
-                  <span className="font-semibold" style={{ color: '#ffaf27' }}>42%</span>
+                  <span className="text-xl text-gray-600">Repeat Purchase Rate</span>
+                  <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>42%</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Peak Shopping Season</span>
-                  <span className="font-semibold" style={{ color: '#ffaf27' }}>Festival Months</span>
+                  <span className="text-xl text-gray-600">Peak Shopping Season</span>
+                  <span className="font-bold text-xl" style={{ color: '#ffaf27' }}>Festival Months</span>
                 </div>
               </div>
             </div>
@@ -385,39 +375,28 @@ const SAPAnalyticsDashboard = ({ productData }) => {
     const forecastData = analytics?.analytics?.demand_forecast;
     
     return (
-      <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
-        <h3 className="text-xl font-bold mb-4 flex items-center" style={{ color: '#479626' }}>
-          🔮 Demand Forecast
+      <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #e8f5e8, #f0f9f0)', border: '1px solid #479626' }}>
+        <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 flex items-center" style={{ color: '#479626' }}>
+          <span className="text-4xl mr-4">🔮</span>
+          Demand Forecast
         </h3>
         
-        {/* Debug display - show raw Groq data */}
-        {forecastData && (
-          <div className="bg-gray-100 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold text-gray-700 mb-2">Raw Groq Data:</h4>
-            <pre className="text-xs overflow-auto max-h-32 text-gray-600">
-              {JSON.stringify(forecastData, null, 2)}
-            </pre>
-          </div>
-        )}
-        
         {forecastData ? (
-          <div className="space-y-4">
+          <div className="space-y-8">
             {/* Display Groq's monthly_forecast */}
             {forecastData.monthly_forecast && Array.isArray(forecastData.monthly_forecast) && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-3">Monthly Forecast</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Monthly Forecast</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {forecastData.monthly_forecast.map((monthString, index) => {
-                    console.log('Monthly String:', monthString); // Debug log
                     // Split string like "Jan: 150 units" into month and value
                     const [month, valueWithUnits] = monthString.split(': ');
                     const numericValue = valueWithUnits ? valueWithUnits.split(' ')[0] : '0';
-                    console.log('Month:', month, 'Value:', numericValue); // Debug log
                     return (
-                      <div key={index} className="p-3 rounded text-center" style={{ backgroundColor: '#e8f5e8' }}>
-                        <div className="font-semibold text-sm" style={{ color: '#479626' }}>{month}</div>
-                        <div className="text-lg font-bold mt-1" style={{ color: '#479626' }}>{numericValue}</div>
-                        <div className="text-xs text-gray-500">units</div>
+                      <div key={index} className="p-4 rounded-xl text-center" style={{ backgroundColor: '#e8f5e8' }}>
+                        <div className="font-bold text-lg" style={{ color: '#479626' }}>{month}</div>
+                        <div className="text-2xl font-bold mt-2" style={{ color: '#479626' }}>{numericValue}</div>
+                        <div className="text-base text-gray-500">units</div>
                       </div>
                     );
                   })}
@@ -427,54 +406,54 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             
             {/* Display seasonal_trends if available */}
             {forecastData.seasonal_trends && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700">Seasonal Trends</h4>
-                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.seasonal_trends}</p>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-4">Seasonal Trends</h4>
+                <p className="text-xl font-bold mt-2" style={{ color: '#479626' }}>{forecastData.seasonal_trends}</p>
               </div>
             )}
             
             {/* Display forecast_confidence if available */}
             {forecastData.forecast_confidence && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700">Forecast Confidence</h4>
-                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.forecast_confidence}</p>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-4">Forecast Confidence</h4>
+                <p className="text-xl font-bold mt-2" style={{ color: '#479626' }}>{forecastData.forecast_confidence}</p>
               </div>
             )}
             
             {/* Display business_impact if available */}
             {forecastData.business_impact && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700">Business Impact</h4>
-                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.business_impact}</p>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-4">Business Impact</h4>
+                <p className="text-xl font-bold mt-2" style={{ color: '#479626' }}>{forecastData.business_impact}</p>
               </div>
             )}
             
             {/* Display forecast_trend if available (fallback) */}
             {forecastData.forecast_trend && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700">Forecast Trend</h4>
-                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.forecast_trend}</p>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-4">Forecast Trend</h4>
+                <p className="text-xl font-bold mt-2" style={{ color: '#479626' }}>{forecastData.forecast_trend}</p>
               </div>
             )}
             
             {/* Display predicted_growth if available (fallback) */}
             {forecastData.predicted_growth && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700">Predicted Growth</h4>
-                <p className="text-lg font-semibold mt-2" style={{ color: '#479626' }}>{forecastData.predicted_growth}</p>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-4">Predicted Growth</h4>
+                <p className="text-xl font-bold mt-2" style={{ color: '#479626' }}>{forecastData.predicted_growth}</p>
               </div>
             )}
             
             {/* Display seasonal_peaks if available (fallback) */}
             {forecastData.seasonal_peaks && Array.isArray(forecastData.seasonal_peaks) && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-2">Seasonal Peaks</h4>
-                <div className="space-y-2">
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Seasonal Peaks</h4>
+                <div className="space-y-4">
                   {forecastData.seasonal_peaks.map((peak, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
-                      <span style={{ color: '#479626' }}>{typeof peak === 'object' ? peak.period : peak}</span>
+                    <div key={index} className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#e8f5e8' }}>
+                      <span className="text-lg font-semibold" style={{ color: '#479626' }}>{typeof peak === 'object' ? peak.period : peak}</span>
                       {typeof peak === 'object' && peak.boost && (
-                        <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>
+                        <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#479626', color: 'white' }}>
                           +{peak.boost}
                         </span>
                       )}
@@ -486,13 +465,13 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             
             {/* Display demand_drivers if available */}
             {forecastData.demand_drivers && Array.isArray(forecastData.demand_drivers) && (
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-2">Demand Drivers</h4>
-                <div className="space-y-2">
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-6">Demand Drivers</h4>
+                <div className="space-y-4">
                   {forecastData.demand_drivers.map((driver, index) => (
-                    <div key={index} className="flex items-start p-2">
-                      <span className="mr-2 mt-1" style={{ color: '#479626' }}>•</span>
-                      <span className="text-gray-600">{driver}</span>
+                    <div key={index} className="flex items-start p-4">
+                      <span className="mr-4 mt-1 text-xl" style={{ color: '#479626' }}>•</span>
+                      <span className="text-lg text-gray-600">{driver}</span>
                     </div>
                   ))}
                 </div>
@@ -500,57 +479,57 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-8">
             {/* Default forecast data when no analytics available */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700">Forecast Trend</h4>
-                <p className="font-semibold" style={{ color: '#479626' }}>↗️ Growing Demand</p>
-                <p className="text-sm text-gray-600 mt-1">Based on market patterns and cultural events</p>
+            <div className="grid grid-cols-2 gap-8">
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-4">Forecast Trend</h4>
+                <p className="font-bold text-xl" style={{ color: '#479626' }}>↗️ Growing Demand</p>
+                <p className="text-lg text-gray-600 mt-4">Based on market patterns and cultural events</p>
               </div>
-              <div className="bg-white p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700">Predicted Growth</h4>
-                <p className="font-semibold" style={{ color: '#479626' }}>+15-25% YoY</p>
-                <p className="text-sm text-gray-600 mt-1">Expected annual growth in artisan category</p>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Seasonal Peaks</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
-                  <span style={{ color: '#479626' }}>🎨 Festival Season (Oct-Nov)</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+40%</span>
-                </div>
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
-                  <span style={{ color: '#479626' }}>🎁 Wedding Season (Dec-Feb)</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+30%</span>
-                </div>
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
-                  <span style={{ color: '#479626' }}>🌸 Spring Collection (Mar-Apr)</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+20%</span>
-                </div>
-                <div className="flex items-center justify-between p-2 rounded" style={{ backgroundColor: '#e8f5e8' }}>
-                  <span style={{ color: '#479626' }}>🏡 Home Decor Trends (Aug-Sep)</span>
-                  <span className="px-2 py-1 rounded text-sm" style={{ backgroundColor: '#479626', color: 'white' }}>+25%</span>
-                </div>
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 className="font-bold text-2xl text-gray-700 mb-4">Predicted Growth</h4>
+                <p className="font-bold text-xl" style={{ color: '#479626' }}>+15-25% YoY</p>
+                <p className="text-lg text-gray-600 mt-4">Expected annual growth in artisan category</p>
               </div>
             </div>
             
-            <div className="bg-white p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Market Insights</h4>
-              <div className="space-y-2">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-2xl text-gray-700 mb-6">Seasonal Peaks</h4>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span className="text-lg font-semibold" style={{ color: '#479626' }}>🎨 Festival Season (Oct-Nov)</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#479626', color: 'white' }}>+40%</span>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span className="text-lg font-semibold" style={{ color: '#479626' }}>🎁 Wedding Season (Dec-Feb)</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#479626', color: 'white' }}>+30%</span>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span className="text-lg font-semibold" style={{ color: '#479626' }}>🌸 Spring Collection (Mar-Apr)</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#479626', color: 'white' }}>+20%</span>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#e8f5e8' }}>
+                  <span className="text-lg font-semibold" style={{ color: '#479626' }}>🏡 Home Decor Trends (Aug-Sep)</span>
+                  <span className="px-4 py-2 rounded-xl text-lg font-semibold" style={{ backgroundColor: '#479626', color: 'white' }}>+25%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h4 className="font-bold text-2xl text-gray-700 mb-6">Market Insights</h4>
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Market Size Growth</span>
-                  <span className="font-semibold" style={{ color: '#479626' }}>₹1.5M annually</span>
+                  <span className="text-xl text-gray-600">Market Size Growth</span>
+                  <span className="font-bold text-xl" style={{ color: '#479626' }}>₹1.5M annually</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Digital Adoption Rate</span>
-                  <span className="font-semibold" style={{ color: '#479626' }}>65% increase</span>
+                  <span className="text-xl text-gray-600">Digital Adoption Rate</span>
+                  <span className="font-bold text-xl" style={{ color: '#479626' }}>65% increase</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Regional Demand Leader</span>
-                  <span className="font-semibold" style={{ color: '#479626' }}>{productData.region || 'Metropolitan'}</span>
+                  <span className="text-xl text-gray-600">Regional Demand Leader</span>
+                  <span className="font-bold text-xl" style={{ color: '#479626' }}>{productData.region || 'Metropolitan'}</span>
                 </div>
               </div>
             </div>
@@ -561,30 +540,31 @@ const SAPAnalyticsDashboard = ({ productData }) => {
   };
 
   const renderRecommendations = () => (
-    <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(to bottom right, #fef3e2, #fff5e6)', border: '1px solid #ffaf27' }}>
-      <h3 className="text-xl font-bold mb-4 flex items-center" style={{ color: '#ffaf27' }}>
-        💡 Strategic Recommendations
+    <div className="p-12 rounded-2xl" style={{ background: 'linear-gradient(to bottom right, #fef3e2, #fff5e6)', border: '1px solid #ffaf27' }}>
+      <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8 flex items-center" style={{ color: '#ffaf27' }}>
+        <span className="text-4xl mr-4">💡</span>
+        Strategic Recommendations
       </h3>
       {analytics?.recommendations && (
-        <div className="space-y-3">
+        <div className="space-y-6">
           {analytics.recommendations.map((rec, index) => (
-            <div key={index} className="bg-white p-4 rounded-lg border-l-4 border-rose-400">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold text-gray-800">{rec.category}</h4>
-                <div className="flex space-x-2">
-                  <span className={`px-2 py-1 rounded text-xs ${
+            <div key={index} className="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-rose-400">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-bold text-2xl text-gray-800">{rec.category}</h4>
+                <div className="flex space-x-3">
+                  <span className={`px-4 py-2 rounded-xl text-base font-semibold ${
                     rec.impact === 'High' ? 'bg-red-100 text-red-800' :
                     rec.impact === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-green-100 text-green-800'
                   }`}>
                     {rec.impact} Impact
                   </span>
-                  <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                  <span className="bg-gray-100 text-gray-600 px-4 py-2 rounded-xl text-base font-semibold">
                     {rec.timeline || rec.implementation}
                   </span>
                 </div>
               </div>
-              <p className="text-gray-600 text-sm">{rec.recommendation}</p>
+              <p className="text-lg text-gray-600">{rec.recommendation}</p>
             </div>
           ))}
         </div>
@@ -642,27 +622,6 @@ const SAPAnalyticsDashboard = ({ productData }) => {
             </div>
           ) : (
             <>
-              {/* Debug Section - Shows data structure */}
-              <div className="rounded-2xl p-8 mb-12" style={{ backgroundColor: '#e8f5e8', border: '1px solid #479626' }}>
-                <h4 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4" style={{ color: '#479626' }}>Debug: Analytics Data</h4>
-                <div className="text-lg sm:text-xl lg:text-2xl space-y-2" style={{ color: '#479626' }}>
-                  <div className="flex justify-between"><span className="font-medium">Success:</span> <span>{String(analytics.success)}</span></div>
-                  <div className="flex justify-between"><span className="font-medium">Source:</span> <span>{analytics.source}</span></div>
-                  <div className="flex justify-between"><span className="font-medium">Has Analytics:</span> <span>{String(!!analytics.analytics)}</span></div>
-                  {analytics.analytics && (
-                    <>
-                      <div className="flex justify-between"><span className="font-medium">Market Intelligence:</span> <span>{String(!!analytics.analytics.market_intelligence)}</span></div>
-                      <div className="flex justify-between"><span className="font-medium">Pricing Trends:</span> <span>{String(!!analytics.analytics.pricing_trends)}</span></div>
-                      <div className="flex justify-between"><span className="font-medium">Customer Segments:</span> <span>{String(!!analytics.analytics.customer_segments)}</span></div>
-                      <div className="flex justify-between"><span className="font-medium">Demand Forecast:</span> <span>{String(!!analytics.analytics.demand_forecast)}</span></div>
-                      {analytics.analytics.market_intelligence && (
-                        <div className="flex justify-between"><span className="font-medium">MI Market Size:</span> <span>{analytics.analytics.market_intelligence.market_size}</span></div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-
               {/* Tab Navigation */}
               <div className="border-b-2 mb-12" style={{ borderColor: '#479626' }}>
                 <nav className="flex flex-wrap gap-2">
