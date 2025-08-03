@@ -84,26 +84,42 @@ export const Shop = () => {
                   key={idx}
                   className="group transform transition-all duration-300 hover:scale-105"
                 >
-                  <div className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 md:p-6 lg:p-8" style={{ background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)', border: '1px solid #d1d5db' }}>
-                    <div className="relative mb-4 md:mb-6 lg:mb-8">
-                      <div className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 mx-auto flex items-center justify-center shadow-lg transition-all duration-300" style={{ background: 'linear-gradient(to bottom right, #479626, #3d7a20)' }} id="item">
-                        <div className="w-20 h-20 md:w-28 md:h-28 lg:w-36 lg:h-36 bg-amber-300 flex items-center justify-center" id="item">
+                  <div className="bg-gray-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 md:p-8 flex flex-col items-center text-center relative overflow-visible">
+                    {/* State Shape Container */}
+                    <div className="relative mb-6 md:mb-8 -mt-8 md:-mt-10">
+                      <div className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 mx-auto flex items-center justify-center relative">
+                        {/* Shadow at bottom */}
+                        <div 
+                          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2"
+                          style={{
+                            width: '90%',
+                            height: '20px',
+                            background: 'rgba(0, 0, 0, 0.3)',
+                            borderRadius: '50%',
+                            filter: 'blur(8px)'
+                          }}
+                        ></div>
+                        
+                        {/* State Image */}
+                        <div className="w-full h-full flex items-center justify-center relative z-10">
                           <img 
                             src={item.url} 
-                            className="w-16 h-16 scale-200 md:w-20 md:h-20 lg:w-28 lg:h-28 object-contain" 
+                            className="w-full h-full object-contain scale-150" 
                             alt={translateState(item.name)}
                           />
                         </div>
                       </div>
                     </div>
-                    <h3 className="text-lg md:text-xl lg:text-2xl font-semibold text-center transition-colors mb-2 md:mb-4" style={{ color: '#479626' }}>
+                    
+                    {/* State Name */}
+                    <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 mb-6 md:mb-8 font-serif">
                       {translateState(item.name)}
                     </h3>
-                    <div className="text-center">
-                      <span className="inline-block px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 rounded-full text-sm md:text-base lg:text-lg font-medium transition-colors" style={{ backgroundColor: '#ffaf27', color: '#ffffff' }}>
-                        Explore Collection
-                      </span>
-                    </div>
+                    
+                    {/* Explore Button */}
+                    <button className="bg-[#479626] hover:bg-green-400 text-white px-6 py-3 md:px-8 md:py-4 rounded-2xl text-base md:text-lg font-medium transition-all duration-300 transform group-hover:scale-105 whitespace-nowrap">
+                      Explore collections
+                    </button>
                   </div>
                 </NavLink>
               ))}
