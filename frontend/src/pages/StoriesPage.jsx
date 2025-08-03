@@ -144,7 +144,10 @@ export const StoriesPage = () => {
                       name={story.name}
                       role={story.role}
                       image={story.image || "https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face"}
+                      profileImage={story.profileImage}
+                      storyImage={story.storyImage}
                       story={story.story}
+                      rating={story.rating}
                     />
                   </div>
                 ))}
