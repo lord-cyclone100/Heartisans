@@ -58,38 +58,50 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in on app start
     const token = localStorage.getItem('authToken');
     const userData = localStorage.getItem('user');
-    if (token && userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        setIsSignedIn(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        localStorage.removeItem('user');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
+
+    const initializeAuth = async () => {
+      if (token && userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          // Set user from local storage initially
+          setUser(parsedUser);
+          setIsSignedIn(true);
+          
+          // Refresh user data from server to get latest permissions
+          const response = await api.get('/auth/me');
+          const updatedUser = response.data.data.user;
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          setUser(updatedUser);
+        } catch (error) {
+          console.error('Error initializing user data:', error);
+          // Clear invalid data on error
+          localStorage.removeItem('user');
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+        }
       }
-    }
-    setIsLoaded(true);
+      setIsLoaded(true);
+    };
+    
+    initializeAuth();
   }, []);
+
   const signIn = async (email, password) => {
     setIsLoading(true);
     try {
       const response = await api.post('/auth/login', { email, password });
       const { token, refreshToken, data } = response.data;
-      // Store tokens and user data
+      
       localStorage.setItem('authToken', token);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
-      // Update state without artificial delays
+      
       setUser(data.user);
       setIsSignedIn(true);
       return { success: true, user: data.user };
     } catch (error) {
-      // Check if this is an email verification issue
       if (error.response?.status === 403 && error.response?.data?.data?.userId) {
         return {
           success: false,
@@ -106,41 +118,43 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
   const signUp = async (userData) => {
     try {
-      console.log('Signing up with data:', userData); // Debug log
+      console.log('Signing up with data:', userData);
       const response = await api.post('/auth/register', userData);
-      console.log('Signup response:', response.data); // Debug log
+      console.log('Signup response:', response.data);
       return {
         success: true,
         message: response.data.message,
         userId: response.data.data.userId
       };
     } catch (error) {
-      console.error('Signup error:', error.response?.data); // Debug log
+      console.error('Signup error:', error.response?.data);
       return {
         success: false,
         error: error.response?.data?.message || 'Registration failed'
       };
     }
   };
+
   const verifyOTP = async (userId, otp) => {
     setIsLoading(true);
     try {
-      console.log('Verifying OTP:', { userId, otp }); // Debug log
+      console.log('Verifying OTP:', { userId, otp });
       const response = await api.post('/auth/verify-otp', { userId, otp });
-      console.log('OTP verification response:', response.data); // Debug log
+      console.log('OTP verification response:', response.data);
       const { token, refreshToken, data } = response.data;
+      
       localStorage.setItem('authToken', token);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
+      
       setUser(data.user);
       setIsSignedIn(true);
-      // Wait for state to fully update
-      await new Promise(resolve => setTimeout(resolve, 50));
       return { success: true, user: data.user };
     } catch (error) {
-      console.error('OTP verification error:', error.response?.data); // Debug log
+      console.error('OTP verification error:', error.response?.data);
       return {
         success: false,
         error: error.response?.data?.message || 'OTP verification failed'
@@ -149,20 +163,20 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
   const signOut = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     setUser(null);
     setIsSignedIn(false);
-    // Redirect to home page after logout
     window.location.href = '/';
   };
+
   const googleSignIn = async (code) => {
     setIsLoading(true);
     try {
       const response = await api.post('/auth/google', { code });
-      // Handle different response statuses
       if (response.data.status === 'account-exists') {
         return {
           success: false,
@@ -171,11 +185,9 @@ export const AuthProvider = ({ children }) => {
         };
       }
       const { token, refreshToken, data } = response.data;
-      // Synchronously update storage
       localStorage.setItem('authToken', token);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
-      // Update state
       setUser(data.user);
       setIsSignedIn(true);
       return { success: true, user: data.user };
@@ -189,6 +201,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
   const forgotPassword = async (email) => {
     try {
       const response = await api.post('/auth/forgot-password', { email });
@@ -200,10 +213,10 @@ export const AuthProvider = ({ children }) => {
       };
     }
   };
+  
   const resetPassword = async (token, password) => {
     try {
       const response = await api.patch(`/auth/reset-password/${token}`, { password });
-      // On success, return a success message instead of logging the user in.
       return { success: true, message: response.data.message };
     } catch (error) {
       return {
@@ -212,6 +225,7 @@ export const AuthProvider = ({ children }) => {
       };
     }
   };
+  
   const linkGoogleAccount = async (code) => {
     setIsLoading(true);
     try {
@@ -226,6 +240,28 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
+  const refreshUser = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return { success: false, error: 'No token found' };
+      
+      const response = await api.get('/auth/me');
+      const updatedUser = response.data.data.user;
+      
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      
+      return { success: true, user: updatedUser };
+    } catch (error) {
+      console.error('Refresh user error:', error);
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Failed to refresh user data'
+      };
+    }
+  };
+  
   const value = {
     user,
     isLoaded,
@@ -239,13 +275,16 @@ export const AuthProvider = ({ children }) => {
     forgotPassword,
     resetPassword,
     linkGoogleAccount,
+    refreshUser,
   };
+  
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -253,7 +292,7 @@ export const useAuth = () => {
   }
   return context;
 };
-// Helper hook to mimic Clerk's useUser
+
 export const useUser = () => {
   const { user, isLoaded, isSignedIn } = useAuth();
   return {
