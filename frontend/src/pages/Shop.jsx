@@ -87,7 +87,7 @@ export const Shop = () => {
                   <div className="rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 md:p-6 lg:p-8" style={{ background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)', border: '1px solid #d1d5db' }}>
                     <div className="relative mb-4 md:mb-6 lg:mb-8">
                       <div className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 mx-auto flex items-center justify-center shadow-lg transition-all duration-300" style={{ background: 'linear-gradient(to bottom right, #479626, #3d7a20)' }} id="item">
-                        <div className="w-20 h-20 md:w-28 md:h-28 lg:w-36 lg:h-36 bg-white flex items-center justify-center" id="item">
+                        <div className="w-20 h-20 md:w-28 md:h-28 lg:w-36 lg:h-36 bg-amber-300 flex items-center justify-center" id="item">
                           <img 
                             src={item.url} 
                             className="w-16 h-16 scale-200 md:w-20 md:h-20 lg:w-28 lg:h-28 object-contain" 
