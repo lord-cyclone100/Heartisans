@@ -29,22 +29,24 @@ export const SubscriptionSuccess = () => {
     try {
       console.log('Verifying subscription payment for order:', orderId);
       
-      const response = await fetch('http://localhost:5000/subscription/payment/verify', {
+      const response = await fetch('http://localhost:5000/api/subscription/payment/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId })
       });
 
       const data = await response.json();
+      console.log('Subscription verification response:', { response, data });
       
       if (response.ok && data.success) {
         setOrder(data.order);
       } else {
+        console.error('Subscription verification failed:', data);
         setError(data.message || t('subscription.error'));
       }
     } catch (error) {
       console.error('Subscription payment verification error:', error);
-      setError(t('subscription.error'));
+      setError(`Verification failed: ${error.message}`);
     } finally {
       setLoading(false);
     }

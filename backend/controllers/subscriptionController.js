@@ -1,4 +1,5 @@
 import { orderModel } from '../models/orderModel.js';
+import { User as userModel } from '../models/userModel.js';
 import cashfree from '../config/cashfree.js';
 import { processSubscriptionPayment } from '../services/subscriptionService.js';
 import { generateOrderId, formatOrderPayload, validateSubscriptionAmount } from '../utils/helpers.js';
@@ -81,9 +82,13 @@ export const createSubscriptionOrder = async (req, res) => {
 export const verifySubscriptionPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
+    console.log('Verifying subscription payment for orderId:', orderId);
+    
     const order = await orderModel.findOne({ orderId, isSubscription: true });
+    console.log('Found order:', order ? 'Yes' : 'No', order?.status);
     
     if (!order) {
+      console.log('Order not found for orderId:', orderId);
       return res.status(404).json({
         success: false,
         message: 'Subscription order not found'
@@ -91,6 +96,7 @@ export const verifySubscriptionPayment = async (req, res) => {
     }
 
     if (order.status === 'paid') {
+      console.log('Order already processed, returning existing order');
       return res.json({
         success: true,
         orderStatus: 'PAID',
@@ -99,14 +105,18 @@ export const verifySubscriptionPayment = async (req, res) => {
       });
     }
 
+    console.log('Fetching order status from Cashfree...');
     const cashfreeResponse = await cashfree.PGFetchOrder(orderId);
     const orderStatus = cashfreeResponse.data.order_status;
     const paymentDetails = cashfreeResponse.data.payment_details || {};
+    console.log('Cashfree response:', { orderStatus, paymentDetails });
 
     if (orderStatus === 'PAID') {
+      console.log('Processing subscription payment...');
       const updatedOrder = await processSubscriptionPayment(order, paymentDetails);
       
       if (!updatedOrder) {
+        console.log('Order was already processed during payment processing');
         return res.json({
           success: true,
           orderStatus: 'PAID',
@@ -115,6 +125,7 @@ export const verifySubscriptionPayment = async (req, res) => {
         });
       }
 
+      console.log('Subscription payment processed successfully');
       return res.json({
         success: true,
         orderStatus,
@@ -122,6 +133,7 @@ export const verifySubscriptionPayment = async (req, res) => {
       });
     }
 
+    console.log('Payment not completed, updating order status to:', orderStatus);
     order.status = orderStatus.toLowerCase();
     order.updatedAt = new Date();
     await order.save();

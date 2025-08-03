@@ -15,7 +15,7 @@ export const SellForm = () => {
     productPrice: "",
     productState: "",
     productCategory: "",
-    productSellerName: user?.fullName || user?.userName || "",
+    productSellerName: "", // Initialize empty, will be set by useEffect
     productImage: null,
     productDescription: "",
     productMaterial: "",
@@ -31,13 +31,13 @@ export const SellForm = () => {
 
   // Update seller name when user data becomes available
   useEffect(() => {
-    if (user && (user.fullName || user.userName)) {
+    if (user && (user.fullName || user.userName) && !form.productSellerName) {
       setForm(prevForm => ({
         ...prevForm,
         productSellerName: user?.fullName || user?.userName || ""
       }));
     }
-  }, [user]);
+  }, [user?.fullName, user?.userName, user?._id, form.productSellerName]); // More specific dependencies
   const [sapAiSuggestion, setSapAiSuggestion] = useState(null);
   const [pricePrediction, setPricePrediction] = useState(null);
   const [isPredictingPrice, setIsPredictingPrice] = useState(false);

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -295,15 +295,20 @@ export const useAuth = () => {
 
 export const useUser = () => {
   const { user, isLoaded, isSignedIn } = useAuth();
-  return {
-    user: user ? {
+  
+  const transformedUser = useMemo(() => {
+    return user ? {
       id: user._id,
       emailAddresses: [{ emailAddress: user.email }],
       firstName: user.fullName?.split(' ')[0] || '',
       lastName: user.fullName?.split(' ').slice(1).join(' ') || '',
       imageUrl: user.imageUrl || '',
       ...user
-    } : null,
+    } : null;
+  }, [user?.id, user?._id, user?.email, user?.fullName, user?.imageUrl]);
+  
+  return {
+    user: transformedUser,
     isLoaded,
     isSignedIn
   };

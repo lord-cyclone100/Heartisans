@@ -30,7 +30,7 @@ export const CheckoutForm = () => {
     setPaymentInProgress(true);
 
     const data = {
-      name: user.fullName,
+      name: user.fullName || user.userName || "User",
       mobile: phoneNumber,
       amount: total,
       address: address,
@@ -184,7 +184,7 @@ export const CheckoutForm = () => {
                   </label>
                   <input
                     type="text"
-                    value={user?.fullName || ""}
+                    value={user?.fullName || user?.userName || ""}
                     disabled
                     className="w-full px-4 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-600 text-lg"
                   />
@@ -237,7 +237,7 @@ export const CheckoutForm = () => {
                 <div className="pt-4">
                   <button 
                     type="submit" 
-                    className="w-full text-white py-4 px-8 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    className="w-full text-white py-4 px-8 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
                     style={{ backgroundColor: '#ffaf27' }}
                   >
                     Pay ₹{total.toLocaleString()} Now
