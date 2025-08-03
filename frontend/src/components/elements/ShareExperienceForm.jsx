@@ -143,8 +143,9 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto my-8">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col my-8">
+        <div className="overflow-y-auto flex-1">
         {success ? (
           // Success Message
           <div className="p-8 md:p-12 text-center">
@@ -458,6 +459,7 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
