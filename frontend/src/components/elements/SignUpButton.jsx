@@ -27,10 +27,10 @@ export const SignUpButton = () => {
         ) : (
           user && dbUserId && (
             <button 
-              className="rounded-full size-12 overflow-hidden" 
+              className="rounded-full size-12 overflow-hidden hover:cursor-pointer transition-transform hover:scale-110" 
               onClick={() => navigate(`/dashboard/${dbUserId}`)}
             >
-              <img src={user.imageUrl || '/photos/primary-logo.svg'} alt="Profile" />
+              <img src={user.imageUrl || '/photos/default_icon.png'} alt="Profile" />
             </button>
           )
         )}
