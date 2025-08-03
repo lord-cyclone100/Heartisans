@@ -15,7 +15,7 @@ export const Teams = () => {
               Meet the team behind Heartisans
             </h1>
             <p className="text-lg md:text-2xl lg:text-3xl max-w-4xl mx-auto leading-relaxed px-4" style={{ color: '#6b7280' }}>
-              Meet the passionate team behind Heartisans, dedicated to connecting artisans with the world
+              We believe every handmade story deserves a global stage and we’re here to make that happen.
             </p>
           </div>
 
