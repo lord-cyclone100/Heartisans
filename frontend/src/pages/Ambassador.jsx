@@ -29,7 +29,7 @@ export const Ambassador = () => {
             <h3 className="text-[3rem] lg:text-[4rem]" style={{ color: '#479626' }}>Heartisans</h3>
             <h1 className="text-center text-[5rem] leading-20 lg:text-[6rem] lg:leading-24">Join our <br />Ambassador <br />Program</h1>
             <a 
-              href="https://google.com" 
+              href="https://docs.google.com/forms/d/e/1FAIpQLSegokpbf_lYiESTLZJrUoEfpDhscTlcGXLoFVeqPP0QEkxefQ/viewform" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-white px-12 py-6 rounded-2xl font-bold text-2xl lg:text-3xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"

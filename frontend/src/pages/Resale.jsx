@@ -215,7 +215,7 @@ export const Resale = () => {
       });
 
       // Get auth token
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         alert('Please log in to create a resale listing');
         return;

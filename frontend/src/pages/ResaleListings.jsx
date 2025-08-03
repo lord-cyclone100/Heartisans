@@ -97,7 +97,7 @@ const ResaleListings = () => {
 
   const handleInterest = async (listingId) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         alert('Please log in to express interest');
         return;
