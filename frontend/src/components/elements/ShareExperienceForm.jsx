@@ -18,6 +18,8 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
     location: '',
     productCategory: ''
   });
+  const [storyImage, setStoryImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
   // Auto-fill user data when component mounts or user changes
   useEffect(() => {
@@ -38,27 +40,86 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        setMsg('Image size should be less than 10MB');
+        return;
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        setMsg('Please select a valid image file');
+        return;
+      }
+      
+      setStoryImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setMsg(''); // Clear any error messages
+    }
+  };
+
+  const removeImage = () => {
+    setStoryImage(null);
+    setImagePreview('');
+    // Reset file input
+    const fileInput = document.getElementById('storyImage');
+    if (fileInput) fileInput.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMsg("");
 
     try {
-      const response = await axios.post('http://localhost:5000/api/stories', formData);
+      // Create FormData for file upload
+      const submitData = new FormData();
+      
+      // Append form fields
+      Object.keys(formData).forEach(key => {
+        submitData.append(key, formData[key]);
+      });
+      
+      // Add profile image from user data
+      const profileImage = user?.imageUrl || user?.image || '';
+      if (profileImage) {
+        submitData.append('profileImage', profileImage);
+      }
+      
+      // Add story image if selected
+      if (storyImage) {
+        submitData.append('storyImage', storyImage);
+      }
+
+      const response = await axios.post('http://localhost:5000/api/stories', submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       
       if (response.data.success) {
         setSuccess(true);
         setMsg("Your story has been submitted successfully! It will be reviewed and published soon.");
         // Reset form but keep user data
         setFormData({
-          name: user?.fullName || user?.firstName + ' ' + user?.lastName || '',
-          email: user?.emailAddresses?.[0]?.emailAddress || '',
+          name: user?.fullName || user?.name || '',
+          email: user?.email || '',
           role: '',
           story: '',
           rating: 5,
           location: '',
           productCategory: ''
         });
+        setStoryImage(null);
+        setImagePreview('');
+        // Reset file input
+        const fileInput = document.getElementById('storyImage');
+        if (fileInput) fileInput.value = '';
       }
     } catch (error) {
       console.error('Error submitting story:', error);
@@ -71,6 +132,11 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
   const handleClose = () => {
     setSuccess(false);
     setMsg("");
+    setStoryImage(null);
+    setImagePreview('');
+    // Reset file input
+    const fileInput = document.getElementById('storyImage');
+    if (fileInput) fileInput.value = '';
     onClose();
   };
 
@@ -268,6 +334,71 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
                   />
                   <div className="text-right text-sm text-gray-500 mt-1">
                     {formData.story.length}/1000 characters
+                  </div>
+                </div>
+
+                {/* Image Upload Section */}
+                <div className="space-y-2">
+                  <label className="block text-base sm:text-lg font-medium text-gray-700">
+                    Add a Photo (Optional)
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-green-400 transition-all duration-300">
+                    {!imagePreview ? (
+                      <div className="text-center">
+                        <div className="text-4xl mb-4">📷</div>
+                        <div className="text-lg font-medium text-gray-700 mb-2">
+                          Share a photo related to your experience
+                        </div>
+                        <div className="text-sm text-gray-500 mb-4">
+                          Upload an image of the product you purchased or your experience with it
+                        </div>
+                        <input
+                          type="file"
+                          id="storyImage"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="storyImage"
+                          className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-all duration-300"
+                        >
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Choose Image
+                        </label>
+                        <div className="text-xs text-gray-400 mt-2">
+                          Maximum file size: 10MB. Supported formats: JPG, PNG, GIF
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <img
+                          src={imagePreview}
+                          alt="Story preview"
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition-all duration-300"
+                        >
+                          ×
+                        </button>
+                        <div className="mt-3 text-center">
+                          <label
+                            htmlFor="storyImage"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 cursor-pointer transition-all duration-300"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Change Image
+                          </label>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
