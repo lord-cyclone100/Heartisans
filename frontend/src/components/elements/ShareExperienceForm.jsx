@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUser } from "@clerk/clerk-react";
+import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
 
 export const ShareExperienceForm = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [msg, setMsg] = useState("");
@@ -24,8 +24,8 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
     if (user) {
       setFormData(prev => ({
         ...prev,
-        name: user.fullName || user.firstName + ' ' + user.lastName || '',
-        email: user.emailAddresses?.[0]?.emailAddress || ''
+        name: user.fullName || user.name || '',
+        email: user.email || ''
       }));
     }
   }, [user]);

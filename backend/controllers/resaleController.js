@@ -1,5 +1,5 @@
 import Resale from '../models/resaleModel.js';
-import { userModel as User } from '../models/userModel.js';
+import { User } from '../models/userModel.js';
 import { v2 as cloudinary } from 'cloudinary';
 
 // Create a new resale listing
