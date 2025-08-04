@@ -3,6 +3,7 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { BotpressChatbot } from "../elements/BotpressChatbot";
 import BackToTop from "../elements/BackToTop";
+import VAPIAssistant from "../voice/VAPIAssistant";
 
 export const AppLayout = () => {
 	const navigation = useNavigation();
@@ -15,6 +16,7 @@ export const AppLayout = () => {
 			</main>
 			<BackToTop />
 			<BotpressChatbot />
+			<VAPIAssistant />
 			<Footer />
 		</div>
 	);
