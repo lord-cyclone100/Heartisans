@@ -1,5 +1,5 @@
 import { SignUpButton } from '../elements/SignUpButton';
-import { LanguageSelector } from '../elements/LanguageSelector';
+//import { LanguageSelector } from '../elements/LanguageSelector';
 import GoogleTranslateButton from '../elements/GoogleTranslateButton';
 import { NavLink } from "react-router-dom"
 import { useAuth } from '../../contexts/AuthContext';
@@ -64,7 +64,7 @@ export const Navbar = () => {
               )}
             </ul>
           </div>
-          <LanguageSelector />
+          {/*<LanguageSelector /> */}
           <GoogleTranslateButton />
           {/* <div className='flex items-start relative'>
             <NavLink to='/cart'><FaCartShopping size={20} /></NavLink>
