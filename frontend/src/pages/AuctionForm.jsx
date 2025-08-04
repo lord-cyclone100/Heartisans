@@ -376,12 +376,13 @@ export const AuctionForm = () => {
                       <div className="bg-white p-4 rounded-lg border shadow-sm">
                         <h4 className="font-semibold text-sm text-gray-600 mb-2">Auction Base Price</h4>
                         <p className="text-xl font-bold text-purple-600">₹{Math.round(pricePrediction.suggestedPrice * 0.7)?.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500">70% of market value</p>
+                        <p className="text-xs text-gray-500 mb-3">70% of market value</p>
                         <button
                           type="button"
                           onClick={() => useSAPPrice(pricePrediction.suggestedPrice, 0.7)}
-                          className="px-3 py-1 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 mt-2"
+                          className="w-full px-4 py-2.5 text-sm font-semibold text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 mt-2"
                         >
+                          <span>✓</span>
                           Use This Base
                         </button>
                       </div>
