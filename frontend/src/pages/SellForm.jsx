@@ -46,36 +46,51 @@ export const SellForm = () => {
   useScrollToTop();
 
   const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-    if (type === "checkbox") {
-      setForm({ ...form, [name]: checked });
-    } else if (type === "file") {
-      setForm({ ...form, productImage: files[0] });
-    } else {
-      setForm({ ...form, [name]: value });
+    try {
+      const { name, value, type, checked, files } = e.target;
+      
+      if (type === "checkbox") {
+        setForm({ ...form, [name]: checked });
+      } else if (type === "file") {
+        setForm({ ...form, productImage: files[0] });
+      } else {
+        setForm({ ...form, [name]: value });
+      }
+    } catch (error) {
+      console.error('Form change error:', error);
+      setMsg("Form update error. Please refresh the page if issues persist.");
     }
   };
 
 
 
-    const generateAIDescription = async () => {
-    if (!form.productName.trim()) {
-      setMsg("Please enter a product name first");
-      return;
-    }
-
-    setAiLoading(true);
-    setMsg("");
-    
+  const generateAIDescription = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/generate-description", {
-        productName: form.productName,
-        productCategory: form.productCategory,
-        productState: form.productState,
-        productMaterial: form.productMaterial,
-        productWeight: form.productWeight,
-        productColor: form.productColor,
-        additionalInfo: form.productDescription
+      const productName = form.productName?.trim();
+      
+      if (!productName) {
+        setMsg("Please enter a product name first");
+        return;
+      }
+
+      setAiLoading(true);
+      setMsg("");
+      
+      const requestData = {
+        productName: productName,
+        productCategory: form.productCategory || "",
+        productState: form.productState || "",
+        productMaterial: form.productMaterial || "",
+        productWeight: form.productWeight || "",
+        productColor: form.productColor || "",
+        additionalInfo: form.productDescription || ""
+      };
+
+      const response = await axios.post("http://localhost:5000/api/generate-description", requestData, {
+        timeout: 15000,
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
 
       if (response.data.success) {
@@ -86,11 +101,12 @@ export const SellForm = () => {
       }
     } catch (error) {
       console.error('AI Generation Error:', error);
+      
       if (error.response?.data?.fallbackDescription) {
         setAiSuggestion(error.response.data.fallbackDescription);
         setMsg("Generated a basic description. AI service temporarily unavailable.");
       } else {
-        setMsg("Failed to generate AI description. Please try again.");
+        setMsg("Failed to generate AI description. Please try again or refresh the page.");
       }
     } finally {
       setAiLoading(false);
@@ -98,30 +114,48 @@ export const SellForm = () => {
   };
 
   const useAISuggestion = () => {
-    setForm({ ...form, productDescription: aiSuggestion });
-    setAiSuggestion("");
-    setMsg("AI description applied! You can edit it further if needed.");
+    try {
+      if (aiSuggestion && aiSuggestion.trim()) {
+        setForm({ ...form, productDescription: aiSuggestion });
+        setAiSuggestion("");
+        setMsg("AI description applied! You can edit it further if needed.");
+      } else {
+        setMsg("No AI suggestion available to apply.");
+      }
+    } catch (error) {
+      console.error('Error applying AI suggestion:', error);
+      setMsg("Error applying AI suggestion. Please try again or refresh the page.");
+    }
   };
 
   // Generate SAP AI Content description
   const generateSAPAIDescription = async () => {
-    if (!form.productName.trim()) {
-      setMsg("Please enter a product name first");
-      return;
-    }
-
-    setSapAiLoading(true);
-    setMsg("");
-    
     try {
-      const response = await axios.post("http://localhost:5000/api/generate-sap-description", {
-        productName: form.productName,
-        productCategory: form.productCategory,
-        productState: form.productState,
-        productMaterial: form.productMaterial,
-        productWeight: form.productWeight,
-        productColor: form.productColor,
-        additionalInfo: form.productDescription
+      const productName = form.productName?.trim();
+      
+      if (!productName) {
+        setMsg("Please enter a product name first");
+        return;
+      }
+
+      setSapAiLoading(true);
+      setMsg("");
+      
+      const requestData = {
+        productName: productName,
+        productCategory: form.productCategory || "",
+        productState: form.productState || "",
+        productMaterial: form.productMaterial || "",
+        productWeight: form.productWeight || "",
+        productColor: form.productColor || "",
+        additionalInfo: form.productDescription || ""
+      };
+
+      const response = await axios.post("http://localhost:5000/api/generate-sap-description", requestData, {
+        timeout: 20000,
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
 
       if (response.data.success) {
@@ -132,38 +166,59 @@ export const SellForm = () => {
       }
     } catch (error) {
       console.error('SAP AI Content Generation Error:', error);
-      setMsg("Failed to generate SAP AI description. Please try again.");
+      setMsg("Failed to generate SAP AI description. Please try again or refresh the page.");
     } finally {
       setSapAiLoading(false);
     }
   };
 
   const useSAPAISuggestion = () => {
-    setForm({ ...form, productDescription: sapAiSuggestion.description });
-    setSapAiSuggestion(null);
-    setMsg("SAP AI description applied! Enterprise-grade content ready.");
+    try {
+      if (sapAiSuggestion && sapAiSuggestion.description) {
+        setForm({ ...form, productDescription: sapAiSuggestion.description });
+        setSapAiSuggestion(null);
+        setMsg("SAP AI description applied! Enterprise-grade content ready.");
+      } else {
+        setMsg("No SAP AI suggestion available to apply.");
+      }
+    } catch (error) {
+      console.error('Error applying SAP AI suggestion:', error);
+      setMsg("Error applying SAP AI suggestion. Please try again or refresh the page.");
+    }
   };
 
   // Generate SAP AI price prediction
   const generateSAPPricePrediction = async () => {
-    if (!form.productName || !form.productCategory) {
-      setMsg("Please fill in product name and category first");
-      return;
-    }
-
-    setIsPredictingPrice(true);
-    setMsg("");
-    
     try {
-      const response = await axios.post("http://localhost:5000/api/predict-price", {
-        productName: form.productName,
-        productCategory: form.productCategory,
-        productState: form.productState,
-        productMaterial: form.productMaterial,
-        productWeight: form.productWeight,
-        productColor: form.productColor,
+      const productName = form.productName?.trim();
+      const productCategory = form.productCategory?.trim();
+      
+      if (!productName || !productCategory) {
+        setMsg("Please fill in product name and category first");
+        return;
+      }
+
+      setIsPredictingPrice(true);
+      setMsg("");
+      
+      const requestData = {
+        productName: productName,
+        productCategory: productCategory,
+        productState: form.productState || "",
+        productMaterial: form.productMaterial || "",
+        productWeight: form.productWeight || "",
+        productColor: form.productColor || "",
         isHandmade: true,
-        region: form.productState
+        region: form.productState || ""
+      };
+
+      console.log('SAP AI Request:', requestData);
+      
+      const response = await axios.post("http://localhost:5000/api/predict-price", requestData, {
+        timeout: 20000,
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
 
       if (response.data.success) {
@@ -182,15 +237,24 @@ export const SellForm = () => {
       }
     } catch (error) {
       console.error('SAP AI Price prediction error:', error);
-      setMsg("Failed to generate SAP AI price prediction. Please try again.");
+      setMsg("Failed to generate SAP AI price prediction. Please try again or refresh the page.");
     } finally {
       setIsPredictingPrice(false);
     }
   };
 
   const useSAPPrice = (price) => {
-    setForm({ ...form, productPrice: price.toString() });
-    setMsg("SAP AI suggested price applied!");
+    try {
+      if (price && !isNaN(price)) {
+        setForm({ ...form, productPrice: price.toString() });
+        setMsg("SAP AI suggested price applied!");
+      } else {
+        setMsg("Invalid price value. Please try again.");
+      }
+    } catch (error) {
+      console.error('Error applying SAP price:', error);
+      setMsg("Error applying price. Please try again or refresh the page.");
+    }
   };
 
 
@@ -295,13 +359,23 @@ export const SellForm = () => {
                     </label>
                     <button
                       type="button"
-                      onClick={generateSAPPricePrediction}
+                      onClick={(e) => {
+                        try {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          generateSAPPricePrediction();
+                        } catch (error) {
+                          console.error('Button click error:', error);
+                          setMsg("Error occurred. Please refresh the page and try again.");
+                        }
+                      }}
                       disabled={isPredictingPrice || !form.productName.trim() || !form.productCategory}
-                      className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 border border-green-500 rounded-lg hover:from-green-700 hover:to-green-800 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                      style={{ backgroundColor: '#479626' }}
                     >
                       {isPredictingPrice ? (
                         <div className="flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                           SAP AI Analyzing...
                         </div>
                       ) : (
@@ -324,15 +398,15 @@ export const SellForm = () => {
                   
                   {/* SAP AI Pricing Insights Panel */}
                   {pricePrediction && showPricingInsights && (
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 mt-4">
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200 mt-4 shadow-lg">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="bg-blue-600 text-white p-3 rounded-lg">
+                          <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-3 rounded-lg shadow-md" style={{ backgroundColor: '#479626' }}>
                             🧠
                           </div>
                           <div>
-                            <h3 className="font-bold text-lg text-blue-900">SAP AI Price Intelligence</h3>
-                            <p className="text-sm text-blue-600">Powered by SAP Business Technology Platform</p>
+                            <h3 className="font-bold text-lg text-green-900">SAP AI Price Intelligence</h3>
+                            <p className="text-sm text-green-700">Powered by SAP Business Technology Platform</p>
                           </div>
                         </div>
                         <button
@@ -344,88 +418,78 @@ export const SellForm = () => {
                         </button>
                       </div>
 
-                      {/* Key Metrics Row */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        {/* Suggested Price */}
-                        <div className="bg-white p-4 rounded-lg border shadow-sm">
-                          <h4 className="font-semibold text-sm text-gray-600 mb-2">SAP Recommended Price</h4>
-                          <p className="text-2xl font-bold text-green-600">₹{pricePrediction.suggestedPrice?.toLocaleString()}</p>
-                          <p className="text-xs text-gray-500 mb-2">
-                            Range: ₹{pricePrediction.priceRange?.min?.toLocaleString()} - ₹{pricePrediction.priceRange?.max?.toLocaleString()}
-                          </p>
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => useSAPPrice(pricePrediction.suggestedPrice)}
-                              className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                            >
-                              Use This Price
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => useSAPPrice(pricePrediction.priceRange?.min)}
-                              className="px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                            >
-                              Use Min
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => useSAPPrice(pricePrediction.priceRange?.max)}
-                              className="px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                            >
-                              Use Max
-                            </button>
-                          </div>
+                      {/* SAP Recommended Price */}
+                      <div className="bg-white p-6 rounded-lg border shadow-sm mb-6">
+                        <h4 className="font-semibold text-lg text-gray-800 mb-3">SAP Recommended Price</h4>
+                        <p className="text-3xl font-bold text-green-600 mb-2">₹{pricePrediction.suggestedPrice?.toLocaleString()}</p>
+                        <p className="text-sm text-gray-500 mb-4">
+                          Range: ₹{pricePrediction.priceRange?.min?.toLocaleString()} - ₹{pricePrediction.priceRange?.max?.toLocaleString()}
+                        </p>
+                        
+                        {/* Action Buttons */}
+                        <div className="grid grid-cols-1 gap-3 mb-4">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              try {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                useSAPPrice(pricePrediction.suggestedPrice);
+                              } catch (error) {
+                                console.error('Error applying price:', error);
+                                setMsg("Error occurred. Please refresh the page and try again.");
+                              }
+                            }}
+                            className="w-full px-6 py-3 text-base font-semibold text-white bg-gradient-to-r from-green-600 to-green-700 rounded-lg hover:from-green-700 hover:to-green-800 focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 shadow-md flex items-center justify-center gap-2"
+                            style={{ backgroundColor: '#479626' }}
+                          >
+                            <span>✓</span>
+                            Use This Price
+                          </button>
                         </div>
-
-                        {/* Market Position */}
-                        <div className="bg-white p-4 rounded-lg border shadow-sm">
-                          <h4 className="font-semibold text-sm text-gray-600 mb-2">Market Position</h4>
-                          <span className={`badge text-white text-sm px-3 py-2 ${
-                            pricePrediction.marketPosition === 'premium' ? 'bg-purple-500' :
-                            pricePrediction.marketPosition === 'mid-range' ? 'bg-blue-500' :
-                            'bg-green-500'
-                          }`}>
-                            {pricePrediction.marketPosition?.toUpperCase()}
-                          </span>
-                          <p className="text-xs text-gray-500 mt-2">
-                            Confidence: {pricePrediction.confidence}%
-                          </p>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div 
-                              className="bg-blue-500 h-2 rounded-full transition-all"
-                              style={{ width: `${pricePrediction.confidence}%` }}
-                            ></div>
-                          </div>
-                        </div>
-
-                        {/* Profit Analysis */}
-                        <div className="bg-white p-4 rounded-lg border shadow-sm">
-                          <h4 className="font-semibold text-sm text-gray-600 mb-2">Profit Analysis</h4>
-                          {pricePrediction.sapBusinessInsights?.profitAnalysis && (
-                            <>
-                              <p className="text-xl font-bold text-green-600">
-                                {pricePrediction.sapBusinessInsights.profitAnalysis.grossMargin}%
-                              </p>
-                              <p className="text-xs text-gray-500">Gross Margin</p>
-                              <div className="mt-2">
-                                <span className={`badge badge-sm ${
-                                  pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore > 80 ? 'badge-success' :
-                                  pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore > 60 ? 'badge-warning' :
-                                  'badge-error'
-                                }`}>
-                                  Health: {pricePrediction.sapBusinessInsights.profitAnalysis.profitHealthScore}/100
-                                </span>
-                              </div>
-                            </>
-                          )}
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              try {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                useSAPPrice(pricePrediction.priceRange?.min);
+                              } catch (error) {
+                                console.error('Error applying min price:', error);
+                                setMsg("Error occurred. Please refresh the page and try again.");
+                              }
+                            }}
+                            className="px-4 py-2.5 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 flex items-center justify-center gap-1"
+                          >
+                            <span>↓</span>
+                            Use Min
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              try {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                useSAPPrice(pricePrediction.priceRange?.max);
+                              } catch (error) {
+                                console.error('Error applying max price:', error);
+                                setMsg("Error occurred. Please refresh the page and try again.");
+                              }
+                            }}
+                            className="px-4 py-2.5 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-all duration-200 flex items-center justify-center gap-1"
+                          >
+                            <span>↑</span>
+                            Use Max
+                          </button>
                         </div>
                       </div>
 
                       {/* SAP Business Intelligence Section */}
                       {pricePrediction.sapBusinessInsights && (
                         <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-blue-800">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-green-800">
                             <span>📊</span>
                             SAP Business Intelligence
                           </h4>
@@ -452,7 +516,7 @@ export const SellForm = () => {
                             {/* Competitive Analysis */}
                             <div>
                               <h5 className="font-medium text-sm mb-2 text-gray-700">Competitive Position</h5>
-                              <p className="text-lg font-bold text-blue-600 mb-1">
+                              <p className="text-lg font-bold text-green-600 mb-1">
                                 {pricePrediction.sapBusinessInsights.competitiveAnalysis?.position || 'challenger'}
                               </p>
                               <p className="text-xs text-gray-600">
@@ -467,14 +531,14 @@ export const SellForm = () => {
                       {/* Enhanced Performance KPIs */}
                       {pricePrediction.sapEnrichment?.performanceKPIs && (
                         <div className="bg-white p-4 rounded-lg border shadow-sm mb-4">
-                          <h4 className="font-semibold mb-3 text-blue-800">📈 Performance KPIs</h4>
+                          <h4 className="font-semibold mb-3 text-green-800">📈 Performance KPIs</h4>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div className="text-center">
                               <p className="text-lg font-bold text-green-600">₹{pricePrediction.sapEnrichment.performanceKPIs.revenueProjection?.toLocaleString()}</p>
                               <p className="text-xs text-gray-600">Monthly Revenue</p>
                             </div>
                             <div className="text-center">
-                              <p className="text-lg font-bold text-blue-600">{pricePrediction.sapEnrichment.performanceKPIs.marketSharePotential}%</p>
+                              <p className="text-lg font-bold text-green-600">{pricePrediction.sapEnrichment.performanceKPIs.marketSharePotential}%</p>
                               <p className="text-xs text-gray-600">Market Share</p>
                             </div>
                             <div className="text-center">
@@ -489,34 +553,6 @@ export const SellForm = () => {
                         </div>
                       )}
 
-                      {/* Price Factors & Recommendations */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Price Factors */}
-                        <div className="bg-white p-4 rounded-lg border shadow-sm">
-                          <h4 className="font-semibold mb-2 text-gray-800">Price Influencing Factors</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {pricePrediction.pricingFactors?.map((factor, index) => (
-                              <span key={index} className="badge badge-outline badge-sm">
-                                {factor}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* SAP Recommendations */}
-                        <div className="bg-white p-4 rounded-lg border shadow-sm">
-                          <h4 className="font-semibold mb-2 text-gray-800">SAP AI Recommendations</h4>
-                          <ul className="text-sm space-y-1">
-                            {pricePrediction.recommendations?.slice(0, 3).map((rec, index) => (
-                              <li key={index} className="flex items-start gap-2">
-                                <span className="text-blue-500 mt-1">•</span>
-                                <span className="text-gray-700">{rec}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-
                       {/* SAP Metadata Footer */}
                       <div className="mt-4 pt-4 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -524,8 +560,8 @@ export const SellForm = () => {
                           <span>📊 Confidence: {pricePrediction.confidence}%</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                          <span className="font-medium text-blue-600">{pricePrediction.sapVersion}</span>
+                          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                          <span className="font-medium text-green-600">{pricePrediction.sapVersion}</span>
                         </div>
                       </div>
                     </div>
@@ -638,7 +674,16 @@ export const SellForm = () => {
                   <div className="flex gap-3">
                     <button
                       type="button"
-                      onClick={generateAIDescription}
+                      onClick={(e) => {
+                        try {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          generateAIDescription();
+                        } catch (error) {
+                          console.error('Button click error:', error);
+                          setMsg("Error occurred. Please refresh the page and try again.");
+                        }
+                      }}
                       disabled={aiLoading || !form.productName.trim()}
                       className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -655,13 +700,23 @@ export const SellForm = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={generateSAPAIDescription}
+                      onClick={(e) => {
+                        try {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          generateSAPAIDescription();
+                        } catch (error) {
+                          console.error('Button click error:', error);
+                          setMsg("Error occurred. Please refresh the page and try again.");
+                        }
+                      }}
                       disabled={sapAiLoading || !form.productName.trim()}
-                      className="px-4 py-2 text-sm font-medium text-orange-700 bg-orange-100 border border-orange-300 rounded-lg hover:bg-orange-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 border border-green-500 rounded-lg hover:from-green-700 hover:to-green-800 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                      style={{ backgroundColor: '#479626' }}
                     >
                       {sapAiLoading ? (
                         <div className="flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-orange-600 border-t-transparent"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                           SAP AI...
                         </div>
                       ) : (
@@ -715,22 +770,23 @@ export const SellForm = () => {
 
                 {/* SAP AI Content Generation Display */}
                 {sapAiSuggestion && (
-                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6 space-y-4">
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 space-y-4 shadow-lg">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="bg-indigo-600 text-white p-2 rounded-lg">
+                        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-2 rounded-lg shadow-md" style={{ backgroundColor: '#479626' }}>
                           🧠
                         </div>
                         <div>
-                          <h4 className="text-sm font-bold text-indigo-900">SAP AI Core Content Generation</h4>
-                          <p className="text-xs text-indigo-600">Enterprise-grade content intelligence</p>
+                          <h4 className="text-sm font-bold text-green-900">SAP AI Core Content Generation</h4>
+                          <p className="text-xs text-green-700">Enterprise-grade content intelligence</p>
                         </div>
                       </div>
                       <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={useSAPAISuggestion}
-                          className="px-3 py-1 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                          className="px-3 py-1 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 rounded-lg hover:from-green-700 hover:to-green-800 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 shadow-md"
+                          style={{ backgroundColor: '#479626' }}
                         >
                           ✓ Use SAP Content
                         </button>
@@ -745,7 +801,7 @@ export const SellForm = () => {
                     </div>
 
                     {/* Generated Description */}
-                    <div className="bg-white rounded-lg p-4 border-l-4 border-indigo-400">
+                    <div className="bg-white rounded-lg p-4 border-l-4 border-green-400 shadow-sm">
                       <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
                         {sapAiSuggestion.description}
                       </p>
@@ -823,7 +879,7 @@ export const SellForm = () => {
                         <div className="flex items-center gap-2">
                           <div className="flex-1 bg-gray-200 rounded-full h-2">
                             <div 
-                              className="bg-indigo-500 h-2 rounded-full"
+                              className="bg-green-500 h-2 rounded-full"
                               style={{ width: `${sapAiSuggestion.sapContentMetrics?.brandAlignment || 91}%` }}
                             ></div>
                           </div>
@@ -835,7 +891,7 @@ export const SellForm = () => {
                     {/* Content Analytics */}
                     {sapAiSuggestion.contentAnalytics && (
                       <div className="bg-white p-4 rounded-lg border">
-                        <h5 className="font-medium text-sm mb-2 text-indigo-800">📊 Content Analytics</h5>
+                        <h5 className="font-medium text-sm mb-2 text-green-800">📊 Content Analytics</h5>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                           <div>
                             <p className="text-lg font-bold text-gray-800">{sapAiSuggestion.contentAnalytics.wordCount}</p>
@@ -860,11 +916,11 @@ export const SellForm = () => {
                     {/* SAP Recommendations */}
                     {sapAiSuggestion.recommendations && (
                       <div className="bg-white p-4 rounded-lg border">
-                        <h5 className="font-medium text-sm mb-2 text-indigo-800">💡 SAP AI Recommendations</h5>
+                        <h5 className="font-medium text-sm mb-2 text-green-800">💡 SAP AI Recommendations</h5>
                         <ul className="text-sm space-y-1">
                           {sapAiSuggestion.recommendations.slice(0, 3).map((rec, index) => (
                             <li key={index} className="flex items-start gap-2">
-                              <span className="text-indigo-500 mt-1">•</span>
+                              <span className="text-green-500 mt-1">•</span>
                               <span className="text-gray-700">{rec}</span>
                             </li>
                           ))}
@@ -873,10 +929,10 @@ export const SellForm = () => {
                     )}
 
                     {/* SAP Metadata */}
-                    <div className="text-xs text-indigo-600 flex items-center justify-between pt-2 border-t border-indigo-200">
+                    <div className="text-xs text-green-600 flex items-center justify-between pt-2 border-t border-green-200">
                       <span>🕒 {new Date(sapAiSuggestion.timestamp).toLocaleString()}</span>
                       <span className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                         <span className="font-medium">{sapAiSuggestion.sapVersion}</span>
                       </span>
                     </div>
