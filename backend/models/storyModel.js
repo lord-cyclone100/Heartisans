@@ -23,9 +23,13 @@ const storySchema = new mongoose.Schema({
     type: String,
     default: "https://via.placeholder.com/150x150?text=User"
   },
+  profileImage: {
+    type: String,
+    default: ""
+  },
   storyImage: {
     type: String,
-    default: null
+    default: ""
   },
   story: {
     type: String,

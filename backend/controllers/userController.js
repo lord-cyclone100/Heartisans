@@ -36,7 +36,7 @@ export const updateArtisanStatus = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to update artisan status" });
   }
-};
+}; 
 
 export const getUserByEmail = async (req, res) => {
   try {
