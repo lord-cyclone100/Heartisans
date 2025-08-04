@@ -11,33 +11,12 @@ export const StoryAdminPanel = () => {
 
   const fetchPendingStories = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        console.error('No auth token found');
-        setLoading(false);
-        return;
-      }
-
-      console.log('Fetching pending stories with token:', token.substring(0, 20) + '...');
-      
-      const response = await axios.get('http://localhost:5000/api/stories/admin/pending', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      console.log('API Response:', response.data);
-      
+      const response = await axios.get('http://localhost:5000/api/stories/admin/pending');
       if (response.data.success) {
         setPendingStories(response.data.data);
-        console.log('Pending stories set:', response.data.data.length);
-      } else {
-        console.error('API returned success: false');
       }
     } catch (error) {
       console.error('Error fetching pending stories:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
     } finally {
       setLoading(false);
     }
@@ -45,17 +24,7 @@ export const StoryAdminPanel = () => {
 
   const approveStory = async (storyId) => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        alert('Authentication required. Please log in again.');
-        return;
-      }
-
-      const response = await axios.put(`http://localhost:5000/api/stories/admin/${storyId}/approve`, {}, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await axios.put(`http://localhost:5000/api/stories/admin/${storyId}/approve`);
       if (response.data.success) {
         setPendingStories(prev => prev.filter(story => story._id !== storyId));
         alert('Story approved successfully!');
@@ -68,17 +37,7 @@ export const StoryAdminPanel = () => {
 
   const rejectStory = async (storyId) => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        alert('Authentication required. Please log in again.');
-        return;
-      }
-
-      const response = await axios.delete(`http://localhost:5000/api/stories/admin/${storyId}/reject`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await axios.delete(`http://localhost:5000/api/stories/admin/${storyId}/reject`);
       if (response.data.success) {
         setPendingStories(prev => prev.filter(story => story._id !== storyId));
         alert('Story rejected successfully!');
@@ -130,24 +89,14 @@ export const StoryAdminPanel = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={story.profileImage || story.image || '/photos/default_icon.png'}
-                        alt={story.name}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-green-200"
-                        onError={(e) => {
-                          e.target.src = '/photos/default_icon.png';
-                        }}
-                      />
-                      <div>
-                        <h3 className="text-xl font-bold" style={{ color: '#479626' }}>
-                          {story.name}
-                        </h3>
-                        <p className="text-gray-600">{story.role}</p>
-                        {story.location && (
-                          <p className="text-sm text-gray-500">📍 {story.location}</p>
-                        )}
-                      </div>
+                    <div>
+                      <h3 className="text-xl font-bold" style={{ color: '#479626' }}>
+                        {story.name}
+                      </h3>
+                      <p className="text-gray-600">{story.role}</p>
+                      {story.location && (
+                        <p className="text-sm text-gray-500">📍 {story.location}</p>
+                      )}
                     </div>
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
@@ -166,37 +115,15 @@ export const StoryAdminPanel = () => {
                     <p className="text-gray-700 leading-relaxed">{story.story}</p>
                   </div>
 
-                  {/* Story Image Display */}
+                  {/* Story Image */}
                   {story.storyImage && (
                     <div className="mb-4">
-                      <h4 className="font-semibold mb-2" style={{ color: '#479626' }}>Attached Image:</h4>
-                      <div className="relative inline-block">
-                        <img
-                          src={story.storyImage}
-                          alt="Story attachment"
-                          className="max-w-full h-48 object-cover rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all duration-300"
-                          onClick={() => {
-                            // Create modal for full image view
-                            const modal = document.createElement('div');
-                            modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4';
-                            modal.innerHTML = `
-                              <div class="relative max-w-4xl max-h-full">
-                                <img src="${story.storyImage}" alt="Story attachment" class="max-w-full max-h-full object-contain rounded-lg">
-                                <button class="absolute top-4 right-4 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-75 transition-all duration-300" onclick="document.body.removeChild(this.parentElement.parentElement)">×</button>
-                              </div>
-                            `;
-                            document.body.appendChild(modal);
-                            modal.addEventListener('click', (e) => {
-                              if (e.target === modal) {
-                                document.body.removeChild(modal);
-                              }
-                            });
-                          }}
-                        />
-                        <div className="text-xs text-gray-500 mt-1">
-                          Click to view full size
-                        </div>
-                      </div>
+                      <h4 className="font-semibold mb-2" style={{ color: '#479626' }}>Uploaded Image:</h4>
+                      <img 
+                        src={story.storyImage} 
+                        alt="Story related image"
+                        className="w-full max-h-60 object-cover rounded-lg border"
+                      />
                     </div>
                   )}
 

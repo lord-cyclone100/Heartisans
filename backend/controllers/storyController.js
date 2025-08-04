@@ -1,6 +1,5 @@
 import Story from '../models/storyModel.js';
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
 
 // Get all approved stories
 const getStories = async (req, res) => {
@@ -53,8 +52,7 @@ const createStory = async (req, res) => {
       rating,
       location,
       purchaseDate,
-      productCategory,
-      profileImage
+      productCategory
     } = req.body;
 
     // Validation
@@ -72,32 +70,24 @@ const createStory = async (req, res) => {
       });
     }
 
-    // Handle story image upload if provided
-    let storyImageUrl = "";
+    // Handle image upload if provided
+    let storyImageUrl = null;
     if (req.file) {
       try {
         const result = await cloudinary.uploader.upload(req.file.path, {
           folder: 'stories',
           transformation: [
-            { width: 800, height: 600, crop: 'limit' },
-            { quality: 'auto' },
-            { fetch_format: 'auto' }
+            { width: 800, height: 600, crop: "fill", quality: "auto" }
           ]
         });
         storyImageUrl = result.secure_url;
-        
-        // Clean up temporary file
-        fs.unlinkSync(req.file.path);
       } catch (uploadError) {
         console.error('Image upload error:', uploadError);
-        // Continue without image if upload fails
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to upload image'
+        });
       }
-    }
-
-    // Set profile image with fallback logic
-    let userProfileImage = profileImage || "";
-    if (!userProfileImage) {
-      userProfileImage = "/photos/default_icon.png";
     }
 
     const newStory = new Story({
@@ -109,7 +99,6 @@ const createStory = async (req, res) => {
       location,
       purchaseDate,
       productCategory,
-      profileImage: userProfileImage,
       storyImage: storyImageUrl,
       isApproved: false // Stories need approval by default
     });
@@ -124,7 +113,8 @@ const createStory = async (req, res) => {
         name: savedStory.name,
         role: savedStory.role,
         story: savedStory.story,
-        rating: savedStory.rating
+        rating: savedStory.rating,
+        storyImage: savedStory.storyImage
       }
     });
   } catch (error) {
@@ -206,12 +196,8 @@ const approveStory = async (req, res) => {
 // Get pending stories (admin only)
 const getPendingStories = async (req, res) => {
   try {
-    console.log('getPendingStories called by user:', req.user?.email, 'isAdmin:', req.user?.isAdmin);
-    
     const stories = await Story.find({ isApproved: false })
       .sort({ createdAt: -1 });
-
-    console.log('Found pending stories:', stories.length);
 
     res.status(200).json({
       success: true,
