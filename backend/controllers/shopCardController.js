@@ -48,16 +48,11 @@ export const getShopCardById = async (req, res) => {
 
 export const updateShopCard = async (req, res) => {
   try {
-    const card = await shopCardModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const card = await shopCardModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!card) return res.status(404).json({ error: "Product not found" });
     res.json(card);
   } catch (err) {
-    console.error('Update error:', err);
-    res.status(500).json({ error: "Failed to update product", details: err.message });
+    res.status(500).json({ error: "Failed to update product" });
   }
 };
 

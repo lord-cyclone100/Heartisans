@@ -15,7 +15,7 @@ export const SellForm = () => {
     productPrice: "",
     productState: "",
     productCategory: "",
-    productSellerName: "", // Initialize empty, will be set by useEffect
+    productSellerName: user?.fullName || user?.userName || "",
     productImage: null,
     productDescription: "",
     productMaterial: "",
@@ -28,20 +28,20 @@ export const SellForm = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState("");
   const [sapAiLoading, setSapAiLoading] = useState(false);
+  const [sapAiSuggestion, setSapAiSuggestion] = useState(null);
+  const [pricePrediction, setPricePrediction] = useState(null);
+  const [isPredictingPrice, setIsPredictingPrice] = useState(false);
+  const [showPricingInsights, setShowPricingInsights] = useState(false);
 
   // Update seller name when user data becomes available
   useEffect(() => {
-    if (user && (user.fullName || user.userName) && !form.productSellerName) {
+    if (user && (user.fullName || user.userName)) {
       setForm(prevForm => ({
         ...prevForm,
         productSellerName: user?.fullName || user?.userName || ""
       }));
     }
-  }, [user?.fullName, user?.userName, user?._id, form.productSellerName]); // More specific dependencies
-  const [sapAiSuggestion, setSapAiSuggestion] = useState(null);
-  const [pricePrediction, setPricePrediction] = useState(null);
-  const [isPredictingPrice, setIsPredictingPrice] = useState(false);
-  const [showPricingInsights, setShowPricingInsights] = useState(false);
+  }, [user]);
 
   useScrollToTop();
 
