@@ -17,6 +17,9 @@ export const Resale = () => {
     condition: '',
     originalPrice: '',
     description: '',
+    material: '',
+    weight: '',
+    color: '',
     images: []
   });
 
@@ -75,8 +78,8 @@ export const Resale = () => {
   };
 
   const generateSAPPricePrediction = async () => {
-    if (!resaleForm.productName || !resaleForm.category) {
-      alert("Please fill in product name and category first");
+    if (!resaleForm.productName || !resaleForm.category || !resaleForm.material || !resaleForm.weight || !resaleForm.color || !resaleForm.originalPrice || !selectedCategory) {
+      alert("Please fill in all required fields (product name, category, material, weight, color, original price, and condition) first");
       return;
     }
 
@@ -108,8 +111,8 @@ export const Resale = () => {
 
   // Generate SAP AI product description
   const generateSAPAIDescription = async () => {
-    if (!resaleForm.productName || !resaleForm.category) {
-      alert("Please fill in product name and category first");
+    if (!resaleForm.productName || !resaleForm.category || !resaleForm.material || !resaleForm.weight || !resaleForm.color || !resaleForm.originalPrice || !selectedCategory) {
+      alert("Please fill in all required fields (product name, category, material, weight, color, original price, and condition) first");
       return;
     }
 
@@ -349,14 +352,14 @@ export const Resale = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                    <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Product Name *
                     </label>
                     <input
                       type="text"
                       value={resaleForm.productName}
                       onChange={(e) => setResaleForm({ ...resaleForm, productName: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg transition-colors"
                       style={{
                         focusRingColor: '#479626',
                         focusBorderColor: '#479626'
@@ -367,13 +370,13 @@ export const Resale = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                    <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Category *
                     </label>
                     <select
                       value={resaleForm.category}
                       onChange={(e) => setResaleForm({ ...resaleForm, category: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg transition-colors"
                       style={{
                         focusRingColor: '#479626',
                         focusBorderColor: '#479626'
@@ -388,14 +391,68 @@ export const Resale = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                    <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                      Material *
+                    </label>
+                    <input
+                      type="text"
+                      value={resaleForm.material}
+                      onChange={(e) => setResaleForm({ ...resaleForm, material: e.target.value })}
+                      className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg transition-colors"
+                      style={{
+                        focusRingColor: '#479626',
+                        focusBorderColor: '#479626'
+                      }}
+                      placeholder="e.g., Wood, Clay, Cotton"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                      Weight (grams) *
+                    </label>
+                    <input
+                      type="number"
+                      value={resaleForm.weight}
+                      onChange={(e) => setResaleForm({ ...resaleForm, weight: e.target.value })}
+                      className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg transition-colors"
+                      style={{
+                        focusRingColor: '#479626',
+                        focusBorderColor: '#479626'
+                      }}
+                      placeholder="Enter weight in grams"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                      Primary Color *
+                    </label>
+                    <input
+                      type="text"
+                      value={resaleForm.color}
+                      onChange={(e) => setResaleForm({ ...resaleForm, color: e.target.value })}
+                      className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg transition-colors"
+                      style={{
+                        focusRingColor: '#479626',
+                        focusBorderColor: '#479626'
+                      }}
+                      placeholder="e.g., Brown, Blue, Multicolor"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Original Purchase Price (₹) *
                     </label>
                     <input
                       type="number"
                       value={resaleForm.originalPrice}
                       onChange={(e) => setResaleForm({ ...resaleForm, originalPrice: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg transition-colors"
                       style={{
                         focusRingColor: '#479626',
                         focusBorderColor: '#479626'
@@ -406,10 +463,10 @@ export const Resale = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                    <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                       Condition Selected
                     </label>
-                    <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+                    <div className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg bg-gray-50">
                       {selectedCategory ? (
                         <span style={{ color: '#479626' }}>
                           {qualityCategories.find(cat => cat.id === selectedCategory)?.title || 'None selected'}
@@ -422,7 +479,7 @@ export const Resale = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
+                  <label className="block text-lg font-semibold mb-2 font-mhlk" style={{ color: '#479626' }}>
                     Product Description
                   </label>
                   <div className="space-y-3">
@@ -430,7 +487,7 @@ export const Resale = () => {
                       value={resaleForm.description}
                       onChange={(e) => setResaleForm({ ...resaleForm, description: e.target.value })}
                       rows="4"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                      className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg transition-colors"
                       style={{
                         focusRingColor: '#479626',
                         focusBorderColor: '#479626'
@@ -441,15 +498,15 @@ export const Resale = () => {
                     {/* SAP AI Description Generator */}
                     <div className="rounded-lg p-4 border-2" style={{ backgroundColor: '#f0f9f0', borderColor: '#479626' }}>
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-sm font-bold flex items-center font-mhlk" style={{ color: '#479626' }}>
+                        <h4 className="text-lg font-bold flex items-center font-mhlk" style={{ color: '#479626' }}>
                           <span className="mr-2">🤖</span>
                           SAP AI Description Generator
                         </h4>
                         <button
                           type="button"
                           onClick={generateSAPAIDescription}
-                          disabled={sapAiLoading || !resaleForm.productName || !resaleForm.category}
-                          className="text-white px-4 py-2 rounded-md text-sm font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-mhlk"
+                          disabled={sapAiLoading || !resaleForm.productName || !resaleForm.category || !resaleForm.material || !resaleForm.weight || !resaleForm.color || !resaleForm.originalPrice || !selectedCategory}
+                          className="text-white px-4 py-2 rounded-md text-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-mhlk"
                           style={{ backgroundColor: '#479626' }}
                         >
                           {sapAiLoading ? (
@@ -465,7 +522,7 @@ export const Resale = () => {
                           )}
                         </button>
                       </div>
-                      <p className="text-blue-700 text-xs">
+                      <p className="text-blue-700 text-lg">
                         Let SAP AI create a professional description for your resale item
                       </p>
                     </div>
@@ -577,7 +634,7 @@ export const Resale = () => {
                   <button
                     type="button"
                     onClick={generateSAPPricePrediction}
-                    disabled={isPredictingPrice || !resaleForm.productName || !resaleForm.category}
+                    disabled={isPredictingPrice || !resaleForm.productName || !resaleForm.category || !resaleForm.material || !resaleForm.weight || !resaleForm.color || !resaleForm.originalPrice || !selectedCategory}
                     className="text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 font-mhlk"
                     style={{ backgroundColor: '#479626' }}
                   >

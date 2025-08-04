@@ -11,6 +11,9 @@ const createResaleListing = async (req, res) => {
       description,
       originalPrice,
       condition,
+      material,
+      weight,
+      color,
       sapAnalytics,
       location
     } = req.body;
@@ -79,13 +82,16 @@ const createResaleListing = async (req, res) => {
       productName,
       category,
       description,
+      material: material || '',
+      weight: weight ? parseFloat(weight) : undefined,
+      color: color || '',
       originalPrice: parseFloat(originalPrice),
       currentPrice,
       condition,
       conditionDetails: conditionDetails[condition],
       images: uploadedImages,
       seller: user._id,
-      sellerName: user.name,
+      sellerName: user.fullName || user.userName,
       sellerContact: user.email,
       sapAnalytics: sapAnalytics ? {
         ...sapAnalytics,
@@ -158,7 +164,7 @@ const getAllResaleListings = async (req, res) => {
     // Execute query
     const [listings, totalCount] = await Promise.all([
       Resale.find(filter)
-        .populate('seller', 'name email profilePicture')
+        .populate('seller', 'userName fullName email profilePicture')
         .sort(sort)
         .skip(skip)
         .limit(parseInt(limit)),
@@ -222,8 +228,8 @@ const getResaleListingById = async (req, res) => {
     const { id } = req.params;
 
     const listing = await Resale.findById(id)
-      .populate('seller', 'name email profilePicture phone')
-      .populate('interestedBuyers.user', 'name email');
+      .populate('seller', 'userName fullName email profilePicture phone')
+      .populate('interestedBuyers.user', 'userName fullName email');
 
     if (!listing) {
       return res.status(404).json({
@@ -279,7 +285,7 @@ const updateResaleListing = async (req, res) => {
       id,
       { ...updates, updatedAt: new Date() },
       { new: true, runValidators: true }
-    ).populate('seller', 'name email');
+    ).populate('seller', 'userName fullName email');
 
     res.json({
       success: true,
@@ -389,7 +395,7 @@ const markAsSold = async (req, res) => {
 const expressInterest = async (req, res) => {
   try {
     const { id } = req.params;
-    const { message } = req.body;
+    const { message, buyNow } = req.body;
 
     const listing = await Resale.findById(id);
     if (!listing) {
@@ -407,30 +413,33 @@ const expressInterest = async (req, res) => {
       });
     }
 
-    // Check if user already expressed interest
-    const alreadyInterested = listing.interestedBuyers.some(
-      buyer => buyer.user.toString() === req.user.id
-    );
+    // Check if user already expressed interest (only for regular interest, not buy now)
+    if (!buyNow) {
+      const alreadyInterested = listing.interestedBuyers.some(
+        buyer => buyer.user.toString() === req.user.id
+      );
 
-    if (alreadyInterested) {
-      return res.status(400).json({
-        success: false,
-        error: 'You have already expressed interest in this listing'
-      });
+      if (alreadyInterested) {
+        return res.status(400).json({
+          success: false,
+          error: 'You have already expressed interest in this listing'
+        });
+      }
     }
 
     // Add to interested buyers
     listing.interestedBuyers.push({
       user: req.user.id,
-      message: message || 'Interested in this item',
-      contactedAt: new Date()
+      message: buyNow ? 'URGENT: Buy Now Request - ' + (message || 'I want to purchase this item immediately') : (message || 'Interested in this item'),
+      contactedAt: new Date(),
+      buyNow: buyNow || false
     });
 
     await listing.save();
 
     res.json({
       success: true,
-      message: 'Interest expressed successfully'
+      message: buyNow ? 'Purchase request sent successfully' : 'Interest expressed successfully'
     });
 
   } catch (error) {

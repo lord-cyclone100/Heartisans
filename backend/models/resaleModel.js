@@ -17,6 +17,20 @@ const resaleSchema = new mongoose.Schema({
     required: true
   },
   
+  // Product Details
+  material: {
+    type: String,
+    trim: true
+  },
+  weight: {
+    type: Number,
+    min: 0
+  },
+  color: {
+    type: String,
+    trim: true
+  },
+  
   // Pricing Information
   originalPrice: {
     type: Number,
@@ -54,7 +68,7 @@ const resaleSchema = new mongoose.Schema({
   // Seller Information
   seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Heartisans_user',
     required: true
   },
   sellerName: String,
@@ -96,13 +110,17 @@ const resaleSchema = new mongoose.Schema({
   interestedBuyers: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'Heartisans_user'
     },
     contactedAt: {
       type: Date,
       default: Date.now
     },
-    message: String
+    message: String,
+    buyNow: {
+      type: Boolean,
+      default: false
+    }
   }],
   
   // Timestamps

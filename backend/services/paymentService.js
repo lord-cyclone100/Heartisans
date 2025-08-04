@@ -1,5 +1,6 @@
 import { orderModel } from '../models/orderModel.js';
 import { User } from '../models/userModel.js';
+import Resale from '../models/resaleModel.js';
 import cashfree from '../config/cashfree.js';
 
 export const processSuccessfulPayment = async (order, paymentDetails) => {
@@ -30,6 +31,21 @@ export const processSuccessfulPayment = async (order, paymentDetails) => {
       if (seller) {
         seller.balance = (seller.balance || 0) + order.amount;
         await seller.save();
+      }
+
+      // Check if this is a resale product and mark it as sold
+      if (order.productDetails?.productType === 'resale' || 
+          (order.productDetails?.id && order.productDetails?.productType === 'resale')) {
+        try {
+          const resaleListing = await Resale.findById(order.productDetails.id);
+          if (resaleListing) {
+            await resaleListing.markAsSold();
+            console.log(`Resale listing ${order.productDetails.id} marked as sold`);
+          }
+        } catch (resaleError) {
+          console.error('Error marking resale listing as sold:', resaleError);
+          // Don't throw error here, as the payment was successful
+        }
       }
     }
     
