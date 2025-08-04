@@ -30,7 +30,7 @@ const BackToTop = () => {
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-24 right-8 z-40 p-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-opacity-50"
+          className="fixed bottom-24 border-1 border-black right-8 z-40 p-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-opacity-50"
           style={{
             backgroundColor: '#479626',
             color: 'white',

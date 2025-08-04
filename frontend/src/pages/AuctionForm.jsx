@@ -197,7 +197,7 @@ export const AuctionForm = () => {
     setMsg("");
     try {
       // 1. Get Cloudinary signature from backend
-      const sigRes = await axios.get("http://localhost:5000/api/cloudinary-signature");
+      const sigRes = await axios.get("http://localhost:5000/api/cloudinary/cloudinary-signature");
       const { signature, timestamp, apiKey, cloudName } = sigRes.data;
 
       // 2. Upload image to Cloudinary
