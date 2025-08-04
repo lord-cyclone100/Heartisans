@@ -10,6 +10,7 @@ import { Auction } from "./pages/Auction";
 import { Shop } from "./pages/Shop";
 import { Resale } from "./pages/Resale";
 import ResaleListings from './pages/ResaleListings';
+import ResaleProductDetails from './pages/ResaleProductDetails';
 import { AppLayout } from "./components/layout/AppLayout";
 import { ShopDetails } from "./pages/ShopDetails";
 import { UserDashBoard } from "./pages/UserDashBoard";
@@ -190,6 +191,10 @@ export const App = () => {
         {
           path: "/resale-listings",
           element: <ResaleListings />,
+        },
+        {
+          path: "/resale-listings/:id",
+          element: <ResaleProductDetails />,
         },
         {
           path: "/sellform",

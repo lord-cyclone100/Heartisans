@@ -22,7 +22,9 @@ export const UserDashBoard = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showArtisanPlanModal, setShowArtisanPlanModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [editingResaleListing, setEditingResaleListing] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [editResaleForm, setEditResaleForm] = useState({});
   const navigate = useNavigate();
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState("");
@@ -62,10 +64,33 @@ export const UserDashBoard = () => {
 
         // Fetch user's resale listings
         try {
-          const resaleRes = await axios.get(`http://localhost:5000/api/resale/user/${userRes.data._id}`);
-          setUserResaleListings(resaleRes.data);
-        } catch {
-          setUserResaleListings([]);
+          const token = localStorage.getItem('authToken');
+          
+          if (!token) {
+            setUserResaleListings([]);
+            return;
+          }
+          
+          const resaleRes = await axios.get(`http://localhost:5000/api/resale/user/listings`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          setUserResaleListings(resaleRes.data.data || resaleRes.data);
+        } catch (error) {
+          console.error('Failed to fetch resale listings:', error.response?.data || error.message);
+          
+          // If the protected route fails, try to fetch all listings and filter by user
+          try {
+            const allListingsRes = await axios.get('http://localhost:5000/api/resale');
+            const userListings = allListingsRes.data.data?.filter(listing => 
+              listing.seller?._id === userRes.data._id || listing.seller === userRes.data._id
+            ) || [];
+            setUserResaleListings(userListings);
+          } catch (fallbackError) {
+            console.error('Fallback also failed:', fallbackError);
+            setUserResaleListings([]);
+          }
         }
 
         if (userRes.data.isArtisan) {
@@ -209,6 +234,90 @@ export const UserDashBoard = () => {
         setTimeout(() => setUpdateMessage(""), 3000);
       } catch (error) {
         setUpdateMessage("Failed to delete product. Please try again.");
+      }
+    }
+  };
+
+  // Resale listing handlers
+  const handleEditResaleListing = (listing) => {
+    setEditingResaleListing(listing);
+    setEditResaleForm({
+      productName: listing.productName,
+      category: listing.category,
+      description: listing.description,
+      originalPrice: listing.originalPrice,
+      condition: listing.condition,
+      material: listing.material || '',
+      weight: listing.weight || '',
+      color: listing.color || ''
+    });
+  };
+
+  const handleEditResaleFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditResaleForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleUpdateResaleListing = async (e) => {
+    e.preventDefault();
+    setUpdateLoading(true);
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.put(
+        `http://localhost:5000/api/resale/${editingResaleListing._id}`,
+        editResaleForm,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.success) {
+        // Update the local state with the updated listing
+        setUserResaleListings(prev =>
+          prev.map(listing =>
+            listing._id === editingResaleListing._id
+              ? { ...listing, ...editResaleForm }
+              : listing
+          )
+        );
+        setEditingResaleListing(null);
+        setUpdateMessage("Resale listing updated successfully!");
+        setTimeout(() => setUpdateMessage(""), 3000);
+      }
+    } catch (error) {
+      console.error('Update resale listing error:', error);
+      setUpdateMessage("Failed to update resale listing. Please try again.");
+      setTimeout(() => setUpdateMessage(""), 3000);
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const handleDeleteResaleListing = async (listingId) => {
+    if (window.confirm("Are you sure you want to delete this resale listing?")) {
+      try {
+        const token = localStorage.getItem('authToken');
+        await axios.delete(`http://localhost:5000/api/resale/${listingId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setUserResaleListings((prev) =>
+          prev.filter((listing) => listing._id !== listingId)
+        );
+        setUpdateMessage("Resale listing deleted successfully!");
+        setTimeout(() => setUpdateMessage(""), 3000);
+      } catch (error) {
+        console.error('Delete resale listing error:', error);
+        setUpdateMessage("Failed to delete resale listing. Please try again.");
+        setTimeout(() => setUpdateMessage(""), 3000);
       }
     }
   };
@@ -520,6 +629,17 @@ export const UserDashBoard = () => {
                 </p>
               </div>
 
+              {updateMessage && (
+                <div
+                  className={`mb-8 p-6 rounded-xl border-2 ${updateMessage.includes("success")
+                    ? "bg-green-50 border-green-200 text-green-800"
+                    : "bg-red-50 border-red-200 text-red-800"
+                    }`}
+                >
+                  <p className="text-lg font-semibold">{updateMessage}</p>
+                </div>
+              )}
+
               <div className="flex gap-6 mb-8">
                 <button
                   className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
@@ -535,89 +655,267 @@ export const UserDashBoard = () => {
                 </button>
               </div>
 
-              {userResaleListings.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {userResaleListings.map((listing) => (
-                    <div
-                      key={listing._id}
-                      className="border-2 border-green-100 rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-br from-green-50 to-emerald-50"
+              {editingResaleListing ? (
+                // Edit Resale Listing Form
+                <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-8 border border-green-200">
+                  <div className="flex justify-between items-center mb-8">
+                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                      Edit Resale Listing: {editingResaleListing.productName}
+                    </h3>
+                    <button
+                      onClick={() => setEditingResaleListing(null)}
+                      className="text-gray-500 hover:text-gray-700 text-3xl font-bold transition-colors"
                     >
-                      {listing.images && listing.images.length > 0 && (
-                        <img
-                          src={listing.images[0].url}
-                          alt={listing.productName}
-                          className="w-full h-48 object-cover rounded-xl mb-4 shadow-lg"
+                      ×
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleUpdateResaleListing} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-gray-700 font-bold text-lg mb-3">
+                          Product Name
+                        </label>
+                        <input
+                          type="text"
+                          name="productName"
+                          value={editResaleForm.productName}
+                          onChange={handleEditResaleFormChange}
+                          className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg"
+                          required
                         />
-                      )}
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                          listing.condition === 'Like New' ? 'bg-green-100 text-green-800' :
-                          listing.condition === 'Good' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-orange-100 text-orange-800'
-                        }`}>
-                          {listing.condition}
-                        </span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          listing.status === 'available' ? 'bg-blue-100 text-blue-800' :
-                          listing.status === 'sold' ? 'bg-gray-100 text-gray-800' :
-                          'bg-purple-100 text-purple-800'
-                        }`}>
-                          {listing.status}
-                        </span>
                       </div>
-                      <h3 className="font-bold text-xl mb-2 text-gray-900 leading-tight">
-                        {listing.productName}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-2">
-                        {listing.category}
-                      </p>
-                      <div className="flex justify-between items-center mb-4">
-                        <div>
-                          <p className="text-green-600 font-bold text-2xl">
-                            ₹{listing.currentPrice?.toLocaleString()}
-                          </p>
-                          {listing.originalPrice && (
-                            <p className="text-gray-500 text-sm line-through">
-                              ₹{listing.originalPrice.toLocaleString()}
-                            </p>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <p className="text-blue-600 font-semibold text-sm">
-                            {listing.interestedUsers?.length || 0} interested
-                          </p>
-                          <p className="text-gray-500 text-xs">
-                            {new Date(listing.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-bold text-lg mb-3">
+                          Category
+                        </label>
+                        <select
+                          name="category"
+                          value={editResaleForm.category}
+                          onChange={handleEditResaleFormChange}
+                          className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg"
+                          required
+                        >
+                          <option value="">Select Category</option>
+                          <option value="Art">Art</option>
+                          <option value="Pottery">Pottery</option>
+                          <option value="Fashion">Fashion</option>
+                          <option value="Crafts">Crafts</option>
+                          <option value="Crochet">Crochet</option>
+                          <option value="Accessories">Accessories</option>
+                          <option value="Jewelry">Jewelry</option>
+                          <option value="Textiles">Textiles</option>
+                          <option value="Woodwork">Woodwork</option>
+                          <option value="Metalwork">Metalwork</option>
+                          <option value="Paintings">Paintings</option>
+                          <option value="Sculptures">Sculptures</option>
+                        </select>
                       </div>
-                      
-                      <div className="flex gap-2">
-                        <button className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                          Edit
-                        </button>
-                        <button className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                          Delete
-                        </button>
+
+                      <div>
+                        <label className="block text-gray-700 font-bold text-lg mb-3">
+                          Original Price (₹)
+                        </label>
+                        <input
+                          type="number"
+                          name="originalPrice"
+                          value={editResaleForm.originalPrice}
+                          onChange={handleEditResaleFormChange}
+                          className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg"
+                          required
+                          min="1"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-bold text-lg mb-3">
+                          Condition
+                        </label>
+                        <select
+                          name="condition"
+                          value={editResaleForm.condition}
+                          onChange={handleEditResaleFormChange}
+                          className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg"
+                          required
+                        >
+                          <option value="">Select Condition</option>
+                          <option value="with-tag">With Tag - Just Like New</option>
+                          <option value="without-tag">Without Tag - Good to Fair</option>
+                          <option value="lesser-quality">Lesser Quality</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-bold text-lg mb-3">
+                          Material
+                        </label>
+                        <input
+                          type="text"
+                          name="material"
+                          value={editResaleForm.material}
+                          onChange={handleEditResaleFormChange}
+                          className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg"
+                          placeholder="e.g., Wood, Clay, Cotton"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-bold text-lg mb-3">
+                          Weight (grams)
+                        </label>
+                        <input
+                          type="number"
+                          name="weight"
+                          value={editResaleForm.weight}
+                          onChange={handleEditResaleFormChange}
+                          className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg"
+                          placeholder="Weight in grams"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-bold text-lg mb-3">
+                          Color
+                        </label>
+                        <input
+                          type="text"
+                          name="color"
+                          value={editResaleForm.color}
+                          onChange={handleEditResaleFormChange}
+                          className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg"
+                          placeholder="e.g., Brown, Blue, Multicolor"
+                        />
                       </div>
                     </div>
-                  ))}
+
+                    <div>
+                      <label className="block text-gray-700 font-bold text-lg mb-3">
+                        Description
+                      </label>
+                      <textarea
+                        name="description"
+                        value={editResaleForm.description}
+                        onChange={handleEditResaleFormChange}
+                        rows="4"
+                        className="w-full p-4 border-2 border-green-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors bg-white text-lg resize-none"
+                        placeholder="Describe the condition and details of your item"
+                      ></textarea>
+                    </div>
+
+                    <div className="flex gap-4 pt-6">
+                      <button
+                        type="submit"
+                        disabled={updateLoading}
+                        className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl disabled:transform-none disabled:shadow-lg"
+                      >
+                        {updateLoading ? "Updating..." : "Update Listing"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingResaleListing(null)}
+                        className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
                 </div>
               ) : (
-                <div className="text-center py-16 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl border border-green-200">
-                  <div className="text-6xl mb-8">♻️</div>
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-600 mb-6">
-                    No Resale Listings Yet
-                  </h3>
-                  <p className="text-gray-500 text-xl sm:text-2xl lg:text-3xl mb-12 max-w-2xl mx-auto leading-relaxed">
-                    Start listing your pre-owned handcrafted items to give them a new life
-                  </p>
-                  <button
-                    onClick={() => navigate("/resale")}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-12 py-6 rounded-2xl font-bold text-xl sm:text-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
-                  >
-                    Create Your First Listing
-                  </button>
+                // Resale Listings List
+                <div>
+                  {userResaleListings.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {userResaleListings.map((listing) => (
+                        <div
+                          key={listing._id}
+                          className="border-2 border-green-100 rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-br from-green-50 to-emerald-50"
+                        >
+                          {listing.images && listing.images.length > 0 && (
+                            <img
+                              src={listing.images[0].url}
+                              alt={listing.productName}
+                              className="w-full h-48 object-cover rounded-xl mb-4 shadow-lg"
+                            />
+                          )}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                              listing.condition === 'with-tag' ? 'bg-green-100 text-green-800' :
+                              listing.condition === 'without-tag' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-orange-100 text-orange-800'
+                            }`}>
+                              {listing.condition === 'with-tag' ? 'Like New' :
+                               listing.condition === 'without-tag' ? 'Good' : 'Fair'}
+                            </span>
+                            <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                              listing.status === 'available' ? 'bg-blue-100 text-blue-800' :
+                              listing.status === 'sold' ? 'bg-gray-100 text-gray-800' :
+                              'bg-purple-100 text-purple-800'
+                            }`}>
+                              {listing.status}
+                            </span>
+                          </div>
+                          <h3 className="font-bold text-xl mb-2 text-gray-900 leading-tight">
+                            {listing.productName}
+                          </h3>
+                          <p className="text-gray-600 text-sm mb-2">
+                            {listing.category}
+                          </p>
+                          <div className="flex justify-between items-center mb-4">
+                            <div>
+                              <p className="text-green-600 font-bold text-2xl">
+                                ₹{listing.currentPrice?.toLocaleString()}
+                              </p>
+                              {listing.originalPrice && (
+                                <p className="text-gray-500 text-sm line-through">
+                                  ₹{listing.originalPrice.toLocaleString()}
+                                </p>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <p className="text-blue-600 font-semibold text-sm">
+                                {listing.interestedUsers?.length || 0} interested
+                              </p>
+                              <p className="text-gray-500 text-xs">
+                                {new Date(listing.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => handleEditResaleListing(listing)}
+                              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-1"
+                            >
+                              ✏️ Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteResaleListing(listing._id)}
+                              className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-1"
+                            >
+                              🗑️ Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-16 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl border border-green-200">
+                      <div className="text-6xl mb-8">♻️</div>
+                      <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-600 mb-6">
+                        No Resale Listings Yet
+                      </h3>
+                      <p className="text-gray-500 text-xl sm:text-2xl lg:text-3xl mb-12 max-w-2xl mx-auto leading-relaxed">
+                        Start listing your pre-owned handcrafted items to give them a new life
+                      </p>
+                      <button
+                        onClick={() => navigate("/resale")}
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-12 py-6 rounded-2xl font-bold text-xl sm:text-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                      >
+                        Create Your First Listing
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

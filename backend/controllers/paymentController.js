@@ -31,11 +31,13 @@ export const createOrder = async (req, res) => {
                 orderId,
                 buyerId,
                 productDetails: {
+                    id: productDetails?.id,
                     productId: productDetails?.id,
                     productName: productDetails?.name,
                     productPrice: productDetails?.price,
                     productCategory: productDetails?.category,
-                    productImage: productDetails?.image
+                    productImage: productDetails?.image,
+                    productType: productDetails?.productType // Add productType to identify resale vs regular products
                 },
                 customerDetails: {
                     name,

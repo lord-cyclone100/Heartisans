@@ -95,33 +95,6 @@ const ResaleListings = () => {
     fetchListings(page);
   };
 
-  const handleInterest = async (listingId) => {
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        alert('Please log in to express interest');
-        return;
-      }
-
-      const response = await axios.post(
-        `http://localhost:5000/api/resale/${listingId}/interest`,
-        { message: 'I am interested in this item' },
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
-
-      if (response.data.success) {
-        alert('Interest expressed successfully! The seller will be notified.');
-      } else {
-        throw new Error(response.data.error);
-      }
-    } catch (error) {
-      console.error('Express interest error:', error);
-      alert(error.response?.data?.error || 'Failed to express interest');
-    }
-  };
-
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -377,17 +350,17 @@ const ResaleListings = () => {
 
                   {/* Seller Info */}
                   <div className="flex items-center justify-between text-base text-gray-500 mb-4 font-mhlk">
-                    <span>By {listing.sellerName}</span>
+                    <span>By {listing.sellerName || listing.seller?.fullName || listing.seller?.userName || 'Unknown Seller'}</span>
                     <span>{listing.views} views</span>
                   </div>
 
                   {/* Action Button */}
                   <button
-                    onClick={() => handleInterest(listing._id)}
+                    onClick={() => navigate(`/resale-listings/${listing._id}`)}
                     className="w-full text-white py-4 px-4 rounded-full font-bold text-lg font-mhlk hover:opacity-90 transition-all duration-300"
                     style={{ backgroundColor: '#479626' }}
                   >
-                    Express Interest
+                    View Details
                   </button>
                 </div>
               </div>
