@@ -67,9 +67,21 @@ export const SellForm = () => {
   const generateAIDescription = async () => {
     try {
       const productName = form.productName?.trim();
+      const productMaterial = form.productMaterial?.trim();
+      const productWeight = form.productWeight?.trim();
       
       if (!productName) {
         setMsg("Please enter a product name first");
+        return;
+      }
+
+      if (!productMaterial) {
+        setMsg("⚠️ Material is required for comprehensive description generation. This helps AI create detailed content about material properties.");
+        return;
+      }
+
+      if (!productWeight) {
+        setMsg("⚠️ Weight is required for accurate description generation. This helps AI understand product dimensions and portability.");
         return;
       }
 
@@ -132,9 +144,21 @@ export const SellForm = () => {
   const generateSAPAIDescription = async () => {
     try {
       const productName = form.productName?.trim();
+      const productMaterial = form.productMaterial?.trim();
+      const productWeight = form.productWeight?.trim();
       
       if (!productName) {
         setMsg("Please enter a product name first");
+        return;
+      }
+
+      if (!productMaterial) {
+        setMsg("⚠️ Material is required for enterprise-grade SAP AI content generation. Premium materials enhance content quality and SEO performance.");
+        return;
+      }
+
+      if (!productWeight) {
+        setMsg("⚠️ Weight is required for comprehensive SAP AI description generation. This enables detailed shipping, handling, and size specifications.");
         return;
       }
 
@@ -192,9 +216,21 @@ export const SellForm = () => {
     try {
       const productName = form.productName?.trim();
       const productCategory = form.productCategory?.trim();
+      const productMaterial = form.productMaterial?.trim();
+      const productWeight = form.productWeight?.trim();
       
       if (!productName || !productCategory) {
         setMsg("Please fill in product name and category first");
+        return;
+      }
+
+      if (!productMaterial) {
+        setMsg("⚠️ Material is required for accurate price prediction. Premium materials (Gold, Silver, Silk) can increase your price by 80%+");
+        return;
+      }
+
+      if (!productWeight) {
+        setMsg("⚠️ Weight is required for accurate price prediction. Weight affects material cost and shipping calculations.");
         return;
       }
 
@@ -369,7 +405,7 @@ export const SellForm = () => {
                           setMsg("Error occurred. Please refresh the page and try again.");
                         }
                       }}
-                      disabled={isPredictingPrice || !form.productName.trim() || !form.productCategory}
+                      disabled={isPredictingPrice || !form.productName.trim() || !form.productCategory || !form.productMaterial.trim() || !form.productWeight.trim()}
                       className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 border border-green-500 rounded-lg hover:from-green-700 hover:to-green-800 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                       style={{ backgroundColor: '#479626' }}
                     >
@@ -484,6 +520,43 @@ export const SellForm = () => {
                             Use Max
                           </button>
                         </div>
+                      </div>
+
+                      {/* Material Impact Guide */}
+                      <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg border border-amber-200 mb-4">
+                        <h4 className="font-semibold mb-3 flex items-center gap-2 text-amber-800">
+                          <span>🏆</span>
+                          How Material Affects Your Price
+                        </h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl mb-1">🥇</div>
+                            <div className="text-xs font-medium text-gray-700">Premium</div>
+                            <div className="text-xs text-green-600">+80%</div>
+                            <div className="text-xs text-gray-500">Gold, Silver</div>
+                          </div>
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl mb-1">🥈</div>
+                            <div className="text-xs font-medium text-gray-700">Luxury</div>
+                            <div className="text-xs text-green-600">+40%</div>
+                            <div className="text-xs text-gray-500">Silk, Marble</div>
+                          </div>
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl mb-1">🌿</div>
+                            <div className="text-xs font-medium text-gray-700">Premium Wood</div>
+                            <div className="text-xs text-green-600">+30%</div>
+                            <div className="text-xs text-gray-500">Teak, Rosewood</div>
+                          </div>
+                          <div className="text-center p-3 bg-white rounded-lg border">
+                            <div className="text-2xl mb-1">🏺</div>
+                            <div className="text-xs font-medium text-gray-700">Standard</div>
+                            <div className="text-xs text-gray-600">Base</div>
+                            <div className="text-xs text-gray-500">Clay, Cotton</div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-amber-700 mt-3">
+                          💡 Your material "{form.productMaterial}" has been factored into the SAP AI pricing above
+                        </p>
                       </div>
 
                       {/* SAP Business Intelligence Section */}
@@ -684,7 +757,7 @@ export const SellForm = () => {
                           setMsg("Error occurred. Please refresh the page and try again.");
                         }
                       }}
-                      disabled={aiLoading || !form.productName.trim()}
+                      disabled={aiLoading || !form.productName.trim() || !form.productMaterial.trim() || !form.productWeight.trim()}
                       className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {aiLoading ? (
@@ -710,7 +783,7 @@ export const SellForm = () => {
                           setMsg("Error occurred. Please refresh the page and try again.");
                         }
                       }}
-                      disabled={sapAiLoading || !form.productName.trim()}
+                      disabled={sapAiLoading || !form.productName.trim() || !form.productMaterial.trim() || !form.productWeight.trim()}
                       className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 border border-green-500 rounded-lg hover:from-green-700 hover:to-green-800 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                       style={{ backgroundColor: '#479626' }}
                     >
@@ -955,17 +1028,20 @@ export const SellForm = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <label className="block text-base sm:text-lg font-medium text-gray-700">
-                    Material *
+                    Material * <span className="text-sm text-green-600 font-medium">(Critical for pricing)</span>
                   </label>
                   <input
                     type="text"
                     name="productMaterial"
-                    placeholder="e.g., Wood, Clay, Cotton"
+                    placeholder="e.g., Gold, Silver, Silk, Teak Wood, Marble, Clay"
                     value={form.productMaterial}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 text-lg"
                   />
+                  <p className="text-sm text-gray-600">
+                    📊 Premium materials (Gold, Silver, Silk) significantly increase SAP AI price predictions
+                  </p>
                 </div>
                 
                 <div className="space-y-2">
