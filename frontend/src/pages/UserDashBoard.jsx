@@ -182,6 +182,11 @@ export const UserDashBoard = () => {
   const navigate = useNavigate();
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState("");
+  
+  // Add these new state variables for video modals
+  const [showSellVideo, setShowSellVideo] = useState(false);
+  const [showResaleVideo, setShowResaleVideo] = useState(false);
+  const [showAuctionVideo, setShowAuctionVideo] = useState(false);
 
   // Simplified useEffect for redirection
   useEffect(() => {
@@ -621,6 +626,46 @@ export const UserDashBoard = () => {
 
         {/* Tab Content */}
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Seller Tutorials Section - NEW ADDITION */}
+          {activeTab === "profile" && (
+            <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-900">
+                Seller Tutorials
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* How to Sell Button */}
+                <button 
+                  onClick={() => setShowSellVideo(true)}
+                  className="bg-gradient-to-br from-green-50 to-emerald-100 hover:from-green-100 hover:to-emerald-200 border-2 border-green-200 rounded-2xl p-6 text-center transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                >
+                  <div className="text-4xl mb-4">🛍️</div>
+                  <h3 className="text-lg font-bold mb-2">How to sell on Heartisans</h3>
+                  <p className="text-sm text-gray-600">Learn the selling process</p>
+                </button>
+
+                {/* How to Start Resale Button */}
+                <button 
+                  onClick={() => setShowResaleVideo(true)}
+                  className="bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-2xl p-6 text-center transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                >
+                  <div className="text-4xl mb-4">♻️</div>
+                  <h3 className="text-lg font-bold mb-2">How to start Resale</h3>
+                  <p className="text-sm text-gray-600">Reselling guide for artisans</p>
+                </button>
+
+                {/* How to Initiate Auction Button */}
+                <button 
+                  onClick={() => setShowAuctionVideo(true)}
+                  className="bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-200 rounded-2xl p-6 text-center transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                >
+                  <div className="text-4xl mb-4">🏺</div>
+                  <h3 className="text-lg font-bold mb-2">How to initiate auction</h3>
+                  <p className="text-sm text-gray-600">Auction setup tutorial</p>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Profile Tab */}
           {activeTab === "profile" && (
             <div className="bg-white rounded-2xl shadow-xl p-12" style={{ border: '1px solid #479626' }}>
@@ -702,16 +747,22 @@ export const UserDashBoard = () => {
                   </h3>
                   <div className="flex gap-6 flex-wrap">
                     <button
-                      className="px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                      className="px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl cursor-pointer"
                       onClick={() => handleProtectedRedirect("/auctionform")}
                     >
                       {t("dashboard.startAuction")}
                     </button>
                     <button
-                      className="px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                      className="px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl cursor-pointer"
                       onClick={() => handleProtectedRedirect("/sellform")}
                     >
                       {t("dashboard.sellOnHeartisans")}
+                    </button>
+                    <button
+                      className="px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl cursor-pointer"
+                      onClick={() => navigate(user.isArtisan ? `/dashboard/seller/${user._id}` : `/dashboard/buyer/${user._id}`)}
+                    >
+                      {user.isArtisan ? "Seller Dashboard" : "Buyer Dashboard"}
                     </button>
                     <button
                       className={`px-8 py-4 rounded-2xl font-bold text-xl sm:text-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl ${!user.isArtisan
@@ -1633,6 +1684,97 @@ export const UserDashBoard = () => {
         onClose={() => setShowArtisanPlanModal(false)}
         user={user}
       />
+
+      {/* Video Modals */}
+      {/* How to Sell Video Modal */}
+      {showSellVideo && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+          <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-2xl max-w-4xl w-full mx-4 border-2 border-gray-300">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h3 className="text-xl sm:text-2xl font-bold">How to Sell on Heartisans</h3>
+              <button 
+                onClick={() => setShowSellVideo(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <div className="aspect-w-16 aspect-h-9 w-full">
+              <iframe
+                width="100%"
+                height="400"
+                src="https://www.youtube.com/embed/jlp1YQ4w2TA?rel=0&modestbranding=1"
+                title="How to Sell on Heartisans"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="rounded-lg"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* How to Start Resale Video Modal */}
+      {showResaleVideo && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+          <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-2xl max-w-4xl w-full mx-4 border-2 border-gray-300">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h3 className="text-xl sm:text-2xl font-bold">How to Start Resale</h3>
+              <button 
+                onClick={() => setShowResaleVideo(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <div className="aspect-w-16 aspect-h-9 w-full">
+              <iframe
+                width="100%"
+                height="400"
+                src="https://www.youtube.com/embed/bmiKFeisDOs?rel=0&modestbranding=1"
+                title="Tutorial - How to Resale on Heartisans"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="rounded-lg"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* How to Initiate Auction Video Modal */}
+      {showAuctionVideo && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+          <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-2xl max-w-4xl w-full mx-4 border-2 border-gray-300">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h3 className="text-xl sm:text-2xl font-bold">How to Initiate Auction</h3>
+              <button 
+                onClick={() => setShowAuctionVideo(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <div className="aspect-w-16 aspect-h-9 w-full">
+              <iframe
+                width="100%"
+                height="400"
+                src="https://www.youtube.com/embed/Z2zzBCY_8gw?rel=0&modestbranding=1"
+                title="How to Initiate Auction at Heartisans"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="rounded-lg"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

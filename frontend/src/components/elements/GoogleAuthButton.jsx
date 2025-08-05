@@ -45,11 +45,13 @@ export const GoogleAuthButton = ({ isSignUp = false }) => {
       <button
         type="button"
         onClick={handleGoogleAuth}
-        className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="w-full flex items-center justify-center py-6 px-6 border border-gray-300 text-xl font-semibold rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200 cursor-pointer"
       >
-        <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-          {/* Google logo SVG */}
-        </svg>
+        <img 
+          src="/photos/google-search.png" 
+          alt="Google" 
+          className="w-8 h-8 mr-3 rounded-full"
+        />
         {isSignUp ? 'Sign up with Google' : 'Sign in with Google'}
       </button>
 
