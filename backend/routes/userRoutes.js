@@ -8,7 +8,8 @@ import {
   getAllUsers,
   deleteUser,
   updateSubscription,
-  getWallet
+  getWallet,
+  getSellerEarnings
 } from '../controllers/userController.js';
 
 const router = express.Router();
@@ -17,6 +18,7 @@ const router = express.Router();
 router.get('/email/:email', getUserByEmail);
 router.get('/username/:username', getUserByUsername);
 router.get('/wallet/:id', getWallet); // Keep this specific path before general :id
+router.get('/earnings/:id', getSellerEarnings); // Seller earnings tracking
 
 router.post('/', createUser);
 router.get('/:id', getUserById); // This is a general ID route, so it comes after specific named parameters

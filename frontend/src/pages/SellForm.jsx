@@ -43,6 +43,15 @@ export const SellForm = () => {
     }
   }, [user]);
 
+  // Debug user loading
+  useEffect(() => {
+    console.log('=== USER CONTEXT DEBUG ===');
+    console.log('User in SellForm:', user);
+    console.log('User ID:', user?._id);
+    console.log('User loaded:', !!user);
+    console.log('User object keys:', user ? Object.keys(user) : 'No user');
+  }, [user]);
+
   useScrollToTop();
 
   const handleChange = (e) => {
@@ -301,12 +310,26 @@ export const SellForm = () => {
   e.preventDefault();
   setLoading(true);
   setMsg("");
+  
+  // Debug user information before proceeding
+  console.log('=== PRODUCT CREATION DEBUG ===');
+  console.log('User object:', user);
+  console.log('User ID:', user?._id);
+  console.log('User Name:', user?.userName);
+  console.log('User Full Name:', user?.fullName);
+  
+  if (!user || !user._id) {
+    setMsg("User not properly loaded. Please refresh the page and try again.");
+    setLoading(false);
+    return;
+  }
+  
   try {
-    // 1. Get signature from backend
+    // Get signature from backend
     const sigRes = await axios.get("http://localhost:5000/api/cloudinary/cloudinary-signature");
     const { signature, timestamp, apiKey, cloudName } = sigRes.data;
 
-    // 2. Upload image to Cloudinary with signature
+    // Upload image to Cloudinary
     let imageUrl = "";
     if (form.productImage) {
       const data = new FormData();
@@ -322,15 +345,30 @@ export const SellForm = () => {
       imageUrl = res.data.secure_url;
     }
 
-    // 3. Send product data to backend
+    // Send product data to backend
     const payload = {
       ...form,
       productImageUrl: imageUrl,
       productSellerName: user?.fullName || user?.userName || "",
+      sellerId: user._id, // Use definitive user._id (we've verified it exists above)
+      productPrice: Number(form.productPrice) // Ensure price is a number
     };
+    
     delete payload.productImage;
-    await axios.post("http://localhost:5000/api/shopcards", payload);
+    
+    console.log('=== SENDING PAYLOAD ===');
+    console.log('Full payload:', payload);
+    console.log('sellerId in payload:', payload.sellerId);
+    console.log('sellerId type:', typeof payload.sellerId);
+    
+    const response = await axios.post("http://localhost:5000/api/shopcards", payload);
+    console.log('=== CREATION RESPONSE ===');
+    console.log('Product creation response:', response.data);
+    console.log('Created product sellerId:', response.data.sellerId);
+    
     setMsg("Product listed successfully!");
+    
+    // Reset form but keep seller info
     setForm({
       productName: "",
       productPrice: "",
@@ -344,10 +382,14 @@ export const SellForm = () => {
       productColor: "",
       isCodAvailable: false,
     });
+    
   } catch (err) {
-    setMsg("Failed to list product.");
+    setMsg("Failed to list product. Please try again.");
+    console.error("Product listing error:", err);
+    console.error("Error response:", err.response?.data);
+  } finally {
+    setLoading(false);
   }
-  setLoading(false);
 };
 
   return (

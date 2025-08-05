@@ -47,6 +47,20 @@ const userSchema = new Schema({
     type: Number,
     default: 0
   },
+  // Seller earnings tracking for commission calculation
+  totalEarnings: {
+    type: Number,
+    default: 0
+  },
+  // Migration tracking for legacy users
+  isCommissionMigrated: {
+    type: Boolean,
+    default: false
+  },
+  legacyEarnings: {
+    type: Number,
+    default: 0 // Store original earnings before migration
+  },
   hasArtisanSubscription: {
     type: Boolean,
     default: false

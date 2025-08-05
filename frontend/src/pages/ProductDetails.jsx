@@ -43,10 +43,36 @@ export const ProductDetails = () => {
 
   // Fetch seller's _id based on seller name
   useEffect(() => {
-    if (!card?.productSellerName) return;
-    axios.get(`http://localhost:5000/api/user/username/${card.productSellerName}`)
-      .then(res => setSellerId(res.data._id))
-      .catch(() => setSellerId("Not Available"));
+    if (!card) return;
+    
+    console.log('=== SELLER ID DEBUG ===');
+    console.log('Product card:', card.productName);
+    console.log('card.sellerId:', card.sellerId);
+    console.log('card.sellerId type:', typeof card.sellerId);
+    console.log('card.productSellerName:', card.productSellerName);
+    
+    // Use sellerId directly from product data (most reliable)
+    if (card.sellerId) {
+      const sellerIdString = typeof card.sellerId === 'object' ? card.sellerId.toString() : card.sellerId;
+      setSellerId(sellerIdString);
+      console.log('Using direct sellerId:', sellerIdString);
+    } else {
+      console.log('sellerId missing, trying fallback...');
+      // Fallback: try to look up by seller name if sellerId is missing
+      if (card.productSellerName) {
+        axios.get(`http://localhost:5000/api/user/username/${card.productSellerName}`)
+          .then(res => {
+            console.log('Fallback lookup success:', res.data._id);
+            setSellerId(res.data._id);
+          })
+          .catch(() => {
+            console.log('Fallback lookup failed');
+            setSellerId("Not Available");
+          });
+      } else {
+        setSellerId("Not Available");
+      }
+    }
   }, [card]);
 
   const handleAddToCart = async () => {

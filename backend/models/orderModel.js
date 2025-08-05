@@ -36,6 +36,10 @@ const orderSchema = new Schema({
     type: Number,
     required: true
   },
+  platformFee: {
+    type: Number,
+    default: 0
+  },
   isSubscription: {
     type: Boolean,
     default: false

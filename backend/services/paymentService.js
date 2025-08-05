@@ -29,11 +29,54 @@ export const processSuccessfulPayment = async (order, paymentDetails) => {
     } else if (order.sellerId) {
       const seller = await User.findById(order.sellerId);
       if (seller) {
-        seller.balance = (seller.balance || 0) + order.amount;
-        await seller.save();
+        // Calculate seller revenue based on business model
+        const productPrice = Number(order.productDetails?.productPrice) || (Number(order.amount) - Number(order.platformFee || 0));
+        
+        // Ensure totalEarnings is a proper number (fix for legacy data)
+        const currentTotalEarnings = Number(seller.totalEarnings) || 0;
+        const currentBalance = Number(seller.balance) || 0;
+        
+        console.log(`📊 Seller ${seller.userName} - Current Total: ₹${currentTotalEarnings}, Balance: ₹${currentBalance}`);
+        
+        // CORRECT LOGIC: Commission applies based on CURRENT wallet status at time of purchase
+        const isCommissionActive = currentTotalEarnings >= 1000;
+        const sellerRevenue = isCommissionActive 
+          ? Math.round(productPrice * 0.9)  // 10% commission if already over ₹1,000
+          : productPrice;                   // 100% if still under ₹1,000
+        
+        // Calculate new totals
+        const newTotalEarnings = currentTotalEarnings + productPrice;
+        const newBalance = currentBalance + sellerRevenue;
+        
+        console.log(`💰 Payment Processing:
+          Product Price: ₹${productPrice}
+          Current Wallet: ₹${currentTotalEarnings}
+          Commission Active: ${isCommissionActive} (wallet ${isCommissionActive ? '≥' : '<'} ₹1,000)
+          Seller Gets: ₹${sellerRevenue} (${isCommissionActive ? '90%' : '100%'})
+          Commission Deducted: ₹${isCommissionActive ? productPrice - sellerRevenue : 0}
+          New Total Earnings: ₹${newTotalEarnings}
+          New Balance: ₹${newBalance}`);
+        
+        // Update seller with explicit values to avoid concatenation issues
+        await User.findByIdAndUpdate(order.sellerId, {
+          totalEarnings: newTotalEarnings,
+          balance: newBalance
+        });
+        
+        console.log(`✅ Seller payment processed for ${seller.userName}`);
       }
 
-      // Check if this is a resale product and mark it as sold
+      // Mark resale products as sold if applicable
+      if (order.productDetails?.productType === 'resale') {
+        try {
+          const resaleListing = await Resale.findById(order.productDetails.id);
+          if (resaleListing) {
+            await resaleListing.markAsSold();
+          }
+        } catch (resaleError) {
+          console.error('Error marking resale listing as sold:', resaleError);
+        }
+      }
       if (order.productDetails?.productType === 'resale' || 
           (order.productDetails?.id && order.productDetails?.productType === 'resale')) {
         try {

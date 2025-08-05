@@ -8,6 +8,160 @@ import { useTranslation } from "react-i18next";
 import { useScrollToTop } from "../hooks/useScrollToTop";
 import { useAuth } from "../contexts/AuthContext";
 
+// Seller Earnings Component
+const SellerEarningsSection = ({ userId }) => {
+  const [earnings, setEarnings] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchEarnings = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:5000/api/user/earnings/${userId}`);
+      
+      // Ensure numbers are properly formatted
+      const formattedEarnings = {
+        ...response.data,
+        totalEarnings: Number(response.data.totalEarnings || 0),
+        currentBalance: Number(response.data.currentBalance || 0),
+        freePostingRemaining: Math.max(0, 1000 - Number(response.data.totalEarnings || 0))
+      };
+      
+      setEarnings(formattedEarnings);
+    } catch (error) {
+      console.error('Failed to fetch seller earnings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      fetchEarnings();
+    }
+  }, [userId]);
+
+  // Auto-refresh every 30 seconds to catch updates
+  useEffect(() => {
+    if (userId) {
+      const interval = setInterval(fetchEarnings, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <div className="border-t-2 border-green-100 pt-12">
+        <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-8 border border-green-200">
+          <div className="animate-pulse">
+            <div className="h-8 bg-green-200 rounded w-1/3 mb-4"></div>
+            <div className="space-y-3">
+              <div className="h-4 bg-green-200 rounded w-full"></div>
+              <div className="h-4 bg-green-200 rounded w-2/3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!earnings) {
+    return null;
+  }
+
+  return (
+    <div className="border-t-2 border-green-100 pt-12">
+      <div className="flex justify-between items-center mb-8">
+        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+          💰 Seller Business Model
+        </h3>
+        <button 
+          onClick={fetchEarnings}
+          disabled={loading}
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+        >
+          {loading ? '↻' : '🔄'} Refresh
+        </button>
+      </div>
+      <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-8 border border-green-200">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="bg-white rounded-xl p-6 shadow-lg">
+            <h4 className="text-lg font-bold text-gray-700 mb-2">Total Earnings</h4>
+            <p className="text-3xl font-bold text-green-600">
+              ₹{(earnings.totalEarnings || 0).toLocaleString()}
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-xl p-6 shadow-lg">
+            <h4 className="text-lg font-bold text-gray-700 mb-2">Current Balance</h4>
+            <p className="text-3xl font-bold text-blue-600">
+              ₹{(earnings.currentBalance || 0).toLocaleString()}
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-xl p-6 shadow-lg">
+            <h4 className="text-lg font-bold text-gray-700 mb-2">Commission Rate</h4>
+            <p className="text-3xl font-bold text-purple-600">
+              {earnings.isCommissionActive ? '10%' : '0%'}
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-xl p-6 shadow-lg">
+            <h4 className="text-lg font-bold text-gray-700 mb-2">Status</h4>
+            <p className={`text-lg font-bold ${earnings.isCommissionActive ? 'text-orange-600' : 'text-green-600'}`}>
+              {earnings.isCommissionActive ? 'Commission Active' : 'Free Posting'}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {!earnings.isCommissionActive && (
+            <div className="bg-green-100 border border-green-300 rounded-xl p-6">
+              <h5 className="font-bold text-green-800 text-xl mb-2">🎉 Free Posting Active!</h5>
+              <p className="text-green-700 text-lg">
+                You can post unlimited crafts for free until you earn ₹1,000 through our platform.
+              </p>
+              <p className="text-green-600 font-semibold mt-2">
+                Remaining: ₹{earnings.freePostingRemaining.toLocaleString()} to reach commission threshold
+              </p>
+            </div>
+          )}
+
+          {earnings.isCommissionActive && (
+            <div className="bg-orange-100 border border-orange-300 rounded-xl p-6">
+              <h5 className="font-bold text-orange-800 text-xl mb-2">📊 Commission Model Active</h5>
+              <p className="text-orange-700 text-lg mb-2">
+                Since you've earned over ₹1,000, a 10% commission applies to all future sales.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="bg-white rounded-lg p-4">
+                  <p className="text-sm text-gray-600">You Receive</p>
+                  <p className="text-2xl font-bold text-green-600">90%</p>
+                  <p className="text-xs text-gray-500">of product price</p>
+                </div>
+                <div className="bg-white rounded-lg p-4">
+                  <p className="text-sm text-gray-600">Platform Fee</p>
+                  <p className="text-2xl font-bold text-orange-600">10%</p>
+                  <p className="text-xs text-gray-500">commission on sales</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-blue-100 border border-blue-300 rounded-xl p-6">
+            <h5 className="font-bold text-blue-800 text-xl mb-2">ℹ️ How It Works</h5>
+            <ul className="text-blue-700 space-y-2">
+              <li>• Post unlimited crafts for free until ₹1,000 total earnings</li>
+              <li>• After ₹1,000, 10% commission applies only when products are sold</li>
+              <li>• Buyers pay product price + ₹40 platform fee (transparent pricing)</li>
+              <li>• Your revenue: {earnings.isCommissionActive ? '90%' : '100%'} of product price goes to your wallet</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const UserDashBoard = () => {
   const { t } = useTranslation();
   const { user: authUser, isSignedIn, isLoaded, signOut } = useAuth();
@@ -96,15 +250,43 @@ export const UserDashBoard = () => {
         if (userRes.data.isArtisan) {
           try {
             const productsRes = await axios.get("http://localhost:5000/api/shopcards");
-            const userProducts = productsRes.data.filter(
-              product => product.productSellerName === userRes.data.userName || 
-                         product.sellerId === userRes.data._id
-            );
+            console.log('All products from API:', productsRes.data);
+            console.log('Current user ID:', userRes.data._id);
+            console.log('Current user name:', userRes.data.userName);
+            
+            const userProducts = productsRes.data.filter(product => {
+              console.log('Checking product:', {
+                productName: product.productName,
+                sellerId: product.sellerId,
+                productSellerName: product.productSellerName,
+                sellerIdType: typeof product.sellerId,
+                userIdType: typeof userRes.data._id
+              });
+              
+              // Primary check: sellerId (most reliable after our fix)
+              const matchesSellerId = product.sellerId && 
+                (product.sellerId === userRes.data._id || 
+                 product.sellerId.toString() === userRes.data._id.toString());
+              
+              // Fallback check: seller name (for any remaining edge cases)
+              const matchesSellerName = product.productSellerName === userRes.data.userName;
+              
+              const isMatch = matchesSellerId || matchesSellerName;
+              console.log('Match result:', isMatch, {
+                matchesSellerId,
+                matchesSellerName
+              });
+              
+              return isMatch;
+            });
+            
+            console.log('Filtered user products:', userProducts);
             setUserProducts(userProducts);
             if (userProducts.length > 0) {
               setSelectedProduct(userProducts[0]);
             }
-          } catch {
+          } catch (error) {
+            console.error('Failed to fetch user products:', error);
             setUserProducts([]);
           }
         }
@@ -507,6 +689,11 @@ export const UserDashBoard = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Seller Earnings Section */}
+                {user.isArtisan && (
+                  <SellerEarningsSection userId={user._id} />
+                )}
 
                 {/* Quick Action Buttons in Profile */}
                 <div className="border-t-2 border-green-100 pt-12">

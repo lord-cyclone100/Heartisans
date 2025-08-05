@@ -6,7 +6,7 @@ import { generateOrderId, formatOrderPayload } from '../utils/helpers.js';
 
 export const createOrder = async (req, res) => {
     try {
-        const { name, mobile, amount, address, sellerId, productDetails, isSubscription } = req.body;
+        const { name, mobile, amount, address, sellerId, productDetails, isSubscription, platformFee } = req.body;
         const orderId = generateOrderId();
 
         let buyerId = null;
@@ -46,6 +46,7 @@ export const createOrder = async (req, res) => {
                     address
                 },
                 amount: parseFloat(amount),
+                platformFee: parseFloat(platformFee) || 0, // Track platform fee
                 status: 'pending',
                 isSubscription: isSubscription || false
             };

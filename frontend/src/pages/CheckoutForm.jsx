@@ -13,6 +13,9 @@ export const CheckoutForm = () => {
   const location = useLocation();
   useScrollToTop();
 
+  // Platform fee constant
+  const PLATFORM_FEE = 40;
+
   // Extract data from location.state
   const {
     total = 0,
@@ -24,6 +27,10 @@ export const CheckoutForm = () => {
     directBuy = false // Flag to distinguish direct buy from cart checkout
   } = location.state || {};
 
+  // Calculate final total with platform fee (ensure proper number addition)
+  const platformFee = isSubscription ? 0 : PLATFORM_FEE; // No platform fee for subscriptions
+  const finalTotal = Number(total) + Number(platformFee);
+
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -32,9 +39,10 @@ export const CheckoutForm = () => {
     const data = {
       name: user.fullName || user.userName || "User",
       mobile: phoneNumber,
-      amount: total,
+      amount: finalTotal, // Use final total including platform fee
       address: address,
-      buyerEmail: user?.email
+      buyerEmail: user?.email,
+      platformFee: platformFee // Include platform fee in payment data
     };
 
     // Conditionally add product/subscription details based on the type of purchase
@@ -148,22 +156,50 @@ export const CheckoutForm = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">Seller</p>
-                        <p className="text-lg font-semibold text-gray-900">{sellerName}</p>
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 mb-1">Seller</p>
+                          <p className="text-lg font-semibold text-gray-900">{sellerName}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 mb-1">Seller ID</p>
+                          <p className="text-lg font-semibold text-gray-900">
+                            {sellerId ? (typeof sellerId === 'object' ? sellerId.toString() : sellerId) : 'Not Available'}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">Seller ID</p>
-                        <p className="text-lg font-semibold text-gray-900">{sellerId || 'Loading...'}</p>
+                    </div>
+                    
+                    {/* Price Breakdown */}
+                    <div className="bg-gray-50 rounded-xl p-6">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Price Breakdown</h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-base text-gray-600">{isSubscription ? 'Subscription Price' : 'Product Price'}</span>
+                          <span className="text-lg font-semibold text-gray-900">₹{total.toLocaleString()}</span>
+                        </div>
+                        {!isSubscription && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-base text-gray-600">Platform Fee</span>
+                            <span className="text-lg font-semibold text-gray-900">₹{platformFee.toLocaleString()}</span>
+                          </div>
+                        )}
+                        <div className="border-t border-gray-200 pt-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-bold text-gray-900">Total Amount</span>
+                            <span className="text-xl font-bold" style={{ color: '#479626' }}>₹{finalTotal.toLocaleString()}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="rounded-xl p-6 text-white" style={{ background: 'linear-gradient(to right, #479626, #3d7a20)' }}>
-                    <p className="text-lg font-medium opacity-90 mb-2">Total Amount</p>
-                    <p className="text-3xl sm:text-4xl font-bold">₹{total.toLocaleString()}</p>
+                  <div className="rounded-xl p-6 text-white mt-6" style={{ background: 'linear-gradient(to right, #479626, #3d7a20)' }}>
+                    <p className="text-lg font-medium opacity-90 mb-2">Pay Now</p>
+                    <p className="text-3xl sm:text-4xl font-bold">₹{finalTotal.toLocaleString()}</p>
+                    <p className="text-sm opacity-75 mt-1">Includes ₹{platformFee} platform fee</p>
                   </div>
                 </div>
               </div>
@@ -239,12 +275,16 @@ export const CheckoutForm = () => {
                     type="submit" 
                     className="w-full text-white py-4 px-8 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
                     style={{ backgroundColor: '#ffaf27' }}
+                    disabled={paymentInProgress}
                   >
-                    Pay ₹{total.toLocaleString()} Now
+                    {paymentInProgress ? 'Processing...' : `Pay ₹${finalTotal.toLocaleString()} Now`}
                     <svg className="w-5 h-5 ml-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </button>
+                  <p className="text-center text-sm text-gray-500 mt-2">
+                    Includes ₹{platformFee} platform service fee
+                  </p>
                 </div>
               </form>
             </div>
