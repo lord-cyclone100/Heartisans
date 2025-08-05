@@ -10,8 +10,16 @@ export const LanguageSelector = () => {
     { code: 'en', name: 'language.english', flag: '🇮🇳', nativeName: 'English' },
     { code: 'hi', name: 'language.hindi', flag: '🇮🇳', nativeName: 'हिंदी' },
     { code: 'bn', name: 'language.bengali', flag: '🇮🇳', nativeName: 'বাংলা' },
-    { code: 'ta', name: 'language.tamil', flag: '🇮🇳', nativeName: 'தமிழ்' },
-    { code: 'te', name: 'language.telugu', flag: '🇮🇳', nativeName: 'తెలుగు' }
+    { code: 'ta', name: 'language.tamil', flag: '🇮🇳', nativeName: 'তমিল্' },
+    { code: 'te', name: 'language.telugu', flag: '🇮🇳', nativeName: 'তেলুগু' },
+    { code: 'kn', name: 'language.kannada', flag: '🇮🇳', nativeName: 'ಕನ್ನಡ' },
+    { code: 'mr', name: 'language.marathi', flag: '🇮🇳', nativeName: 'मराठी' },
+    { code: 'ml', name: 'language.malayalam', flag: '🇮🇳', nativeName: 'മലയാളം' },
+    { code: 'gu', name: 'language.gujarati', flag: '🇮🇳', nativeName: 'ગુજરાતી' },
+    { code: 'ur', name: 'language.urdu', flag: '🇮🇳', nativeName: 'اردو' },
+    { code: 'pa', name: 'language.punjabi', flag: '🇮🇳', nativeName: 'ਪੰਜਾਬੀ' },
+    { code: 'or', name: 'language.odia', flag: '🇮🇳', nativeName: 'ଓଡ଼ିଆ' },
+    { code: 'as', name: 'language.assamese', flag: '🇮🇳', nativeName: 'অসমীয়া' }
   ];
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];

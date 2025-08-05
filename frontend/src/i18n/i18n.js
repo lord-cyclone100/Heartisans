@@ -240,6 +240,14 @@ const resources = {
       "language.bengali": "বাংলা",
       "language.tamil": "தமிழ்",
       "language.telugu": "తెలుగు",
+      "language.kannada": "ಕನ್ನಡ",
+      "language.marathi": "मराठी",
+      "language.malayalam": "മലയാളം",
+      "language.gujarati": "ગુજરાતી",
+      "language.urdu": "اردو",
+      "language.punjabi": "ਪੰਜਾਬੀ",
+      "language.odia": "ଓଡ଼ିଆ",
+      "language.assamese": "অসমীয়া",
       
       // Categories (for products from database)
       "category.traditional": "Traditional Crafts",
