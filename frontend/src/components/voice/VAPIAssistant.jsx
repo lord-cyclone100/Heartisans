@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Vapi from '@vapi-ai/web';
+import { FaMicrophone } from 'react-icons/fa';
 
 const VAPIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,91 +11,207 @@ const VAPIAssistant = () => {
   const [conversationMessages, setConversationMessages] = useState([]);
   const [currentSpeaker, setCurrentSpeaker] = useState(''); // 'user' or 'assistant'
   const [error, setError] = useState('');
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [isReconnecting, setIsReconnecting] = useState(false);
   
   const vapiRef = useRef(null);
   const volumeAnimationRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const heartbeatIntervalRef = useRef(null);
 
-  // Initialize VAPI
+  // Initialize VAPI with better error handling and reconnection logic
   useEffect(() => {
-    try {
-      vapiRef.current = new Vapi("da510ba8-a49a-42a1-b036-43a10c258275");
-      
-      // Event listeners
-      vapiRef.current.on('call-start', () => {
-        console.log('Call started');
-        setIsConnected(true);
-        setIsConnecting(false);
-        setError('');
-      });
+    const initializeVAPI = () => {
+      try {
+        if (vapiRef.current) {
+          vapiRef.current.stop();
+        }
 
-      vapiRef.current.on('call-end', () => {
-        console.log('Call ended');
-        setIsConnected(false);
-        setIsConnecting(false);
-        setTranscript('');
-        setConversationMessages([]);
-        setCurrentSpeaker('');
-        setVolume(0);
-      });
-
-      vapiRef.current.on('volume-level', (level) => {
-        setVolume(level);
-      });
-
-      vapiRef.current.on('message', (message) => {
-        console.log('VAPI Message:', message);
+        vapiRef.current = new Vapi("da510ba8-a49a-42a1-b036-43a10c258275");
         
-        if (message.type === 'transcript') {
-          if (message.transcriptType === 'partial') {
-            setTranscript(message.transcript);
-            setCurrentSpeaker('user');
-          } else if (message.transcriptType === 'final') {
+        // Event listeners with enhanced error handling
+        vapiRef.current.on('call-start', () => {
+          console.log('Call started');
+          setIsConnected(true);
+          setIsConnecting(false);
+          setIsReconnecting(false);
+          setReconnectAttempts(0);
+          setError('');
+          
+          // Start heartbeat to monitor connection
+          startHeartbeat();
+        });
+
+        vapiRef.current.on('call-end', () => {
+          console.log('Call ended');
+          setIsConnected(false);
+          setIsConnecting(false);
+          setIsReconnecting(false);
+          setTranscript('');
+          setConversationMessages([]);
+          setCurrentSpeaker('');
+          setVolume(0);
+          
+          // Clear heartbeat
+          clearHeartbeat();
+        });
+
+        vapiRef.current.on('volume-level', (level) => {
+          setVolume(level);
+        });
+
+        vapiRef.current.on('message', (message) => {
+          console.log('VAPI Message:', message);
+          
+          if (message.type === 'transcript') {
+            if (message.transcriptType === 'partial') {
+              setTranscript(message.transcript);
+              setCurrentSpeaker('user');
+            } else if (message.transcriptType === 'final') {
+              setConversationMessages(prev => [...prev, {
+                type: 'user',
+                text: message.transcript,
+                timestamp: Date.now()
+              }]);
+              setTranscript('');
+            }
+          } else if (message.type === 'function-call') {
+            setCurrentSpeaker('assistant');
+            setTranscript('');
+          } else if (message.type === 'speech-start') {
+            setCurrentSpeaker('assistant');
+            setTranscript('');
+          } else if (message.type === 'speech-end') {
+            setCurrentSpeaker('');
+          } else if (message.type === 'assistant-response' || message.type === 'response') {
+            // Handle assistant responses
             setConversationMessages(prev => [...prev, {
-              type: 'user',
-              text: message.transcript,
+              type: 'assistant',
+              text: message.content || message.text || message.transcript || 'Assistant responded',
               timestamp: Date.now()
             }]);
-            setTranscript('');
+          } else if (message.type === 'conversation-update' && message.conversation) {
+            // Handle conversation updates from VAPI
+            const lastMessage = message.conversation[message.conversation.length - 1];
+            if (lastMessage && lastMessage.role === 'assistant') {
+              setConversationMessages(prev => [...prev, {
+                type: 'assistant',
+                text: lastMessage.content || lastMessage.text || 'Assistant responded',
+                timestamp: Date.now()
+              }]);
+            }
           }
-        } else if (message.type === 'function-call') {
+        });
+
+        vapiRef.current.on('speech-start', () => {
+          console.log('Assistant started speaking');
           setCurrentSpeaker('assistant');
-          setTranscript('');
-        } else if (message.type === 'speech-start') {
-          setCurrentSpeaker('assistant');
-          setTranscript('');
-        } else if (message.type === 'speech-end') {
+        });
+
+        vapiRef.current.on('speech-end', () => {
+          console.log('Assistant stopped speaking');
           setCurrentSpeaker('');
-        }
-      });
+        });
 
-      vapiRef.current.on('speech-start', () => {
-        console.log('Assistant started speaking');
-        setCurrentSpeaker('assistant');
-      });
+        vapiRef.current.on('error', (error) => {
+          console.error('VAPI Error:', error);
+          handleConnectionError(error);
+        });
 
-      vapiRef.current.on('speech-end', () => {
-        console.log('Assistant stopped speaking');
-        setCurrentSpeaker('');
-      });
+        // Handle connection issues
+        vapiRef.current.on('disconnect', () => {
+          console.log('VAPI disconnected');
+          handleConnectionError('Connection lost');
+        });
 
-      vapiRef.current.on('error', (error) => {
-        console.error('VAPI Error:', error);
-        setError('Connection failed. Please try again.');
-        setIsConnecting(false);
-        setIsConnected(false);
-      });
+      } catch (err) {
+        console.error('Failed to initialize VAPI:', err);
+        setError('Failed to initialize voice assistant');
+      }
+    };
 
-    } catch (err) {
-      console.error('Failed to initialize VAPI:', err);
-      setError('Failed to initialize voice assistant');
-    }
+    initializeVAPI();
 
     return () => {
+      clearHeartbeat();
+      clearReconnectTimeout();
       if (vapiRef.current) {
         vapiRef.current.stop();
       }
     };
   }, []);
+
+  // Heartbeat to monitor connection health
+  const startHeartbeat = () => {
+    clearHeartbeat();
+    heartbeatIntervalRef.current = setInterval(() => {
+      if (isConnected && vapiRef.current) {
+        // Check if connection is still alive
+        try {
+          // You can implement a ping mechanism here if VAPI supports it
+          console.log('Heartbeat check');
+        } catch (err) {
+          console.error('Heartbeat failed:', err);
+          handleConnectionError('Connection lost during heartbeat');
+        }
+      }
+    }, 30000); // Check every 30 seconds
+  };
+
+  const clearHeartbeat = () => {
+    if (heartbeatIntervalRef.current) {
+      clearInterval(heartbeatIntervalRef.current);
+      heartbeatIntervalRef.current = null;
+    }
+  };
+
+  const clearReconnectTimeout = () => {
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+  };
+
+  // Enhanced error handling with automatic reconnection
+  const handleConnectionError = (error) => {
+    const errorMessage = typeof error === 'string' ? error : error.message || 'Connection failed';
+    console.error('Connection error:', errorMessage);
+    
+    setIsConnected(false);
+    setIsConnecting(false);
+    setCurrentSpeaker('');
+    
+    // Don't show error immediately, try to reconnect first
+    if (reconnectAttempts < 3) {
+      setIsReconnecting(true);
+      setError(`Reconnecting... (${reconnectAttempts + 1}/3)`);
+      
+      clearReconnectTimeout();
+      reconnectTimeoutRef.current = setTimeout(() => {
+        attemptReconnect();
+      }, 2000 * (reconnectAttempts + 1)); // Progressive delay
+      
+      setReconnectAttempts(prev => prev + 1);
+    } else {
+      setIsReconnecting(false);
+      setError('Connection failed. Please try again.');
+      setReconnectAttempts(0);
+    }
+  };
+
+  // Attempt to reconnect
+  const attemptReconnect = async () => {
+    if (!vapiRef.current) return;
+    
+    try {
+      console.log('Attempting to reconnect...');
+      setIsConnecting(true);
+      await vapiRef.current.start("3cb5663f-335e-4388-beb8-b18938f159e1");
+    } catch (err) {
+      console.error('Reconnection failed:', err);
+      handleConnectionError(err);
+    }
+  };
 
   // Volume animation effect
   useEffect(() => {
@@ -108,20 +225,38 @@ const VAPIAssistant = () => {
     
     setIsConnecting(true);
     setError('');
+    setReconnectAttempts(0);
     
     try {
+      // Check microphone permissions first
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+      
       await vapiRef.current.start("3cb5663f-335e-4388-beb8-b18938f159e1");
     } catch (err) {
       console.error('Failed to start call:', err);
-      setError('Failed to start voice chat. Please check your microphone permissions.');
+      
+      if (err.name === 'NotAllowedError' || err.message.includes('permission')) {
+        setError('Microphone permission denied. Please allow microphone access and try again.');
+      } else if (err.name === 'NotFoundError') {
+        setError('No microphone found. Please connect a microphone and try again.');
+      } else {
+        setError('Failed to start voice chat. Please check your connection and try again.');
+      }
+      
       setIsConnecting(false);
     }
   };
 
   const endCall = () => {
     if (vapiRef.current) {
+      clearHeartbeat();
+      clearReconnectTimeout();
       vapiRef.current.stop();
     }
+    setReconnectAttempts(0);
+    setIsReconnecting(false);
   };
 
   const toggleWidget = () => {
@@ -260,7 +395,14 @@ const VAPIAssistant = () => {
                       </svg>
                     </div>
                   </div>
-                  <p className="text-green-600 font-medium text-sm">Connecting...</p>
+                  <p className="text-green-600 font-medium text-sm">
+                    {isReconnecting ? 'Reconnecting...' : 'Connecting...'}
+                  </p>
+                  {isReconnecting && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Attempt {reconnectAttempts}/3
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -297,11 +439,17 @@ const VAPIAssistant = () => {
                         key={index}
                         className={`mb-3 p-3 rounded-lg max-w-[85%] ${
                           message.type === 'user' 
-                            ? 'bg-blue-500 text-white ml-auto' 
-                            : 'bg-white border border-gray-200'
+                            ? 'bg-blue-500 text-white ml-auto rounded-br-sm' 
+                            : 'bg-white border border-gray-200 text-gray-800 mr-auto rounded-bl-sm shadow-sm'
                         }`}
                       >
                         <p className="text-sm">{message.text}</p>
+                        {message.type === 'assistant' && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                            <span className="text-xs text-gray-500">Assistant</span>
+                          </div>
+                        )}
                       </div>
                     ))}
                     
@@ -339,12 +487,7 @@ const VAPIAssistant = () => {
                   className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-full transition-all duration-200 flex items-center justify-center gap-2 text-sm"
                   style={{ backgroundColor: '#479626' }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 1c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2V3c0-1.1-.9-2-2-2z"/>
-                    <path d="M19 10v2c0 3.87-3.13 7-7 7s-7-3.13-7-7v-2"/>
-                    <path d="M12 19v4"/>
-                    <path d="M8 23h8"/>
-                  </svg>
+                  <FaMicrophone size={16} />
                   Start
                 </button>
               ) : (
