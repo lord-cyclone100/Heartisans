@@ -427,15 +427,9 @@ export const AdminPanel = () => {
                 </div>
                 <p className="text-base text-gray-500 mb-4">{product.productState}</p>
                 <div className="flex space-x-3">
-                  <button className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-lg text-base font-semibold hover:bg-blue-600 transition-colors">
-                    <FaEye className="inline mr-2" size={16} /> {t('admin.view')}
-                  </button>
-                  <button className="flex-1 bg-green-500 text-white py-3 px-4 rounded-lg text-base font-semibold hover:bg-green-600 transition-colors">
-                    <FaEdit className="inline mr-2" size={16} /> {t('admin.edit')}
-                  </button>
                   <button 
                     onClick={() => deleteProduct(product._id)}
-                    className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg text-base font-semibold hover:bg-red-600 transition-colors"
+                    className="w-full bg-red-500 text-white py-3 px-4 rounded-lg text-base font-semibold hover:bg-red-600 transition-colors"
                   >
                     <FaTrash className="inline mr-2" size={16} /> {t('admin.delete')}
                   </button>
