@@ -32,7 +32,7 @@ export const createSubscriptionOrder = async (req, res) => {
       name,
       email: req.body.buyerEmail,
       mobile,
-      returnUrl: `http://localhost:5173/subscription-success?order_id=${orderId}`
+      returnUrl: `https://heartisans-frontend-ibwf.onrender.com/subscription-success?order_id=${orderId}`
     });
 
     const cashfreeResponse = await cashfree.PGCreateOrder(orderPayload);

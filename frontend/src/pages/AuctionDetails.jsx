@@ -9,7 +9,7 @@ import { useScrollToTop } from "../hooks/useScrollToTop";
 // Initialize socket with error handling
 let socket;
 try {
-  socket = io("http://localhost:5000", {
+  socket = io("https://heartisans-1.onrender.com/", {
     autoConnect: false, // Don't auto-connect immediately
     timeout: 5000,
     transports: ['websocket', 'polling']

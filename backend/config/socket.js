@@ -4,7 +4,7 @@ import { auctionModel } from '../models/auctionModel.js';
 export const configureSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "https://heartisans-frontend-ibwf.onrender.com",
       methods: ["GET", "POST"]
     }
   });
