@@ -31,7 +31,7 @@ const SAPAnalyticsDashboard = ({ productData }) => {
   const generateAnalytics = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/analytics/analytics-dashboard', productData);
+      const response = await axios.post('https://heartisans-1.onrender.com/api/analytics/analytics-dashboard', productData);
       setAnalytics(response.data.dashboard);
     } catch (error) {
       console.error('Analytics generation failed:', error);

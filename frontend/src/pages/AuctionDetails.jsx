@@ -43,7 +43,7 @@ export const AuctionDetails = () => {
   // Fetch auction details
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/auctions/${id}`)
+      .get(`https://heartisans-1.onrender.com/api/auctions/${id}`)
       .then((res) => setAuction(res.data))
       .catch(() => setAuction(null));
   }, [id]);

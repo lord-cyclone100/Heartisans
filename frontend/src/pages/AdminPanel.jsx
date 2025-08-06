@@ -83,9 +83,9 @@ export const AdminPanel = () => {
     setLoading(true)
     try {
       const [usersRes, shopCardsRes, auctionsRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/user"), // We'll need to create this endpoint
-        axios.get("http://localhost:5000/api/shopcards"),
-        axios.get("http://localhost:5000/api/auctions")
+        axios.get("https://heartisans-1.onrender.com/api/user"), // We'll need to create this endpoint
+        axios.get("https://heartisans-1.onrender.com//api/shopcards"),
+        axios.get("https://heartisans-1.onrender.com//api/auctions")
       ])
 
       setUsers(usersRes.data || [])
@@ -106,9 +106,9 @@ export const AdminPanel = () => {
       console.error('Error fetching admin data:', error)
       // Fallback to individual API calls for existing endpoints
       try {
-        const shopCardsRes = await axios.get("http://localhost:5000/api/shopcards")
+        const shopCardsRes = await axios.get("https://heartisans-1.onrender.com/api/shopcards")
         setShopCards(shopCardsRes.data || [])
-        const auctionsRes = await axios.get("http://localhost:5000/api/auctions")
+        const auctionsRes = await axios.get("https://heartisans-1.onrender.com/api/auctions")
         setAuctions(auctionsRes.data || [])
         
         setStats(prevStats => ({
@@ -135,7 +135,7 @@ export const AdminPanel = () => {
   const deleteUser = async (userId) => {
     if (window.confirm(t('admin.confirmDeleteUser'))) {
       try {
-        await axios.delete(`http://localhost:5000/api/user/${userId}`)
+        await axios.delete(`https://heartisans-1.onrender.com/api/user/${userId}`)
         setUsers(users.filter(user => user._id !== userId))
         // Update stats
         const updatedUsers = users.filter(user => user._id !== userId)
@@ -156,7 +156,7 @@ export const AdminPanel = () => {
   const deleteProduct = async (productId) => {
     if (window.confirm(t('admin.confirmDeleteProduct'))) {
       try {
-        await axios.delete(`http://localhost:5000/api/shopcards/${productId}`)
+        await axios.delete(`https://heartisans-1.onrender.com/api/shopcards/${productId}`)
         setShopCards(shopCards.filter(product => product._id !== productId))
         setStats(prevStats => ({
           ...prevStats,
@@ -173,7 +173,7 @@ export const AdminPanel = () => {
   const deleteAuction = async (auctionId) => {
     if (window.confirm(t('admin.confirmDeleteAuction'))) {
       try {
-        await axios.delete(`http://localhost:5000/api/auctions/${auctionId}`)
+        await axios.delete(`https://heartisans-1.onrender.com/api/auctions/${auctionId}`)
         setAuctions(auctions.filter(auction => auction._id !== auctionId))
         setStats(prevStats => ({
           ...prevStats,
@@ -190,7 +190,7 @@ export const AdminPanel = () => {
   const terminateSubscription = async (userId) => {
     if (window.confirm(t('admin.confirmTerminateSubscription'))) {
       try {
-        await axios.patch(`http://localhost:5000/api/user/${userId}/subscription`, {
+        await axios.patch(`https://heartisans-1.onrender.com/api/user/${userId}/subscription`, {
           hasArtisanSubscription: false,
           subscriptionType: null,
           subscriptionDate: null

@@ -22,7 +22,7 @@ export const StoriesPage = () => {
   const fetchStories = async () => {
     try {
       setError(null);
-      const response = await axios.get('http://localhost:5000/api/stories');
+      const response = await axios.get('https://heartisans-1.onrender.com/api/stories');
       if (response.data.success) {
         setStories(response.data.data || []);
       } else {

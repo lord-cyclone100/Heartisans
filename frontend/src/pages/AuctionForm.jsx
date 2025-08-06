@@ -73,7 +73,7 @@ export const AuctionForm = () => {
     setMsg("");
     
     try {
-      const response = await axios.post("http://localhost:5000/api/generate-description", {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/generate-description", {
         productName: form.productName,
         productCategory: "Auction Item",
         productState: "India",
@@ -133,7 +133,7 @@ export const AuctionForm = () => {
     setMsg("");
     
     try {
-      const response = await axios.post("http://localhost:5000/api/generate-sap-description", {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/generate-sap-description", {
         productName: form.productName,
         productCategory: "Auction Item",
         productState: "India",
@@ -192,7 +192,7 @@ export const AuctionForm = () => {
     setMsg("");
     
     try {
-      const response = await axios.post("http://localhost:5000/api/predict-price", {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/predict-price", {
         productName: form.productName,
         productCategory: "Auction Item",
         productMaterial: form.productMaterial,
@@ -239,7 +239,7 @@ export const AuctionForm = () => {
     setMsg("");
     try {
       // 1. Get Cloudinary signature from backend
-      const sigRes = await axios.get("http://localhost:5000/api/cloudinary/cloudinary-signature");
+      const sigRes = await axios.get("https://heartisans-1.onrender.com/api/cloudinary/cloudinary-signature");
       const { signature, timestamp, apiKey, cloudName } = sigRes.data;
 
       // 2. Upload image to Cloudinary
@@ -272,7 +272,7 @@ export const AuctionForm = () => {
         startTime: new Date(form.startTime),
         duration: Number(form.duration), // in seconds or minutes
       };
-      await axios.post("http://localhost:5000/api/auctions", payload);
+      await axios.post("https://heartisans-1.onrender.com/api/auctions", payload);
       setMsg("Auction created successfully!");
       setForm({
         productName: "",

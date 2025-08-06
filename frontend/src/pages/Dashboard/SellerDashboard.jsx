@@ -38,7 +38,7 @@ const SellerDashboard = () => {
         setError(null);
 
         const res = await axios.get(
-          `http://localhost:5000/api/analytics/seller/${sellerId}?range=${timeRange}`
+          `https://heartisans-1.onrender.com/api/analytics/seller/${sellerId}?range=${timeRange}`
         );
         if (!res.data) {
           throw new Error('No data received from server');

@@ -107,7 +107,7 @@ export const SellForm = () => {
         additionalInfo: form.productDescription || ""
       };
 
-      const response = await axios.post("http://localhost:5000/api/generate-description", requestData, {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/generate-description", requestData, {
         timeout: 15000,
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +184,7 @@ export const SellForm = () => {
         additionalInfo: form.productDescription || ""
       };
 
-      const response = await axios.post("http://localhost:5000/api/generate-sap-description", requestData, {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/generate-sap-description", requestData, {
         timeout: 20000,
         headers: {
           'Content-Type': 'application/json',
@@ -259,7 +259,7 @@ export const SellForm = () => {
 
       console.log('SAP AI Request:', requestData);
       
-      const response = await axios.post("http://localhost:5000/api/predict-price", requestData, {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/predict-price", requestData, {
         timeout: 20000,
         headers: {
           'Content-Type': 'application/json',
@@ -326,7 +326,7 @@ export const SellForm = () => {
   
   try {
     // Get signature from backend
-    const sigRes = await axios.get("http://localhost:5000/api/cloudinary/cloudinary-signature");
+    const sigRes = await axios.get("https://heartisans-1.onrender.com/api/cloudinary/cloudinary-signature");
     const { signature, timestamp, apiKey, cloudName } = sigRes.data;
 
     // Upload image to Cloudinary
@@ -361,7 +361,7 @@ export const SellForm = () => {
     console.log('sellerId in payload:', payload.sellerId);
     console.log('sellerId type:', typeof payload.sellerId);
     
-    const response = await axios.post("http://localhost:5000/api/shopcards", payload);
+    const response = await axios.post("https://heartisans-1.onrender.com/api/shopcards", payload);
     console.log('=== CREATION RESPONSE ===');
     console.log('Product creation response:', response.data);
     console.log('Created product sellerId:', response.data.sellerId);

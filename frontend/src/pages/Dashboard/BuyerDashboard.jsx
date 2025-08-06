@@ -28,9 +28,9 @@ const BuyerDashboard = () => {
       setLoading(true);
       setError(null);
       const [analyticsRes, ordersRes, productsRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/analytics/buyer/${buyerId}`),
-        axios.get(`http://localhost:5000/api/orders/buyer/${buyerId}`),
-        axios.get('http://localhost:5000/api/shopcards')
+        axios.get(`https://heartisans-1.onrender.com/api/analytics/buyer/${buyerId}`),
+        axios.get(`https://heartisans-1.onrender.com/api/orders/buyer/${buyerId}`),
+        axios.get('https://heartisans-1.onrender.com/api/shopcards')
       ]);
 
       setAnalytics(analyticsRes.data);

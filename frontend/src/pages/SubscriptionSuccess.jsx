@@ -29,7 +29,7 @@ export const SubscriptionSuccess = () => {
     try {
       console.log('Verifying subscription payment for order:', orderId);
       
-      const response = await fetch('http://localhost:5000/api/subscription/payment/verify', {
+      const response = await fetch('https://heartisans-1.onrender.com/api/subscription/payment/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId })

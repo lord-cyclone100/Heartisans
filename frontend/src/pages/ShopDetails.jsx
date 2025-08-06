@@ -11,13 +11,13 @@ export const ShopDetails = () => {
   useScrollToTop();
   
   useEffect(()=>{
-    axios.get(`http://localhost:5000/api/shopcards/category/${params.name}`)
+    axios.get(`https://heartisans-1.onrender.com/api/shopcards/category/${params.name}`)
     .then(res=>{
       if(res.data.length > 0){
         setCards(res.data)
       }
       else{
-        axios.get(`http://localhost:5000/api/shopcards/state/${params.name}`)
+        axios.get(`https://heartisans-1.onrender.com/api/shopcards/state/${params.name}`)
         .then(res2=>setCards(res2.data))
         .catch(()=>setCards([]))
       }

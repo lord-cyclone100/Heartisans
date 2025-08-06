@@ -9,7 +9,7 @@ export const Auction = () => {
   useScrollToTop();
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/auctions")
+    axios.get("https://heartisans-1.onrender.com/api/auctions")
       .then(res => setAuctions(res.data))
       .catch(() => setAuctions([]));
   }, []);

@@ -14,7 +14,7 @@ export const WalletPage = () => {
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/user/wallet/${id}`);
+        const res = await fetch(`https://heartisans-1.onrender.com/api/user/wallet/${id}`);
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(errorData.error || 'Failed to fetch wallet data.');

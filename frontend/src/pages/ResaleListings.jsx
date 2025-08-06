@@ -62,7 +62,7 @@ const ResaleListings = () => {
         ...(filters.maxPrice && { maxPrice: filters.maxPrice })
       });
 
-      const response = await axios.get(`http://localhost:5000/api/resale?${params}`);
+      const response = await axios.get(`https://heartisans-1.onrender.com/api/resale?${params}`);
       
       if (response.data.success) {
         setListings(response.data.data);

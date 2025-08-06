@@ -19,7 +19,7 @@ export const ResaleProductDetails = () => {
     const fetchListing = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/resale/${id}`);
+        const response = await axios.get(`https://heartisans-1.onrender.com/api/resale/${id}`);
         
         if (response.data.success) {
           setListing(response.data.data);

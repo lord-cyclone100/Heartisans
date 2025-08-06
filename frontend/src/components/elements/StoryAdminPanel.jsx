@@ -20,7 +20,7 @@ export const StoryAdminPanel = () => {
 
       console.log('Fetching pending stories with token:', token.substring(0, 20) + '...');
       
-      const response = await axios.get('http://localhost:5000/api/stories/admin/pending', {
+      const response = await axios.get('https://heartisans-1.onrender.com/api/stories/admin/pending', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -51,7 +51,7 @@ export const StoryAdminPanel = () => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:5000/api/stories/admin/${storyId}/approve`, {}, {
+      const response = await axios.put(`https://heartisans-1.onrender.com/api/stories/admin/${storyId}/approve`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -74,7 +74,7 @@ export const StoryAdminPanel = () => {
         return;
       }
 
-      const response = await axios.delete(`http://localhost:5000/api/stories/admin/${storyId}/reject`, {
+      const response = await axios.delete(`https://heartisans-1.onrender.com/api/stories/admin/${storyId}/reject`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

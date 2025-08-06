@@ -21,7 +21,7 @@ export const ProductDetails = () => {
   useScrollToTop();
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/shopcards/${id}`)
+    axios.get(`https://heartisans-1.onrender.com/api/shopcards/${id}`)
       .then(res => setCard(res.data))
       .catch(() => setCard(null));
   }, [id]);
@@ -33,7 +33,7 @@ export const ProductDetails = () => {
 
   useEffect(() => {
     if (!mongoUserId || !card) return;
-    axios.get(`http://localhost:5000/api/cart/${mongoUserId}`)
+    axios.get(`https://heartisans-1.onrender.com/api/cart/${mongoUserId}`)
       .then(res => {
         const found = res.data?.items?.some(item => item.productId === card._id);
         setInCart(found);
@@ -60,7 +60,7 @@ export const ProductDetails = () => {
       console.log('sellerId missing, trying fallback...');
       // Fallback: try to look up by seller name if sellerId is missing
       if (card.productSellerName) {
-        axios.get(`http://localhost:5000/api/user/username/${card.productSellerName}`)
+        axios.get(`https://heartisans-1.onrender.com/api/user/username/${card.productSellerName}`)
           .then(res => {
             console.log('Fallback lookup success:', res.data._id);
             setSellerId(res.data._id);
@@ -77,7 +77,7 @@ export const ProductDetails = () => {
 
   const handleAddToCart = async () => {
     if (!mongoUserId || !card) return;
-    await axios.post("http://localhost:5000/api/cart/add", {
+    await axios.post("https://heartisans-1.onrender.com/api/cart/add", {
       userId: mongoUserId,
       productId: card._id,
       productName: card.productName,
@@ -90,7 +90,7 @@ export const ProductDetails = () => {
 
   const handleRemoveFromCart = async () => {
     if (!mongoUserId || !card) return;
-    await axios.post("http://localhost:5000/api/cart/remove", {
+    await axios.post("https://heartisans-1.onrender.com/api/cart/remove", {
       userId: mongoUserId,
       productId: card._id,
     });

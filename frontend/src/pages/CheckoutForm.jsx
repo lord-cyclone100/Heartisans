@@ -70,8 +70,8 @@ export const CheckoutForm = () => {
 
       // Use different endpoints for subscription vs regular purchases
       const endpoint = isSubscription
-        ? "http://localhost:5000/api/subscription/create-order"
-        : "http://localhost:5000/api/payment/create-order";
+        ? "https://heartisans-1.onrender.com/api/subscription/create-order"
+        : "https://heartisans-1.onrender.com/api/payment/create-order";
 
       const response = await axios.post(endpoint, data);
       console.log("Payment API response:", response.data);

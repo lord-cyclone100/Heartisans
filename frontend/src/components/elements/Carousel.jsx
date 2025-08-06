@@ -11,7 +11,7 @@ export const Carousel = () => {
     const fetchRandomProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/api/shopcards");
+        const response = await axios.get("https://heartisans-1.onrender.com/api/shopcards");
         const allProducts = response.data;
         
         // Shuffle and get 5 random products

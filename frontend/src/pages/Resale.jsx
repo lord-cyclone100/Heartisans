@@ -86,7 +86,7 @@ export const Resale = () => {
     setIsPredictingPrice(true);
     
     try {
-      const response = await axios.post("http://localhost:5000/api/predict-price", {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/predict-price", {
         productName: resaleForm.productName,
         productCategory: resaleForm.category,
         productMaterial: "Handcrafted materials",
@@ -119,7 +119,7 @@ export const Resale = () => {
     setSapAiLoading(true);
     
     try {
-      const response = await axios.post("http://localhost:5000/api/generate-description", {
+      const response = await axios.post("https://heartisans-1.onrender.com/api/generate-description", {
         productName: resaleForm.productName,
         productCategory: resaleForm.category,
         productState: "India",
@@ -224,7 +224,7 @@ export const Resale = () => {
         return;
       }
 
-      const response = await axios.post('http://localhost:5000/api/resale', formData, {
+      const response = await axios.post('https://heartisans-1.onrender.com/api/resale', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

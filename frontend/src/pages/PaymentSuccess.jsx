@@ -22,7 +22,7 @@ export const PaymentSuccess = () => {
 
         try {
             console.time('PaymentVerification');
-            const response = await fetch('http://localhost:5000/api/payment/verify', {
+            const response = await fetch('https://heartisans-1.onrender.com/api/payment/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderId })
@@ -67,7 +67,7 @@ export const PaymentSuccess = () => {
         // Polling for status updates
         const pollInterval = setInterval(async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/payment/status?orderId=${orderId}`); // Ensure correct URL
+                const response = await fetch(`https://heartisans-1.onrender.com/api/payment/status?orderId=${orderId}`); // Ensure correct URL
                 const data = await response.json();
 
                 if (data.success && data.status === 'paid') { // Assuming your backend returns 'paid'

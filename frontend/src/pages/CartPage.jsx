@@ -15,19 +15,19 @@ export const CartPage = () => {
   useEffect(() => {
     if (!user?._id) return;
     setMongoUserId(user._id);
-    axios.get(`http://localhost:5000/api/cart/${user._id}`)
+    axios.get(`https://heartisans-1.onrender.com/api/cart/${user._id}`)
       .then(res => setCart(res.data))
       .catch(() => setCart({ items: [] }));
   }, [user]);
 
   const handleRemove = async (productId) => {
     if (!mongoUserId || !productId) return;
-    await axios.post("http://localhost:5000/api/cart/remove", {
+    await axios.post("https://heartisans-1.onrender.com/api/cart/remove", {
       userId: mongoUserId,
       productId,
     });
     // Refresh cart after removal
-    const res = await axios.get(`http://localhost:5000/api/cart/${mongoUserId}`);
+    const res = await axios.get(`https://heartisans-1.onrender.com/api/cart/${mongoUserId}`);
     setCart(res.data);
   };
 

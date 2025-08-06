@@ -14,7 +14,7 @@ const OrderDetailsPage = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/orders/${id}`);
+        const res = await axios.get(`https://heartisans-1.onrender.com/api/orders/${id}`);
         setOrder(res.data);
       } catch (err) {
         console.error("Failed to fetch order", err);

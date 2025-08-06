@@ -19,7 +19,7 @@ export const Navbar = () => {
   useEffect(() => {
     // Only fetch if authentication is loaded, user is signed in, and we have a user ID
     if (isLoaded && isSignedIn && user?._id) {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://heartisans-1.onrender.com/';
       
       // Use the user ID to fetch the cart count
       axios.get(`${API_BASE_URL}/cart/${user._id}`)

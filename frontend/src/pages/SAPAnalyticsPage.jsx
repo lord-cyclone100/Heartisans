@@ -14,7 +14,7 @@ export const SAPAnalyticsPage = () => {
 
   useEffect(() => {
     // Fetch all products
-    axios.get("http://localhost:5000/api/shopcards")
+    axios.get("https://heartisans-1.onrender.com/api/shopcards")
       .then(res => {
         setProducts(res.data);
         if (res.data.length > 0) {

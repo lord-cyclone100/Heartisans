@@ -23,7 +23,7 @@ const ProductDetailPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/shopcards/${id}`);
+        const response = await axios.get(`https://heartisans-1.onrender.com/api/shopcards/${id}`);
         setProduct(response.data);
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load product');

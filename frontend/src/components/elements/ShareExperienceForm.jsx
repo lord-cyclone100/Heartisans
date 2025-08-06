@@ -96,7 +96,7 @@ export const ShareExperienceForm = ({ isOpen, onClose }) => {
         submitData.append('storyImage', storyImage);
       }
 
-      const response = await axios.post('http://localhost:5000/api/stories', submitData, {
+      const response = await axios.post('https://heartisans-1.onrender.com/api/stories', submitData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

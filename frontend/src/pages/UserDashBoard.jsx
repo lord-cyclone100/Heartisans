@@ -16,7 +16,7 @@ const SellerEarningsSection = ({ userId }) => {
   const fetchEarnings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/user/earnings/${userId}`);
+      const response = await axios.get(`https://heartisans-1.onrender.com/api/user/earnings/${userId}`);
       
       // Ensure numbers are properly formatted
       const formattedEarnings = {
@@ -211,7 +211,7 @@ export const UserDashBoard = () => {
     const fetchUserData = async () => {
       try {
         setLoadingUser(true);
-        const userRes = await axios.get(`http://localhost:5000/api/user/${id}`);
+        const userRes = await axios.get(`https://heartisans-1.onrender.com/api/user/${id}`);
         
         // Verify the fetched user matches the authenticated user
         if (userRes.data._id !== authUser?._id) {
@@ -230,7 +230,7 @@ export const UserDashBoard = () => {
             return;
           }
           
-          const resaleRes = await axios.get(`http://localhost:5000/api/resale/user/listings`, {
+          const resaleRes = await axios.get(`https://heartisans-1.onrender.com/api/resale/user/listings`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -241,7 +241,7 @@ export const UserDashBoard = () => {
           
           // If the protected route fails, try to fetch all listings and filter by user
           try {
-            const allListingsRes = await axios.get('http://localhost:5000/api/resale');
+            const allListingsRes = await axios.get('https://heartisans-1.onrender.com/api/resale');
             const userListings = allListingsRes.data.data?.filter(listing => 
               listing.seller?._id === userRes.data._id || listing.seller === userRes.data._id
             ) || [];
@@ -254,7 +254,7 @@ export const UserDashBoard = () => {
 
         if (userRes.data.isArtisan) {
           try {
-            const productsRes = await axios.get("http://localhost:5000/api/shopcards");
+            const productsRes = await axios.get("https://heartisans-1.onrender.com/api/shopcards");
             console.log('All products from API:', productsRes.data);
             console.log('Current user ID:', userRes.data._id);
             console.log('Current user name:', userRes.data.userName);
@@ -324,7 +324,7 @@ export const UserDashBoard = () => {
 
   const handleArtisanStatus = (status) => {
     axios
-      .patch(`http://localhost:5000/api/user/${id}/artisan`, {
+      .patch(`https://heartisans-1.onrender.com/api/user/${id}/artisan`, {
         isArtisan: status,
       })
       .then((res) => setUser(res.data))
@@ -371,7 +371,7 @@ export const UserDashBoard = () => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/shopcards/${editingProduct._id}`,
+        `https://heartisans-1.onrender.com/api/shopcards/${editingProduct._id}`,
         editForm
       );
 
@@ -413,7 +413,7 @@ export const UserDashBoard = () => {
   const handleDeleteProduct = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/shopcards/${productId}`);
+        await axios.delete(`https://heartisans-1.onrender.com/api/shopcards/${productId}`);
         setUserProducts((prev) =>
           prev.filter((product) => product._id !== productId)
         );
@@ -455,7 +455,7 @@ export const UserDashBoard = () => {
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.put(
-        `http://localhost:5000/api/resale/${editingResaleListing._id}`,
+        `https://heartisans-1.onrender.com/api/resale/${editingResaleListing._id}`,
         editResaleForm,
         {
           headers: {
@@ -491,7 +491,7 @@ export const UserDashBoard = () => {
     if (window.confirm("Are you sure you want to delete this resale listing?")) {
       try {
         const token = localStorage.getItem('authToken');
-        await axios.delete(`http://localhost:5000/api/resale/${listingId}`, {
+        await axios.delete(`https://heartisans-1.onrender.com/api/resale/${listingId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
